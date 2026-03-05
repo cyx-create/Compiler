@@ -1,0 +1,6 @@
+public int main() {
+   x=1;
+   z=(x+y);
+   y=2;
+   return z;
+}
