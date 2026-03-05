@@ -1,0 +1,3 @@
+# Hashes of file build rules.
+eecd534b45ee932e4615492ddb388bc3 lib/frontend/lexer.cc
+342c97004e85a14cb29027cdaa72dde8 lib/frontend/parser.cc
