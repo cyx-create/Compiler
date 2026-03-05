@@ -15,7 +15,7 @@ using namespace fdmj;
 using namespace tinyxml2;
 
 //false调试用，防止xml文件太大。改成true，可以得到报错信息中的正确位置信息
-#define with_location_info true
+#define with_location_info false
 // false means no location info in the AST XML files
 
 Program *prog();
