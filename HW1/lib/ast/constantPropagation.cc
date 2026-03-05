@@ -3,119 +3,242 @@
 
 #include "constantPropagation.hh"
 #include "MinusIntConverter.hh"
+#include <iostream>
 
 using namespace std;
 using namespace fdmj;
 
-// 表达式递归变换（clone + 常量折叠）
-static Exp* transformExp(Exp* exp) {
+#define StmList vector<Stm *>
 
-  // 如果是 BinaryOp
-  if (exp->getASTKind() == ASTKind::BinaryOp) {
-
-    BinaryOp* b = static_cast<BinaryOp*>(exp);
-
-    // 递归处理左右
-    Exp* newLeft  = transformExp(b->left);
-    Exp* newRight = transformExp(b->right);
-
-    // 如果左右都是常量 → 折叠
-    if (newLeft->getASTKind() == ASTKind::IntExp &&
-        newRight->getASTKind() == ASTKind::IntExp) {
-
-      int lval = static_cast<IntExp*>(newLeft)->val;
-      int rval = static_cast<IntExp*>(newRight)->val;
-      int result = 0;
-
-      string op = b->op->op;
-
-      if (op == "+") result = lval + rval;
-      else if (op == "-") result = lval - rval;
-      else if (op == "*") result = lval * rval;
-      else if (op == "/") result = lval / rval;
-
-      // 不访问 pos，使用 clone 的位置信息
-      IntExp* folded = static_cast<IntExp*>(newLeft->clone());
-      folded->val = result;
-      return folded;
-    }
-
-    // 否则 clone 当前节点，再替换子树
-    BinaryOp* newNode = static_cast<BinaryOp*>(b->clone());
-    newNode->left  = newLeft;
-    newNode->right = newRight;
-    return newNode;
-  }
-
-  // 如果是 UnaryOp
-  if (exp->getASTKind() == ASTKind::UnaryOp) {
-    UnaryOp* u = static_cast<UnaryOp*>(exp);
-
-    UnaryOp* newNode = static_cast<UnaryOp*>(u->clone());
-    newNode->exp = transformExp(u->exp);
-    return newNode;
-  }
-
-  // 其他类型（IntExp, IdExp, OpExp）
-  return static_cast<Exp*>(exp->clone());
-}
-
-// 语句递归变换
-static Stm* transformStm(Stm* stm) {
-
-  if (stm->getASTKind() == ASTKind::Assign) {
-
-    Assign* a = static_cast<Assign*>(stm);
-
-    Assign* newNode = static_cast<Assign*>(a->clone());
-    newNode->left = transformExp(a->left);
-    newNode->exp  = transformExp(a->exp);
-
-    return newNode;
-  }
-
-  if (stm->getASTKind() == ASTKind::Return) {
-
-    Return* r = static_cast<Return*>(stm);
-
-    Return* newNode = static_cast<Return*>(r->clone());
-    newNode->exp = transformExp(r->exp);
-
-    return newNode;
-  }
-
-  return static_cast<Stm*>(stm->clone());
-}
-
-// 程序递归变换
-static Program* transformProgram(Program* root) {
-
-  Program* newProgram = static_cast<Program*>(root->clone());
-
-  MainMethod* oldMain = root->main;
-  MainMethod* newMain = static_cast<MainMethod*>(oldMain->clone());
-
-  vector<Stm*>* newStmList = new vector<Stm*>;
-
-  for (auto stm : *(oldMain->sl)) {
-    newStmList->push_back(transformStm(stm));
-  }
-
-  newMain->sl = newStmList;
-  newProgram->main = newMain;
-
-  return newProgram;
-}
-
-
-//入口函数
 Program *constantPropagate(Program *root) {
-	cout << "TODO" << endl;
-	// return root;
+  if (root == nullptr)
+    return nullptr;
 
-	// 先做 minusIntRewrite（它已经 clone）
-	Program* afterMinus = minusIntRewrite(root);
+  // 先做 minus rewrite
+  Program *afterMinus = minusIntRewrite(root);
 
-  	// 再做常量折叠（完全 clone 风格）
-  	return transformProgram(afterMinus);
+  ConstantPropagation v(nullptr);
+  afterMinus->accept(v);
+
+  return dynamic_cast<Program *>(v.newNode);
+}
+
+template <typename T>
+static vector<T *> *visitList(ConstantPropagation &v, vector<T *> *tl) {
+
+  if (tl == nullptr || tl->size() == 0)
+    return nullptr;
+
+  vector<T *> *vt = new vector<T *>();
+
+  for (T *x : *tl) {
+
+    if (x == nullptr)
+      continue;
+
+    x->accept(v);
+
+    if (v.newNode == nullptr)
+      continue;
+
+    vt->push_back(static_cast<T *>(v.newNode));
+  }
+
+  if (vt->size() == 0) {
+    delete vt;
+    vt = nullptr;
+  }
+
+  return vt;
+}
+
+void ConstantPropagation::visit(Program *node) {
+
+#ifdef DEBUG
+  cerr << "Rewriting Program...\n";
+#endif
+
+  if (node == nullptr) {
+    newNode = nullptr;
+    return;
+  }
+
+  MainMethod *m = nullptr;
+
+  if (node->main != nullptr) {
+
+    node->main->accept(*this);
+
+    if (newNode != nullptr)
+      m = static_cast<MainMethod *>(newNode);
+  }
+
+  newNode = new Program(node->getPos()->clone(), m);
+}
+
+void ConstantPropagation::visit(MainMethod *node) {
+
+#ifdef DEBUG
+  cerr << "Rewriting MainMethod...\n";
+#endif
+
+  if (node == nullptr) {
+    newNode = nullptr;
+    return;
+  }
+
+  StmList *sl = nullptr;
+
+  if (node->sl != nullptr)
+    sl = visitList<Stm>(*this, node->sl);
+
+  newNode = new MainMethod(node->getPos()->clone(), sl);
+}
+
+void ConstantPropagation::visit(Assign *node) {
+
+#ifdef DEBUG
+  cerr << "Rewriting Assign...\n";
+#endif
+
+  if (node == nullptr) {
+    newNode = nullptr;
+    return;
+  }
+
+  Exp *l = nullptr;
+  Exp *r = nullptr;
+
+  if (node->left != nullptr) {
+    node->left->accept(*this);
+    l = static_cast<Exp *>(newNode);
+  }
+
+  if (node->exp != nullptr) {
+    node->exp->accept(*this);
+    r = static_cast<Exp *>(newNode);
+  }
+
+  newNode = new Assign(node->getPos()->clone(), l, r);
+}
+
+void ConstantPropagation::visit(Return *node) {
+
+#ifdef DEBUG
+  cerr << "Rewriting Return...\n";
+#endif
+
+  if (node == nullptr) {
+    newNode = nullptr;
+    return;
+  }
+
+  Exp *e = nullptr;
+
+  if (node->exp != nullptr) {
+    node->exp->accept(*this);
+    e = static_cast<Exp *>(newNode);
+  }
+
+  newNode = new Return(node->getPos()->clone(), e);
+}
+
+void ConstantPropagation::visit(BinaryOp *node) {
+
+#ifdef DEBUG
+  cerr << "Rewriting BinaryOp...\n";
+#endif
+
+  if (node == nullptr) {
+    newNode = nullptr;
+    return;
+  }
+
+  Exp *l = nullptr;
+  Exp *r = nullptr;
+
+  if (node->left != nullptr) {
+    node->left->accept(*this);
+    l = static_cast<Exp *>(newNode);
+  }
+
+  if (node->right != nullptr) {
+    node->right->accept(*this);
+    r = static_cast<Exp *>(newNode);
+  }
+
+  // 常量折叠
+  if (l != nullptr && r != nullptr &&
+      l->getASTKind() == ASTKind::IntExp &&
+      r->getASTKind() == ASTKind::IntExp) {
+
+    int lv = static_cast<IntExp *>(l)->val;
+    int rv = static_cast<IntExp *>(r)->val;
+
+    string op = node->op->op;
+
+    int result = 0;
+
+    if (op == "+")
+      result = lv + rv;
+    else if (op == "-")
+      result = lv - rv;
+    else if (op == "*")
+      result = lv * rv;
+    else if (op == "/")
+      result = lv / rv;
+
+    newNode = new IntExp(node->getPos()->clone(), result);
+    return;
+  }
+
+  newNode = new BinaryOp(node->getPos()->clone(), l, node->op->clone(), r);
+}
+
+void ConstantPropagation::visit(UnaryOp *node) {
+
+#ifdef DEBUG
+  cerr << "Rewriting UnaryOp...\n";
+#endif
+
+  if (node == nullptr) {
+    newNode = nullptr;
+    return;
+  }
+
+  Exp *e = nullptr;
+
+  if (node->exp != nullptr) {
+    node->exp->accept(*this);
+    e = static_cast<Exp *>(newNode);
+  }
+
+  newNode = new UnaryOp(node->getPos()->clone(), node->op->clone(), e);
+}
+
+void ConstantPropagation::visit(IdExp *node) {
+
+#ifdef DEBUG
+  cerr << "Rewriting IdExp...\n";
+#endif
+
+  newNode = (node == nullptr) ? nullptr : static_cast<IdExp *>(node->clone());
+}
+
+void ConstantPropagation::visit(IntExp *node) {
+
+#ifdef DEBUG
+  cerr << "Rewriting IntExp...\n";
+#endif
+
+  newNode = (node == nullptr) ? nullptr : static_cast<IntExp *>(node->clone());
+}
+
+void ConstantPropagation::visit(OpExp *node) {
+
+#ifdef DEBUG
+  cerr << "Rewriting OpExp...\n";
+#endif
+
+  newNode = (node == nullptr) ? nullptr : static_cast<OpExp *>(node->clone());
 }

@@ -240,20 +240,20 @@ tools/main/CMakeFiles/main.dir/main.cc.o: ../tools/main/main.cc \
   /usr/include/strings.h \
   ../include/ast/xml2ast.hh \
   ../include/ast/constantPropagation.hh \
-  ../include/ast/executor.hh \
   /usr/include/c++/11/map \
   /usr/include/c++/11/bits/stl_tree.h \
   /usr/include/c++/11/bits/node_handle.h \
   /usr/include/c++/11/bits/stl_map.h \
   /usr/include/c++/11/bits/stl_multimap.h \
-  /usr/include/c++/11/bits/erase_if.h
+  /usr/include/c++/11/bits/erase_if.h \
+  ../include/ast/executor.hh
 
+
+../include/ast/executor.hh:
 
 /usr/include/c++/11/bits/erase_if.h:
 
 /usr/include/c++/11/bits/stl_map.h:
-
-../include/ast/executor.hh:
 
 ../include/ast/constantPropagation.hh:
 
