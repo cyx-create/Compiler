@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Program>
+    <MainMethod>
+        <StmList>
+            <Assign>
+                <IdExp id="a"/>
+                <UnaryOp>
+                    <OpExp op="-"/>
+                    <BinaryOp>
+                        <IntExp val="1"/>
+                        <OpExp op="+"/>
+                        <IntExp val="2"/>
+                    </BinaryOp>
+                </UnaryOp>
+            </Assign>
+            <Return>
+                <IdExp id="a"/>
+            </Return>
+        </StmList>
+    </MainMethod>
+</Program>
