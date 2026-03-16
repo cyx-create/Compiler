@@ -68,7 +68,7 @@ bool lvalue;
 - **Values**: 
   - `true` - Expression is an lvalue (can be assigned to)
   - `false` - Expression is an rvalue (cannot be assigned to)
-
+ 
 ---
 
 ### Public Methods
