@@ -1,0 +1,42 @@
+[
+{
+  "directory": "/root/fducompilerh2026/HW2/build",
+  "command": "/usr/bin/arm-linux-gnueabi-g++ -I/root/fducompilerh2026/HW2/include/frontend -I/root/fducompilerh2026/HW2/include/ast -I/root/fducompilerh2026/HW2/include/util -I/root/fducompilerh2026/HW2/vendor/tinyxml2 -g -std=gnu++17 -o lib/ast/CMakeFiles/ast.dir/FDMJAST.cc.o -c /root/fducompilerh2026/HW2/lib/ast/FDMJAST.cc",
+  "file": "/root/fducompilerh2026/HW2/lib/ast/FDMJAST.cc"
+},
+{
+  "directory": "/root/fducompilerh2026/HW2/build",
+  "command": "/usr/bin/arm-linux-gnueabi-g++ -I/root/fducompilerh2026/HW2/include/frontend -I/root/fducompilerh2026/HW2/include/ast -I/root/fducompilerh2026/HW2/include/util -I/root/fducompilerh2026/HW2/vendor/tinyxml2 -g -std=gnu++17 -o lib/ast/CMakeFiles/ast.dir/namemaps.cc.o -c /root/fducompilerh2026/HW2/lib/ast/namemaps.cc",
+  "file": "/root/fducompilerh2026/HW2/lib/ast/namemaps.cc"
+},
+{
+  "directory": "/root/fducompilerh2026/HW2/build",
+  "command": "/usr/bin/arm-linux-gnueabi-g++ -I/root/fducompilerh2026/HW2/include/frontend -I/root/fducompilerh2026/HW2/include/ast -I/root/fducompilerh2026/HW2/include/util -I/root/fducompilerh2026/HW2/vendor/tinyxml2 -g -std=gnu++17 -o lib/ast/CMakeFiles/ast.dir/semantanlyzer.cc.o -c /root/fducompilerh2026/HW2/lib/ast/semantanlyzer.cc",
+  "file": "/root/fducompilerh2026/HW2/lib/ast/semantanlyzer.cc"
+},
+{
+  "directory": "/root/fducompilerh2026/HW2/build",
+  "command": "/usr/bin/arm-linux-gnueabi-g++ -I/root/fducompilerh2026/HW2/include/frontend -I/root/fducompilerh2026/HW2/include/ast -I/root/fducompilerh2026/HW2/include/util -I/root/fducompilerh2026/HW2/vendor/tinyxml2 -g -std=gnu++17 -o lib/ast/CMakeFiles/ast.dir/setnamemaps.cc.o -c /root/fducompilerh2026/HW2/lib/ast/setnamemaps.cc",
+  "file": "/root/fducompilerh2026/HW2/lib/ast/setnamemaps.cc"
+},
+{
+  "directory": "/root/fducompilerh2026/HW2/build",
+  "command": "/usr/bin/arm-linux-gnueabi-g++ -I/root/fducompilerh2026/HW2/include/frontend -I/root/fducompilerh2026/HW2/include/ast -I/root/fducompilerh2026/HW2/include/util -I/root/fducompilerh2026/HW2/vendor/tinyxml2 -g -std=gnu++17 -o lib/util/CMakeFiles/util.dir/ast2xml.cc.o -c /root/fducompilerh2026/HW2/lib/util/ast2xml.cc",
+  "file": "/root/fducompilerh2026/HW2/lib/util/ast2xml.cc"
+},
+{
+  "directory": "/root/fducompilerh2026/HW2/build",
+  "command": "/usr/bin/arm-linux-gnueabi-g++ -I/root/fducompilerh2026/HW2/include/frontend -I/root/fducompilerh2026/HW2/include/ast -I/root/fducompilerh2026/HW2/include/util -I/root/fducompilerh2026/HW2/vendor/tinyxml2 -g -std=gnu++17 -o lib/util/CMakeFiles/util.dir/xml2ast.cc.o -c /root/fducompilerh2026/HW2/lib/util/xml2ast.cc",
+  "file": "/root/fducompilerh2026/HW2/lib/util/xml2ast.cc"
+},
+{
+  "directory": "/root/fducompilerh2026/HW2/build",
+  "command": "/usr/bin/arm-linux-gnueabi-g++ -I/root/fducompilerh2026/HW2/include/frontend -I/root/fducompilerh2026/HW2/include/ast -I/root/fducompilerh2026/HW2/include/util -I/root/fducompilerh2026/HW2/vendor/tinyxml2  -Wno-unused-result --std=c++17 -g -std=gnu++17 -o tools/main/CMakeFiles/main.dir/main.cc.o -c /root/fducompilerh2026/HW2/tools/main/main.cc",
+  "file": "/root/fducompilerh2026/HW2/tools/main/main.cc"
+},
+{
+  "directory": "/root/fducompilerh2026/HW2/build",
+  "command": "/usr/bin/arm-linux-gnueabi-g++ -I/root/fducompilerh2026/HW2/include/frontend -I/root/fducompilerh2026/HW2/include/ast -I/root/fducompilerh2026/HW2/include/util -I/root/fducompilerh2026/HW2/vendor/tinyxml2  -Wno-unused-result --std=c++17 -g -std=gnu++17 -o vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.o -c /root/fducompilerh2026/HW2/vendor/tinyxml2/tinyxml2.cc",
+  "file": "/root/fducompilerh2026/HW2/vendor/tinyxml2/tinyxml2.cc"
+}
+]
