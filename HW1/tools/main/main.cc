@@ -3,6 +3,8 @@
 #include "MinusIntConverter.hh"
 #include "ast2xml.hh"
 #include "xml2ast.hh"
+#include "constantPropagation.hh"
+#include "executor.hh"
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -12,6 +14,7 @@ using namespace std;
 using namespace fdmj;
 using namespace tinyxml2;
 
+//false调试用，防止xml文件太大。改成true，可以得到报错信息中的正确位置信息
 #define with_location_info false
 // false means no location info in the AST XML files
 
@@ -37,6 +40,7 @@ int main(int argc, const char *argv[]) {
   string file_ast2 = file + ".2-debug.ast";
   string file_ast3 = file + ".2-debug3.ast";
   string file_ast4 = file + ".2-debug4.ast";
+  string file_ast5 = file + ".2-debug5.ast";
   string file_irp = file + ".3.irp";
   string file_stm = file + ".4.stm";
   string file_liv = file + ".5.liv";
@@ -85,11 +89,16 @@ int main(int argc, const char *argv[]) {
   cout << "Saving cloned AST (XML) to: " << file_ast3 << endl;
   w->SaveFile(file_ast3.c_str());
   cout << "Rewriting AST..." << endl;
-  Program *root4 = minusIntRewrite(root3);
+  Program *root4 = constantPropagate(root3);
   cout << "Convert rewrote AST to XML..." << endl;
   w = ast2xml(root4, with_location_info);
   cout << "Saving AST (XML) to: " << file_ast4 << endl;
   w->SaveFile(file_ast4.c_str());
+
+  // Execute
+  cout << "Executing program..." << endl;
+  int result = execute(root4);
+  cout << "Execution result: " << result << endl;
   cout << "-----Done---" << endl;
   return EXIT_SUCCESS;
 }
