@@ -1,0 +1,14 @@
+public int main() {
+    class A a;
+    a.a = 3;
+}
+
+public class TestClass_Immutable {
+    int a;
+    int[] b;
+}
+
+public class A extends TestClass_Immutable {
+   int a;
+   class TestClass_Immutable o;
+}

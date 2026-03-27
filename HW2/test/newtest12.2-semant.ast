@@ -2,17 +2,17 @@
 <Program bline="1" bpos="1" eline="56" epos="1">
     <MainMethod bline="1" bpos="1" eline="47" epos="1">
         <VarDeclList>
-            <VarDecl bline="3" bpos="3" eline="3" epos="8" s_kind="Value" typeKind="Int" lvalue="true">
-                <Type typeKind="Int" bline="3" bpos="3" eline="3" epos="5" s_kind="Value" lvalue="false"/>
+            <VarDecl bline="3" bpos="3" eline="3" epos="8">
+                <Type typeKind="INT" bline="3" bpos="3" eline="3" epos="5"/>
                 <IdExp id="n" bline="3" bpos="7" eline="3" epos="7"/>
             </VarDecl>
-            <VarDecl bline="4" bpos="3" eline="4" epos="8" s_kind="Value" typeKind="Int" lvalue="true">
-                <Type typeKind="Int" bline="4" bpos="3" eline="4" epos="5" s_kind="Value" lvalue="false"/>
+            <VarDecl bline="4" bpos="3" eline="4" epos="8">
+                <Type typeKind="INT" bline="4" bpos="3" eline="4" epos="5"/>
                 <IdExp id="i" bline="4" bpos="7" eline="4" epos="7"/>
             </VarDecl>
-            <VarDecl bline="5" bpos="3" eline="5" epos="14" s_kind="Value" typeKind="Class" lvalue="true" cid="fib">
-                <Type typeKind="Class" bline="5" bpos="3" eline="5" epos="11" s_kind="Value" lvalue="false" cid="fib">
-                    <IdExp id="fib" bline="5" bpos="9" eline="5" epos="11" s_kind="Value" typeKind="Int" lvalue="true"/>
+            <VarDecl bline="5" bpos="3" eline="5" epos="14">
+                <Type typeKind="CLASS" bline="5" bpos="3" eline="5" epos="11">
+                    <IdExp id="fib" bline="5" bpos="9" eline="5" epos="11"/>
                 </Type>
                 <IdExp id="o" bline="5" bpos="13" eline="5" epos="13"/>
             </VarDecl>
@@ -139,7 +139,7 @@
                         <PutInt bline="41" bpos="7" eline="41" epos="21">
                             <CallExp bline="41" bpos="14" eline="41" epos="19" s_kind="Value" typeKind="Int" lvalue="false">
                                 <IdExp bline="41" bpos="14" eline="41" epos="14" s_kind="Value" typeKind="Class" lvalue="true" cid="fib" id="o"/>
-                                <IdExp id="f" bline="41" bpos="16" eline="41" epos="16"/>
+                                <IdExp id="f" bline="41" bpos="16" eline="41" epos="16" s_kind="MethodName"/>
                                 <ParList>
                                     <IdExp bline="41" bpos="18" eline="41" epos="18" s_kind="Value" typeKind="Int" lvalue="true" id="i"/>
                                 </ParList>
@@ -173,12 +173,12 @@
             <VarDeclList/>
             <MethodDeclList>
                 <MethodDecl bline="50" bpos="3" eline="55" epos="3">
-                    <Type typeKind="Int" bline="50" bpos="10" eline="50" epos="12" s_kind="Value" lvalue="false"/>
+                    <Type typeKind="INT" bline="50" bpos="10" eline="50" epos="12"/>
                     <IdExp id="f" bline="50" bpos="14" eline="50" epos="14"/>
                     <FormalList>
                         <Formal bline="50" bpos="16" eline="50" epos="20">
-                            <Type typeKind="Int" bline="50" bpos="16" eline="50" epos="18" s_kind="Value" lvalue="false"/>
-                            <IdExp bline="50" bpos="20" eline="50" epos="20" s_kind="Value" typeKind="Int" lvalue="true" id="n"/>
+                            <Type typeKind="INT" bline="50" bpos="16" eline="50" epos="18"/>
+                            <IdExp bline="50" bpos="20" eline="50" epos="20" id="n"/>
                         </Formal>
                     </FormalList>
                     <VarDeclList/>
@@ -204,7 +204,7 @@
                                 <BinaryOp bline="54" bpos="14" eline="54" epos="42" s_kind="Value" typeKind="Int" lvalue="false">
                                     <CallExp bline="54" bpos="14" eline="54" epos="26" s_kind="Value" typeKind="Int" lvalue="false">
                                         <This bline="54" bpos="14" eline="54" epos="17" s_kind="Value" typeKind="Class" lvalue="false" cid="fib"/>
-                                        <IdExp id="f" bline="54" bpos="19" eline="54" epos="19"/>
+                                        <IdExp id="f" bline="54" bpos="19" eline="54" epos="19" s_kind="MethodName"/>
                                         <ParList>
                                             <BinaryOp bline="54" bpos="21" eline="54" epos="25" s_kind="Value" typeKind="Int" lvalue="false">
                                                 <IdExp bline="54" bpos="21" eline="54" epos="21" s_kind="Value" typeKind="Int" lvalue="true" id="n"/>
@@ -216,7 +216,7 @@
                                     <OpExp op="+" bline="54" bpos="28" eline="54" epos="28"/>
                                     <CallExp bline="54" bpos="30" eline="54" epos="42" s_kind="Value" typeKind="Int" lvalue="false">
                                         <This bline="54" bpos="30" eline="54" epos="33" s_kind="Value" typeKind="Class" lvalue="false" cid="fib"/>
-                                        <IdExp id="f" bline="54" bpos="35" eline="54" epos="35"/>
+                                        <IdExp id="f" bline="54" bpos="35" eline="54" epos="35" s_kind="MethodName"/>
                                         <ParList>
                                             <BinaryOp bline="54" bpos="37" eline="54" epos="41" s_kind="Value" typeKind="Int" lvalue="false">
                                                 <IdExp bline="54" bpos="37" eline="54" epos="37" s_kind="Value" typeKind="Int" lvalue="true" id="n"/>
