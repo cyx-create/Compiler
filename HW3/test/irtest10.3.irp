@@ -3,23 +3,23 @@
     <FunctionDeclaration name="__$main__^main" return_type="INT" last_temp="101" last_label="99">
         <Sequence>
             <Move>
+                <Temp type="PTR" temp="100"/>
+                <ExtCall extfun="malloc">
+                    <Arguments>
+                        <Const value="16"/>
+                    </Arguments>
+                </ExtCall>
+            </Move>
+            <Move>
                 <Memory type="INT">
-                    <ExtCall extfun="malloc">
-                        <Arguments>
-                            <Const value="16"/>
-                        </Arguments>
-                    </ExtCall>
+                    <Temp type="PTR" temp="100"/>
                 </Memory>
                 <Const value="3"/>
             </Move>
             <Move>
                 <Memory type="INT">
                     <BinOp type="PTR" op="+">
-                        <ExtCall extfun="malloc">
-                            <Arguments>
-                                <Const value="16"/>
-                            </Arguments>
-                        </ExtCall>
+                        <Temp type="PTR" temp="100"/>
                         <Const value="4"/>
                     </BinOp>
                 </Memory>
@@ -28,11 +28,7 @@
             <Move>
                 <Memory type="INT">
                     <BinOp type="PTR" op="+">
-                        <ExtCall extfun="malloc">
-                            <Arguments>
-                                <Const value="16"/>
-                            </Arguments>
-                        </ExtCall>
+                        <Temp type="PTR" temp="100"/>
                         <Const value="8"/>
                     </BinOp>
                 </Memory>
@@ -41,23 +37,11 @@
             <Move>
                 <Memory type="INT">
                     <BinOp type="PTR" op="+">
-                        <ExtCall extfun="malloc">
-                            <Arguments>
-                                <Const value="16"/>
-                            </Arguments>
-                        </ExtCall>
+                        <Temp type="PTR" temp="100"/>
                         <Const value="12"/>
                     </BinOp>
                 </Memory>
                 <Const value="3"/>
-            </Move>
-            <Move>
-                <Temp type="PTR" temp="100"/>
-                <ExtCall extfun="malloc">
-                    <Arguments>
-                        <Const value="16"/>
-                    </Arguments>
-                </ExtCall>
             </Move>
         </Sequence>
     </FunctionDeclaration>
