@@ -21,7 +21,7 @@ class ASTToTreeVisitor;
 
 tree::Program* ast2tree(fdmj::Program* prog, AST_Semant_Map* semant_map);
 Class_table* generate_class_table(AST_Semant_Map* semant_map);
-Method_var_table* generate_method_var_table(string class_name, string method_name, Name_Maps* nm, Temp_map* tm);
+Method_var_table* generate_method_var_table(string class_name, string method_name, Name_Maps* nm, Temp_map* tm, AST_Semant_Map* semant_map = nullptr);
 
 //class table is to map each class var and method to an address offset
 //this uses a "universal class" method, i.e., all the classes use the
@@ -32,32 +32,85 @@ class Class_table {
 public:
      map<string, int> var_pos_map;  // key: "class_name^var_name" for variable hiding support
      map<string, int> method_pos_map;
+     
+     // HW4新增：支持继承和多态
+     map<string, string> parent_map;  // class_name -> parent_class_name
+     map<string, vector<string>> vtable_map;  // class_name -> list of method names
+     map<string, int> class_size_map;  // class_name -> size in words (including vptr)
+     
      Class_table() {
           var_pos_map = map<string, int>();
           method_pos_map = map<string, int>();
+          parent_map = map<string, string>();
+          vtable_map = map<string, vector<string>>();
+          class_size_map = map<string, int>();
      };
      ~Class_table() {
           var_pos_map.clear();
           method_pos_map.clear();
+          parent_map.clear();
+          vtable_map.clear();
+          class_size_map.clear();
      }
-     // Get variable position for a specific class (supports variable hiding)
-     // uses "class_name^var_name" as key
+     
+     // Get variable position for a specific class (supports inheritance)
      int get_var_pos(string class_name, string var_name) {
           string key = class_name + "^" + var_name;
-          if (var_pos_map.find(key) == var_pos_map.end()) {
-               cerr << "Error: var " << key << " not found in class table!" << endl;
-               return 0;
+          if (var_pos_map.find(key) != var_pos_map.end()) {
+               return var_pos_map[key];
           }
-          return var_pos_map[key];
+          // 查找父类
+          if (parent_map.find(class_name) != parent_map.end()) {
+               return get_var_pos(parent_map[class_name], var_name);
+          }
+          cerr << "Error: var " << var_name << " not found in class " << class_name << " or its parents!" << endl;
+          return -1;
      }
+     
      // Check if a class has a variable
      bool has_var(string class_name, string var_name) {
           string key = class_name + "^" + var_name;
-          return var_pos_map.find(key) != var_pos_map.end();
+          if (var_pos_map.find(key) != var_pos_map.end()) {
+               return true;
+          }
+          if (parent_map.find(class_name) != parent_map.end()) {
+               return has_var(parent_map[class_name], var_name);
+          }
+          return false;
      }
+     
+     // Get method index in vtable (supports inheritance)
+     int get_method_index(string class_name, string method_name) {
+          if (vtable_map.find(class_name) != vtable_map.end()) {
+               auto& vtable = vtable_map[class_name];
+               for (size_t i = 0; i < vtable.size(); i++) {
+                    if (vtable[i] == method_name) {
+                         return i;
+                    }
+               }
+          }
+          // 查找父类
+          if (parent_map.find(class_name) != parent_map.end()) {
+               return get_method_index(parent_map[class_name], method_name);
+          }
+          return -1;
+     }
+     
      int get_method_pos(string method_name) {
           return method_pos_map[method_name];
      }
+     
+     // 获取类的大小（包括vptr）
+     int get_class_size(string class_name) {
+          if (class_size_map.find(class_name) != class_size_map.end()) {
+               return class_size_map[class_name];
+          }
+          if (parent_map.find(class_name) != parent_map.end()) {
+               return get_class_size(parent_map[class_name]);
+          }
+          return 1; // 至少包含vptr
+     }
+     
      void print_class_table() {
           cout << "======Class Table:" << endl;
           for (auto it = var_pos_map.begin(); it != var_pos_map.end(); ++it) {
@@ -66,10 +119,21 @@ public:
           for (auto it = method_pos_map.begin(); it != method_pos_map.end(); ++it) {
                printf("method %s has pos %d\n", it->first.c_str(), it->second);
           }
+          cout << "======Inheritance:" << endl;
+          for (auto it = parent_map.begin(); it != parent_map.end(); ++it) {
+               printf("%s extends %s\n", it->first.c_str(), it->second.c_str());
+          }
+          cout << "======VTable:" << endl;
+          for (auto it = vtable_map.begin(); it != vtable_map.end(); ++it) {
+               printf("%s vtable: ", it->first.c_str());
+               for (auto m : it->second) {
+                    printf("%s ", m.c_str());
+               }
+               printf("\n");
+          }
           cout << "======End of Class Table" << endl;
      }
 };
-
 //For each method, there is a var table, including formal and local var.
 //(if a method local has a conflict in var name with formal, then local var
 //is used (ignore the formal))
