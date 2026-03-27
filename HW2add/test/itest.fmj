@@ -1,0 +1,18 @@
+public int main() {
+    class A_Immutable a;
+    a.x[0] = 3;
+}
+
+public class A_Immutable {
+    int[] x;
+}
+
+/*
+--Analyzing Semantics...
+Start Semantic Analysis
+Error: at position Position(sline: 3, scolumn: 5, eline: 3, ecolumn: 21)
+Error: Cannot assign to a member of an immutable object of type 'A_Immutable'.
+Error: at position Position(sline: 4, scolumn: 5, eline: 4, ecolumn: 36)
+Error: Cannot assign to a member of an immutable object of type 'A_Immutable'.
+Semantic Analysis failed due to errors
+*/
