@@ -258,6 +258,14 @@ public:
      void visit(fdmj::IdExp* node) override;
      void visit(fdmj::OpExp* node) override;
      void visit(fdmj::IntExp* node) override;
+     // 辅助函数进行边界检查
+     tree::Exp* getArrayElementForAssign(tree::Exp* arr_addr, tree::Exp* index_exp);
+    
+    // 辅助函数：生成带边界检查的数组元素访问（读）
+    tree::Exp* getArrayElementValue(tree::Exp* arr_addr, tree::Exp* index_exp);
+    
+    // 辅助函数：生成带边界检查的数组元素赋值（写）
+    tree::Stm* getArrayElementAssign(tree::Exp* arr_addr, tree::Exp* index_exp, tree::Exp* value);
 };
 
 #endif
