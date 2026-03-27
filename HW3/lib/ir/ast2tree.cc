@@ -347,33 +347,40 @@ void ASTToTreeVisitor::visit(fdmj::VarDecl* node) {
     
     // 检查是否是数组类型
     if (node->type != nullptr && node->type->typeKind == fdmj::TypeKind::ARRAY) {
-        // 数组变量声明
         vector<tree::Stm*>* init_stms = new vector<tree::Stm*>();
         
         // 检查是否有初始化列表
-        if (node->init.index() == 2) {  // index 2 是 vector<IntExp*>* 类型
+        if (node->init.index() == 2) {
             vector<IntExp*>* init_array = get<vector<IntExp*>*>(node->init);
             if (init_array != nullptr) {
-                int actual_size = init_array->size();  // 使用初始化列表的大小
+                int actual_size = init_array->size();
                 
-                // 计算需要分配的内存大小（字节数）
-                // 数组布局：第一个位置存储长度（int），后面是数组元素
-                // 总大小 = (数组长度 + 1) * 4 字节
+                // 创建临时变量来存储数组地址
+                tree::Temp* array_temp = method_temp_map->newtemp();
+                
+                // 计算需要分配的内存大小
                 int total_bytes = (actual_size + 1) * 4;
                 
-                // 分配内存
+                // 1. 分配内存
                 vector<tree::Exp*>* args = new vector<tree::Exp*>();
                 args->push_back(new tree::Const(total_bytes));
                 tree::Exp* new_array = new tree::ExtCall(tree::Type::PTR, "malloc", args);
                 
-                // 设置数组长度（存储在数组的第一个位置，即偏移0）
+                // 2. 将分配的地址存入临时变量
+                tree::Stm* assign_addr = new tree::Move(
+                    new tree::TempExp(tree::Type::PTR, array_temp),
+                    new_array
+                );
+                init_stms->push_back(assign_addr);
+                
+                // 3. 设置数组长度（存储在数组的第一个位置，即偏移0）
                 tree::Stm* set_length = new tree::Move(
-                    new tree::Mem(tree::Type::INT, new_array),
+                    new tree::Mem(tree::Type::INT, new tree::TempExp(tree::Type::PTR, array_temp)),
                     new tree::Const(actual_size)
                 );
                 init_stms->push_back(set_length);
                 
-                // 初始化数组元素（从位置1开始，偏移4字节）
+                // 4. 初始化数组元素
                 for (size_t i = 0; i < init_array->size(); i++) {
                     IntExp* init_val = (*init_array)[i];
                     if (init_val != nullptr) {
@@ -381,7 +388,7 @@ void ASTToTreeVisitor::visit(fdmj::VarDecl* node) {
                         tree::Exp* elem_addr = new tree::Binop(
                             tree::Type::PTR, 
                             "+", 
-                            new_array, 
+                            new tree::TempExp(tree::Type::PTR, array_temp), 
                             new tree::Const(offset)
                         );
                         tree::Stm* init_elem = new tree::Move(
@@ -392,92 +399,15 @@ void ASTToTreeVisitor::visit(fdmj::VarDecl* node) {
                     }
                 }
                 
-                // 将数组地址赋值给变量
+                // 5. 将数组地址赋值给变量
                 tree::Temp* var_temp = method_var_table->get_var_temp(var_name);
                 if (var_temp != nullptr) {
                     tree::Stm* assign = new tree::Move(
                         new tree::TempExp(tree::Type::PTR, var_temp),
-                        new_array
+                        new tree::TempExp(tree::Type::PTR, array_temp)
                     );
                     init_stms->push_back(assign);
                 }
-            }
-        } else if (node->init.index() == 1) {  // index 1 是 IntExp* 类型（单个整数初始化）
-            IntExp* init_int = get<IntExp*>(node->init);
-            if (init_int != nullptr) {
-                // 获取数组大小（从arity获取）
-                int array_size = 0;
-                if (node->type->arity != nullptr) {
-                    array_size = node->type->arity->val;
-                }
-                
-                int total_bytes = (array_size + 1) * 4;
-                
-                vector<tree::Exp*>* args = new vector<tree::Exp*>();
-                args->push_back(new tree::Const(total_bytes));
-                tree::Exp* new_array = new tree::ExtCall(tree::Type::PTR, "malloc", args);
-                
-                // 设置长度
-                tree::Stm* set_length = new tree::Move(
-                    new tree::Mem(tree::Type::INT, new_array),
-                    new tree::Const(array_size)
-                );
-                init_stms->push_back(set_length);
-                
-                // 用同一个值初始化所有元素
-                for (int i = 0; i < array_size; i++) {
-                    int offset = (i + 1) * 4;
-                    tree::Exp* elem_addr = new tree::Binop(
-                        tree::Type::PTR, 
-                        "+", 
-                        new_array, 
-                        new tree::Const(offset)
-                    );
-                    tree::Stm* init_elem = new tree::Move(
-                        new tree::Mem(tree::Type::INT, elem_addr),
-                        new tree::Const(init_int->val)
-                    );
-                    init_stms->push_back(init_elem);
-                }
-                
-                // 赋值
-                tree::Temp* var_temp = method_var_table->get_var_temp(var_name);
-                if (var_temp != nullptr) {
-                    tree::Stm* assign = new tree::Move(
-                        new tree::TempExp(tree::Type::PTR, var_temp),
-                        new_array
-                    );
-                    init_stms->push_back(assign);
-                }
-            }
-        } else {
-            // 没有初始化，只分配空间
-            int array_size = 0;
-            if (node->type->arity != nullptr) {
-                array_size = node->type->arity->val;
-            }
-            
-            int total_bytes = (array_size + 1) * 4;
-            
-            vector<tree::Exp*>* args = new vector<tree::Exp*>();
-            args->push_back(new tree::Const(total_bytes));
-            tree::Exp* new_array = new tree::ExtCall(tree::Type::PTR, "malloc", args);
-            
-            // 设置长度
-            tree::Stm* set_length = new tree::Move(
-                new tree::Mem(tree::Type::INT, new_array),
-                new tree::Const(array_size)
-            );
-            init_stms->push_back(set_length);
-            
-            // 赋值
-            tree::Temp* var_temp = method_var_table->get_var_temp(var_name);
-            if (var_temp != nullptr) {
-                tree::Stm* assign = new tree::Move(
-                    new tree::TempExp(tree::Type::PTR, var_temp),
-                    new_array
-                );
-                init_stms->push_back(assign);
             }
         }
         
@@ -489,7 +419,6 @@ void ASTToTreeVisitor::visit(fdmj::VarDecl* node) {
             visit_tree_result = new tree::Seq(init_stms);
         }
     } else {
-        // 非数组变量，不做处理
         visit_tree_result = nullptr;
     }
 }
