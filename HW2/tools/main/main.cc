@@ -30,6 +30,8 @@ int main(int argc, const char *argv[]) {
 
     // boilerplate output filenames (used throughout the compiler pipeline)
     string file_ast = file + ".2.ast";        // ast in xml
+    // 第二部分
+    // string file_ast_semant = file + ".try-semant.ast";
     string file_ast_semant = file + ".2-semant.ast";
  
     XMLDocument *x = new XMLDocument();
@@ -47,6 +49,10 @@ int main(int argc, const char *argv[]) {
     std::cout << "Semantic analysis..." << std::endl;
     std::cout << "--Making Name Maps..." << endl;
     Name_Maps *name_maps = makeNameMaps(root); 
+
+    name_maps->print();
+
+
     std::cout << "--Analyzing Semantics..." << endl;
     AST_Semant_Map *semant_map = semant_analyze(root); 
 
@@ -58,6 +64,7 @@ int main(int argc, const char *argv[]) {
         return EXIT_FAILURE;  
     }
 
+    // 第二部分
     x->SaveFile(file_ast_semant.c_str());
     return EXIT_SUCCESS;
 }
