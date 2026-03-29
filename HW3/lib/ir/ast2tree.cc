@@ -38,26 +38,26 @@ Class_table* generate_class_table(AST_Semant_Map* semant_map) {
         }
     }
     
-    // 第二遍：计算所有类的变量偏移（包括继承）
-    // 收集所有类名，按拓扑排序（父类在前）
+    // 第二遍：收集所有类名
     vector<string> class_order;
-    // 简单处理：确保父类在子类之前
     for (const auto& class_name : *nm->get_class_list()) {
         if (ct->parent_map.find(class_name) == ct->parent_map.end()) {
             class_order.push_back(class_name);
         }
     }
-    // 添加子类
     for (const auto& class_name : *nm->get_class_list()) {
         if (ct->parent_map.find(class_name) != ct->parent_map.end()) {
             class_order.push_back(class_name);
         }
     }
     
-    // 计算每个类的变量偏移
+    // 第三遍：计算所有类的变量偏移（Unified Object Record）
     int current_offset = 0;
     for (const auto& class_name : *nm->get_class_list()) {
-        // 添加当前类的变量
+        // 跳过 __$main__ 类
+        if (class_name == "__$main__") {
+            continue;
+        }
         set<string>* vars = nm->get_class_var_list(class_name);
         for (const auto& v : *vars) {
             string key = class_name + "^" + v;
@@ -65,40 +65,86 @@ Class_table* generate_class_table(AST_Semant_Map* semant_map) {
         }
         delete vars;
     }
-
-    // 记录每个类的大小（变量数量）
-    for (const auto& class_name : *nm->get_class_list()) {
-        set<string>* vars = nm->get_class_var_list(class_name);
-        ct->class_size_map[class_name] = vars->size() + 1;  // +1 for vptr
-        delete vars;
-    }
-
-    // 构建虚函数表（所有类共享同一个 vtable）
+    int total_vars = current_offset;  // 所有类的变量总数
+    // cout << "total_vars = " << total_vars << endl;
+    
+    // 第四遍：构建全局虚函数表（去重后的所有方法）
     vector<string> global_vtable;
+    map<string, int> method_global_index;
+
     for (const auto& class_name : *nm->get_class_list()) {
+        // 跳过 __$main__ 类
+        if (class_name == "__$main__") {
+            continue;
+        }
         set<string>* methods = nm->get_method_list(class_name);
         for (const auto& m : *methods) {
-            // 检查是否已存在
-            bool found = false;
-            for (size_t i = 0; i < global_vtable.size(); i++) {
-                if (global_vtable[i] == m) {
-                    found = true;
-                    break;
-                }
+            // 跳过 main 方法（如果有）
+            if (m == "main") {
+                continue;
             }
-            if (!found) {
+            if (method_global_index.find(m) == method_global_index.end()) {
+                method_global_index[m] = global_vtable.size();
                 global_vtable.push_back(m);
             }
         }
         delete methods;
     }
+    int global_vtable_size = global_vtable.size();
 
-    // 所有类共享同一个 vtable
-    for (const auto& class_name : *nm->get_class_list()) {
-        ct->vtable_map[class_name] = global_vtable;
-        for (size_t i = 0; i < global_vtable.size(); i++) {
-            ct->method_pos_map[global_vtable[i]] = i;
+    // cout << "global_vtable_size = " << global_vtable_size << endl;
+    // for (const auto& m : global_vtable) {
+    //     cout << "  method: " << m << endl;
+    // }
+    
+    // 第五遍：为每个类构建其 vtable（考虑继承和覆盖）
+    for (const auto& class_name : class_order) {
+        // 跳过 __$main__ 类
+        if (class_name == "__$main__") {
+            continue;
         }
+        vector<string> vtable;
+        
+        // 收集该类及其所有父类的方法（子类覆盖父类）
+        string current = class_name;
+        while (!current.empty()) {
+            set<string>* methods = nm->get_method_list(current);
+            for (const auto& m : *methods) {
+                // 跳过 main 方法
+                if (m == "main") {
+                    continue;
+                }
+                bool already_exists = false;
+                for (const auto& existing : vtable) {
+                    if (existing == m) {
+                        already_exists = true;
+                        break;
+                    }
+                }
+                if (!already_exists) {
+                    vtable.push_back(m);
+                }
+            }
+            delete methods;
+            current = nm->get_parent(current);
+        }
+        
+        ct->vtable_map[class_name] = vtable;
+        
+        // 记录方法在全局 vtable 中的位置
+        for (const auto& m : vtable) {
+            ct->method_pos_map[m] = method_global_index[m];
+        }
+    }
+    
+    // 第六遍：计算每个类的大小（总变量数 + 全局 vtable 大小）
+    // 所有类统一使用全局 vtable 大小，保证多态时对象布局一致
+    for (const auto& class_name : *nm->get_class_list()) {
+        // 跳过 __$main__ 类
+        if (class_name == "__$main__") {
+            continue;
+        }
+        ct->class_size_map[class_name] = total_vars + global_vtable_size;
     }
     
     return ct;
@@ -429,71 +475,24 @@ void ASTToTreeVisitor::visit(fdmj::MethodDecl* node) {
     string method_name = node->id->id;
     string ir_func_name = current_class + "^" + method_name;
     
-    // 创建新的Temp_map和Method_var_table
+    // 创建新的Temp_map
     Temp_map* method_tm = new Temp_map();
-    Method_var_table* mvt = new Method_var_table();
     
-    // 添加this参数（所有非static方法都有this）
-    tree::Temp* this_temp = method_tm->newtemp();
-    (*mvt->var_temp_map)["this"] = this_temp;
-    (*mvt->var_type_map)["this"] = tree::Type::PTR;
+    // 使用 generate_method_var_table 创建 Method_var_table，保证一致性
+    Method_var_table* mvt = generate_method_var_table(
+        current_class, 
+        method_name,
+        semant_map ? semant_map->getNameMaps() : nullptr,
+        method_tm,
+        semant_map
+    );
     
-    // 获取Name_Maps
-    Name_Maps* nm = semant_map ? semant_map->getNameMaps() : nullptr;
-    
-    // 添加方法参数 - 从Name_Maps获取类型
-    if (node->fl != nullptr) {
-        for (auto* formal : *node->fl) {
-            if (formal == nullptr || formal->id == nullptr) continue;
-            string param_name = formal->id->id;
-            tree::Temp* param_temp = method_tm->newtemp();
-            (*mvt->var_temp_map)[param_name] = param_temp;
-            
-            // 从Name_Maps获取Formal节点来获取类型
-            tree::Type param_type = tree::Type::INT;
-            if (nm != nullptr) {
-                Formal* f = nm->get_method_formal(current_class, method_name, param_name);
-                if (f != nullptr && f->type != nullptr) {
-                    if (f->type->typeKind == fdmj::TypeKind::ARRAY || 
-                        f->type->typeKind == fdmj::TypeKind::CLASS) {
-                        param_type = tree::Type::PTR;
-                    } else {
-                        param_type = tree::Type::INT;
-                    }
-                }
-            }
-            (*mvt->var_type_map)[param_name] = param_type;
-        }
-    }
-    
-    // 添加局部变量 - 从Name_Maps获取类型
-    if (node->vdl != nullptr) {
-        for (auto* var_decl : *node->vdl) {
-            if (var_decl == nullptr || var_decl->id == nullptr) continue;
-            string var_name = var_decl->id->id;
-            
-            // 检查是否与参数冲突（局部变量覆盖参数）
-            if (mvt->var_temp_map->find(var_name) != mvt->var_temp_map->end()) {
-                (*mvt->var_temp_map)[var_name] = method_tm->newtemp();
-            } else {
-                (*mvt->var_temp_map)[var_name] = method_tm->newtemp();
-            }
-            
-            // 从Name_Maps获取VarDecl来获取类型
-            tree::Type var_type = tree::Type::INT;
-            if (nm != nullptr) {
-                VarDecl* vd = nm->get_method_var(current_class, method_name, var_name);
-                if (vd != nullptr && vd->type != nullptr) {
-                    if (vd->type->typeKind == fdmj::TypeKind::ARRAY || 
-                        vd->type->typeKind == fdmj::TypeKind::CLASS) {
-                        var_type = tree::Type::PTR;
-                    } else {
-                        var_type = tree::Type::INT;
-                    }
-                }
-            }
-            (*mvt->var_type_map)[var_name] = var_type;
-        }
+    // 获取 this_temp 用于构建参数列表
+    tree::Temp* this_temp = mvt->get_var_temp("this");
+    if (this_temp == nullptr) {
+        cerr << "Error: this not found in method_var_table" << endl;
+        visit_tree_result = nullptr;
+        return;
     }
     
     // 保存当前的context
@@ -520,18 +519,6 @@ void ASTToTreeVisitor::visit(fdmj::MethodDecl* node) {
         }
     }
     
-    // 添加return语句（如果没有）
-    // bool has_return = false;
-    // for (auto* stm : *stm_ir_list) {
-    //     if (dynamic_cast<tree::Return*>(stm) != nullptr) {
-    //         has_return = true;
-    //         break;
-    //     }
-    // }
-    // if (!has_return) {
-    //     stm_ir_list->push_back(new tree::Return(new tree::Const(0)));
-    // }
-    
     tree::Seq* body_seq = new tree::Seq(stm_ir_list);
     
     // 构建参数列表（只包含Temp*，不包含类型信息）
@@ -542,18 +529,20 @@ void ASTToTreeVisitor::visit(fdmj::MethodDecl* node) {
         for (auto* formal : *node->fl) {
             if (formal == nullptr || formal->id == nullptr) continue;
             string param_name = formal->id->id;
-            tree::Temp* param_temp = (*mvt->var_temp_map)[param_name];
-            params->push_back(param_temp);
+            tree::Temp* param_temp = mvt->get_var_temp(param_name);
+            if (param_temp != nullptr) {
+                params->push_back(param_temp);
+            }
         }
     }
     
     int last_temp;
     if (stm_ir_list->empty() && node->sl == nullptr) {
-        // 空方法体：使用 next_temp（下一个可用编号）
-        last_temp = method_temp_map->next_temp;
+        // 空方法体：使用 next_temp（下一个可用编号）(-1?)
+        last_temp = method_temp_map->next_temp -1;
     } else {
         // 非空方法体：使用最后使用的编号
-        last_temp = method_temp_map->next_temp - 1;
+        last_temp = method_temp_map->next_temp -1;
     }
     int last_label = method_temp_map->next_label - 1;
     
@@ -691,6 +680,7 @@ tree::Exp* ASTToTreeVisitor::getArrayElementValue(tree::Exp* arr_addr, tree::Exp
     tree::Const* const_index = dynamic_cast<tree::Const*>(index_exp);
     
     if (const_index != nullptr) {
+        // 常量索引：直接使用
         int index_val = const_index->constVal;
         
         // 获取数组长度
@@ -710,8 +700,8 @@ tree::Exp* ASTToTreeVisitor::getArrayElementValue(tree::Exp* arr_addr, tree::Exp
             ">=", 
             new tree::Const(index_val),
             new tree::Const(0),
-            label_101,  // true 跳转到 101
-            label_100   // false 跳转到 100
+            label_101,
+            label_100
         );
         
         // 第二个检查：index >= length
@@ -719,8 +709,8 @@ tree::Exp* ASTToTreeVisitor::getArrayElementValue(tree::Exp* arr_addr, tree::Exp
             ">=", 
             new tree::Const(index_val),
             new tree::TempExp(tree::Type::INT, length_temp),
-            label_100,  // true 跳转到 100
-            label_102   // false 跳转到 102
+            label_100,
+            label_102
         );
         
         // 越界处理
@@ -748,14 +738,27 @@ tree::Exp* ASTToTreeVisitor::getArrayElementValue(tree::Exp* arr_addr, tree::Exp
         tree::Exp* elem_addr = new tree::Binop(tree::Type::PTR, "+", arr_addr, byte_offset);
         tree::Exp* elem_value = new tree::Mem(tree::Type::INT, elem_addr);
         
-        return elem_value;  // 直接返回，不包装外层 ESeq
+        return elem_value;
     } else {
-        // 变量索引：需要存储到临时变量
-        tree::Temp* index_temp = method_temp_map->newtemp();
-        tree::Stm* store_index = new tree::Move(
-            new tree::TempExp(tree::Type::INT, index_temp),
-            index_exp
-        );
+        // 变量索引或表达式索引（如 i+1）
+        // 检查索引是否需要计算（是 BinOp 表达式）
+        tree::Binop* binop_index = dynamic_cast<tree::Binop*>(index_exp);
+        
+        tree::Exp* index_to_use = index_exp;
+        vector<tree::Stm*>* outer_stms = nullptr;
+        
+        // 如果是 BinOp 表达式，需要先计算并存储到临时变量
+        if (binop_index != nullptr) {
+            tree::Temp* index_temp = method_temp_map->newtemp();
+            tree::Stm* store_index = new tree::Move(
+                new tree::TempExp(tree::Type::INT, index_temp),
+                index_exp
+            );
+            index_to_use = new tree::TempExp(tree::Type::INT, index_temp);
+            
+            outer_stms = new vector<tree::Stm*>();
+            outer_stms->push_back(store_index);
+        }
         
         // 获取数组长度
         tree::Temp* length_temp = method_temp_map->newtemp();
@@ -764,27 +767,27 @@ tree::Exp* ASTToTreeVisitor::getArrayElementValue(tree::Exp* arr_addr, tree::Exp
             new tree::Mem(tree::Type::INT, arr_addr)
         );
         
-        // 标签创建顺序与 getArrayElementForAssign 保持一致
+        // 标签创建顺序
         Label* label_100 = method_temp_map->newlabel();
         Label* label_101 = method_temp_map->newlabel();
         Label* label_102 = method_temp_map->newlabel();
         
-        // 检查 index >= 0
+        // 第一个检查：index >= 0
         tree::Cjump* check_ge = new tree::Cjump(
             ">=", 
-            new tree::TempExp(tree::Type::INT, index_temp),
+            index_to_use,
             new tree::Const(0),
-            label_101,  // true 跳转到 101
-            label_100   // false 跳转到 100
+            label_101,
+            label_100
         );
         
-        // 检查 index >= length
+        // 第二个检查：index >= length
         tree::Cjump* check_ge_length = new tree::Cjump(
             ">=", 
-            new tree::TempExp(tree::Type::INT, index_temp),
+            index_to_use,
             new tree::TempExp(tree::Type::INT, length_temp),
-            label_100,  // true 跳转到 100
-            label_102   // false 跳转到 102
+            label_100,
+            label_102
         );
         
         // 越界处理
@@ -804,7 +807,7 @@ tree::Exp* ASTToTreeVisitor::getArrayElementValue(tree::Exp* arr_addr, tree::Exp
         inner_stms->push_back(new tree::LabelStm(label_102));
         
         tree::Seq* inner_seq = new tree::Seq(inner_stms);
-        tree::Exp* inner_eseq = new tree::Eseq(tree::Type::INT, inner_seq, new tree::TempExp(tree::Type::INT, index_temp));
+        tree::Exp* inner_eseq = new tree::Eseq(tree::Type::INT, inner_seq, index_to_use);
         
         // 计算元素地址
         tree::Exp* elem_index = new tree::Binop(tree::Type::INT, "+", inner_eseq, new tree::Const(1));
@@ -812,12 +815,13 @@ tree::Exp* ASTToTreeVisitor::getArrayElementValue(tree::Exp* arr_addr, tree::Exp
         tree::Exp* elem_addr = new tree::Binop(tree::Type::PTR, "+", arr_addr, byte_offset);
         tree::Exp* elem_value = new tree::Mem(tree::Type::INT, elem_addr);
         
-        // 外层 ESeq：先存储索引，然后返回元素值
-        vector<tree::Stm*>* outer_stms = new vector<tree::Stm*>();
-        outer_stms->push_back(store_index);
-        tree::Seq* outer_seq = new tree::Seq(outer_stms);
+        // 如果有外层语句（存储索引计算结果），包装成 Eseq
+        if (outer_stms != nullptr) {
+            tree::Seq* outer_seq = new tree::Seq(outer_stms);
+            return new tree::Eseq(tree::Type::INT, outer_seq, elem_value);
+        }
         
-        return new tree::Eseq(tree::Type::INT, outer_seq, elem_value);
+        return elem_value;
     }
 }
 
@@ -912,74 +916,74 @@ void ASTToTreeVisitor::visit(fdmj::Assign* node) {
         return;
     }
 
-// 处理 ClassVar 赋值：a.i = 1
-fdmj::ClassVar* class_var = dynamic_cast<fdmj::ClassVar*>(node->left);
-if (class_var != nullptr) {
-    // 翻译对象表达式
-    class_var->obj->accept(*this);
-    Tr_Exp* obj_tr = visit_exp_result;
-    if (obj_tr == nullptr) {
-        visit_tree_result = nullptr;
-        return;
-    }
-    tree::Exp* obj_addr = obj_tr->unEx(method_temp_map)->exp;
-    if (obj_addr == nullptr) {
-        visit_tree_result = nullptr;
-        return;
-    }
-    
-    string var_name = class_var->id->id;
-    
-    // 从语义分析获取对象的实际类型
-    string class_name;
-    if (semant_map != nullptr) {
-        AST_Semant* semant = semant_map->getSemant(class_var->obj);
-        if (semant != nullptr && semant->get_kind() == AST_Semant::Kind::Value) {
-            // 如果是类类型，typeKind 应该是 CLASS
-            if (semant->get_type() == fdmj::TypeKind::CLASS) {
-                variant<monostate, string, int> type_par = semant->get_type_par();
-                if (holds_alternative<string>(type_par)) {
-                    class_name = get<string>(type_par);
+    // 处理 ClassVar 赋值：a.i = 1
+    fdmj::ClassVar* class_var = dynamic_cast<fdmj::ClassVar*>(node->left);
+    if (class_var != nullptr) {
+        // 翻译对象表达式
+        class_var->obj->accept(*this);
+        Tr_Exp* obj_tr = visit_exp_result;
+        if (obj_tr == nullptr) {
+            visit_tree_result = nullptr;
+            return;
+        }
+        tree::Exp* obj_addr = obj_tr->unEx(method_temp_map)->exp;
+        if (obj_addr == nullptr) {
+            visit_tree_result = nullptr;
+            return;
+        }
+        
+        string var_name = class_var->id->id;
+        
+        // 从语义分析获取对象的实际类型
+        string class_name;
+        if (semant_map != nullptr) {
+            AST_Semant* semant = semant_map->getSemant(class_var->obj);
+            if (semant != nullptr && semant->get_kind() == AST_Semant::Kind::Value) {
+                // 如果是类类型，typeKind 应该是 CLASS
+                if (semant->get_type() == fdmj::TypeKind::CLASS) {
+                    variant<monostate, string, int> type_par = semant->get_type_par();
+                    if (holds_alternative<string>(type_par)) {
+                        class_name = get<string>(type_par);
+                    }
                 }
             }
         }
-    }
-    
-    if (class_name.empty()) {
-        cerr << "Error: Cannot determine class type for expression" << endl;
-        visit_tree_result = nullptr;
+        
+        if (class_name.empty()) {
+            cerr << "Error: Cannot determine class type for expression" << endl;
+            visit_tree_result = nullptr;
+            return;
+        }
+        
+        // 获取变量偏移
+        int offset = class_table->get_var_pos(class_name, var_name);
+        if (offset < 0) {
+            cerr << "Error: Variable " << var_name << " not found in class " << class_name << endl;
+            visit_tree_result = nullptr;
+            return;
+        }
+        
+        // 计算变量地址：obj_addr + offset * 4
+        tree::Exp* var_addr = new tree::Binop(
+            tree::Type::PTR, 
+            "+", 
+            obj_addr, 
+            new tree::Const(offset * 4)
+        );
+        tree::Exp* dst = new tree::Mem(tree::Type::INT, var_addr);
+        
+        // 翻译右值
+        node->exp->accept(*this);
+        Tr_Exp* rhs_tr = visit_exp_result;
+        if (rhs_tr == nullptr) {
+            visit_tree_result = nullptr;
+            return;
+        }
+        tree::Exp* src = rhs_tr->unEx(method_temp_map)->exp;
+        
+        visit_tree_result = new tree::Move(dst, src);
         return;
     }
-    
-    // 获取变量偏移
-    int offset = class_table->get_var_pos(class_name, var_name);
-    if (offset < 0) {
-        cerr << "Error: Variable " << var_name << " not found in class " << class_name << endl;
-        visit_tree_result = nullptr;
-        return;
-    }
-    
-    // 计算变量地址：obj_addr + offset * 4
-    tree::Exp* var_addr = new tree::Binop(
-        tree::Type::PTR, 
-        "+", 
-        obj_addr, 
-        new tree::Const(offset * 4)
-    );
-    tree::Exp* dst = new tree::Mem(tree::Type::INT, var_addr);
-    
-    // 翻译右值
-    node->exp->accept(*this);
-    Tr_Exp* rhs_tr = visit_exp_result;
-    if (rhs_tr == nullptr) {
-        visit_tree_result = nullptr;
-        return;
-    }
-    tree::Exp* src = rhs_tr->unEx(method_temp_map)->exp;
-    
-    visit_tree_result = new tree::Move(dst, src);
-    return;
-}
     
     // 处理数组赋值：a[index] = value
     fdmj::ArrayExp* array_exp = dynamic_cast<fdmj::ArrayExp*>(node->left);
@@ -1128,13 +1132,17 @@ void ASTToTreeVisitor::visit(fdmj::Return* node) {
         return;
     }
     if (node->exp == nullptr) {
+        // 没有返回值，返回 0
         visit_tree_result = new tree::Return(new tree::Const(0));
         return;
     }
     node->exp->accept(*this);
     Tr_Exp* ret_tr = visit_exp_result;
     Tr_ex* ret_ex = ret_tr->unEx(method_temp_map);
-    visit_tree_result = new tree::Return(ret_ex->exp);
+    tree::Exp* ret_exp = ret_ex->exp;
+    
+    // 注意：返回值的类型应该由方法决定，这里直接使用表达式的结果
+    visit_tree_result = new tree::Return(ret_exp);
 }
 
 void ASTToTreeVisitor::visit(fdmj::PutInt* node) {
@@ -1217,12 +1225,92 @@ void ASTToTreeVisitor::visit(fdmj::CallStm* node) {
         visit_tree_result = nullptr;
         return;
     }
+    
+    // 如果有对象，则是方法调用
     if (node->obj != nullptr) {
-        cerr << "Error: CallStm on object not supported in HW3" << endl;
-        visit_tree_result = nullptr;
+        // 翻译对象
+        node->obj->accept(*this);
+        Tr_Exp* obj_tr = visit_exp_result;
+        if (obj_tr == nullptr) {
+            visit_tree_result = nullptr;
+            return;
+        }
+        tree::Exp* obj_addr = obj_tr->unEx(method_temp_map)->exp;
+        if (obj_addr == nullptr) {
+            visit_tree_result = nullptr;
+            return;
+        }
+        
+        string method_name = node->name->id;
+        
+        // 获取对象的实际类型（从语义分析）
+        string class_name;
+        if (semant_map != nullptr) {
+            AST_Semant* semant = semant_map->getSemant(node->obj);
+            if (semant != nullptr && semant->get_kind() == AST_Semant::Kind::Value) {
+                if (semant->get_type() == fdmj::TypeKind::CLASS) {
+                    variant<monostate, string, int> type_par = semant->get_type_par();
+                    if (holds_alternative<string>(type_par)) {
+                        class_name = get<string>(type_par);
+                    }
+                }
+            }
+        }
+        
+        if (class_name.empty()) {
+            cerr << "Error: Cannot determine class type for method call" << endl;
+            visit_tree_result = nullptr;
+            return;
+        }
+        
+        // 获取方法在 vtable 中的索引
+        int method_index = class_table->get_method_index(class_name, method_name);
+        if (method_index < 0) {
+            cerr << "Error: Method " << method_name << " not found in class " << class_name << endl;
+            visit_tree_result = nullptr;
+            return;
+        }
+        
+        // 获取所有类的变量总数
+        Name_Maps* nm = semant_map->getNameMaps();
+        int total_vars = 0;
+        for (const auto& c : *nm->get_class_list()) {
+            set<string>* vars = nm->get_class_var_list(c);
+            total_vars += vars->size();
+            delete vars;
+        }
+        
+        // 计算 vtable 偏移
+        int vtable_offset = (total_vars + method_index) * 4;
+        
+        // 获取方法地址
+        tree::Exp* method_ptr_addr = new tree::Binop(
+            tree::Type::PTR, 
+            "+", 
+            obj_addr, 
+            new tree::Const(vtable_offset)
+        );
+        tree::Exp* method_addr = new tree::Mem(tree::Type::PTR, method_ptr_addr);
+        
+        // 准备参数（包括 this）
+        vector<tree::Exp*>* args = new vector<tree::Exp*>();
+        args->push_back(obj_addr);
+        
+        if (node->par != nullptr) {
+            for (auto* p : *node->par) {
+                if (p == nullptr) continue;
+                p->accept(*this);
+                args->push_back(visit_exp_result->unEx(method_temp_map)->exp);
+            }
+        }
+        
+        // 创建方法调用
+        tree::Call* call = new tree::Call(tree::Type::INT, method_name, method_addr, args);
+        visit_tree_result = new tree::ExpStm(call);
         return;
     }
-
+    
+    // 外部函数调用（原有代码）
     string extfun = node->name->id;
     vector<tree::Exp*>* args = nullptr;
     if (node->par != nullptr) {
@@ -1375,7 +1463,6 @@ void ASTToTreeVisitor::visit(fdmj::IdExp* node) {
     
     // 获取变量的类型
     tree::Type var_type = method_var_table->get_var_type(name);
-    
     visit_exp_result = new Tr_ex(new tree::TempExp(var_type, t));
 }
 
@@ -1451,7 +1538,7 @@ void ASTToTreeVisitor::visit(fdmj::ClassVar* node) {
     
     string var_name = node->id->id;
     
-    // 从语义分析获取对象的实际类型
+    // 获取对象的实际类型（从语义分析）
     string class_name;
     if (semant_map != nullptr) {
         AST_Semant* semant = semant_map->getSemant(node->obj);
@@ -1463,6 +1550,11 @@ void ASTToTreeVisitor::visit(fdmj::ClassVar* node) {
                 }
             }
         }
+    }
+    // 如果是 this 关键字，从当前类获取
+    fdmj::This* this_exp = dynamic_cast<fdmj::This*>(node->obj);
+    if (this_exp != nullptr) {
+        class_name = current_class;
     }
     
     if (class_name.empty()) {
@@ -1485,16 +1577,49 @@ void ASTToTreeVisitor::visit(fdmj::ClassVar* node) {
         return;
     }
     
-    // 计算变量地址：obj_addr + offset * 4
+    // 计算变量地址
     tree::Exp* var_addr = new tree::Binop(
         tree::Type::PTR, 
         "+", 
         obj_addr, 
         new tree::Const(offset * 4)
     );
-    tree::Exp* var_value = new tree::Mem(tree::Type::INT, var_addr);
     
-    visit_exp_result = new Tr_ex(var_value);
+    // 获取变量的类型（从 class_table 中获取）
+    Name_Maps* nm = semant_map->getNameMaps();
+    tree::Type var_type = tree::Type::INT;
+    
+    if (nm != nullptr) {
+        VarDecl* vd = nm->get_class_var(class_name, var_name);
+        if (vd != nullptr && vd->type != nullptr) {
+            if (vd->type->typeKind == fdmj::TypeKind::ARRAY) {
+                var_type = tree::Type::PTR;
+            } else if (vd->type->typeKind == fdmj::TypeKind::CLASS) {
+                var_type = tree::Type::PTR;
+            }
+        }
+    }
+    
+    if (var_type == tree::Type::PTR) {
+        if (nm != nullptr) {
+            VarDecl* vd = nm->get_class_var(class_name, var_name);
+            if (vd != nullptr && vd->type != nullptr) {
+                if (vd->type->typeKind == fdmj::TypeKind::ARRAY) {
+                    // 数组：返回解引用后的地址值（数组基地址）
+                    tree::Exp* array_addr = new tree::Mem(tree::Type::PTR, var_addr);
+                    visit_exp_result = new Tr_ex(array_addr);
+                } else if (vd->type->typeKind == fdmj::TypeKind::CLASS) {
+                    // 类：返回解引用后的对象地址
+                    tree::Exp* obj_addr = new tree::Mem(tree::Type::PTR, var_addr);
+                    visit_exp_result = new Tr_ex(obj_addr);
+                }
+            }
+        }
+    } else {
+            // 基本类型（INT），返回解引用后的值
+            tree::Exp* var_value = new tree::Mem(tree::Type::INT, var_addr);
+            visit_exp_result = new Tr_ex(var_value);
+    }
 }
 
 void ASTToTreeVisitor::visit(fdmj::This* node) {
@@ -1539,11 +1664,26 @@ void ASTToTreeVisitor::visit(fdmj::Length* node) {
     }
     
     // 数组长度存储在数组的第一个位置（偏移0）
-    // length() 不需要边界检查，直接返回长度
-    tree::Exp* length = new tree::Mem(tree::Type::INT, arr_addr);
+    // 创建临时变量存储长度
+    tree::Temp* length_temp = method_temp_map->newtemp();
+    tree::Stm* store_length = new tree::Move(
+        new tree::TempExp(tree::Type::INT, length_temp),
+        new tree::Mem(tree::Type::INT, arr_addr)
+    );
     
-    visit_exp_result = new Tr_ex(length);
+    // 返回 Eseq，先获取长度，再返回
+    // vector<tree::Stm*>* stms = new vector<tree::Stm*>();
+    // stms->push_back(store_length);
+    // tree::Seq* seq = new tree::Seq(stms);
+    // tree::Exp* result = new tree::Eseq(tree::Type::INT, seq, new tree::TempExp(tree::Type::INT, length_temp));
+
+    // 21
+        // 直接使用 Move 作为 stm，不包装成 Seq
+    tree::Exp* result = new tree::Eseq(tree::Type::INT, store_length, new tree::TempExp(tree::Type::INT, length_temp));
+    
+    visit_exp_result = new Tr_ex(result);
 }
+
 void ASTToTreeVisitor::visit(fdmj::NewArray* node) {
     if (node == nullptr || node->size == nullptr) {
         visit_exp_result = nullptr;
@@ -1679,55 +1819,55 @@ void ASTToTreeVisitor::visit(fdmj::NewObject* node) {
         return;
     }
     
-    // 获取所有类的变量总数（用于计算 vptr 偏移）
-    int total_vars = 0;
+    // 获取所有类的变量总数
     Name_Maps* nm = semant_map->getNameMaps();
+    int total_vars = 0;
     for (const auto& c : *nm->get_class_list()) {
         set<string>* vars = nm->get_class_var_list(c);
         total_vars += vars->size();
         delete vars;
     }
     
-    // 对象大小 = (变量总数 + 1) * 4
-    int obj_size = total_vars + 1;
+    // 获取类的大小
+    int obj_size = class_table->get_class_size(class_name);
     int total_bytes = obj_size * 4;
     
-    // 创建临时变量存储对象地址
+    // 创建临时变量
     tree::Temp* obj_temp = method_temp_map->newtemp();
     
-    // 分配对象内存
+    // 分配内存
     vector<tree::Exp*>* args = new vector<tree::Exp*>();
     args->push_back(new tree::Const(total_bytes));
     tree::Exp* malloc_call = new tree::ExtCall(tree::Type::PTR, "malloc", args);
     
-    // 将分配的地址存入临时变量
     tree::Stm* assign_addr = new tree::Move(
         new tree::TempExp(tree::Type::PTR, obj_temp),
         malloc_call
     );
     
-    // vptr 存储在变量之后，偏移 = 变量总数 * 4
-    int vptr_offset = total_vars * 4;
-    
-    // 设置vptr
-    string vtable_label = class_name + "^f";
-    tree::Exp* vtable_addr = new tree::Name(new tree::String_Label(vtable_label));
-    
-    tree::Exp* vptr_addr = new tree::Binop(
-        tree::Type::PTR, 
-        "+", 
-        new tree::TempExp(tree::Type::PTR, obj_temp), 
-        new tree::Const(vptr_offset)
-    );
-    tree::Stm* set_vptr = new tree::Move(
-        new tree::Mem(tree::Type::PTR, vptr_addr),
-        vtable_addr
-    );
-    
-    // 组合
+    // 设置 vtable 条目（只设置该类有的方法，按全局位置设置）
     vector<tree::Stm*>* stms = new vector<tree::Stm*>();
     stms->push_back(assign_addr);
-    stms->push_back(set_vptr);
+    
+    vector<string>& vtable = class_table->vtable_map[class_name];
+    for (const auto& method_name : vtable) {
+        int method_index = class_table->get_method_pos(method_name);
+        int offset = (total_vars + method_index) * 4;
+        string full_method_name = class_name + "^" + method_name;
+        tree::Exp* vtable_addr = new tree::Name(new tree::String_Label(full_method_name));
+        
+        tree::Exp* vptr_addr = new tree::Binop(
+            tree::Type::PTR, 
+            "+", 
+            new tree::TempExp(tree::Type::PTR, obj_temp), 
+            new tree::Const(offset)
+        );
+        tree::Stm* set_vptr = new tree::Move(
+            new tree::Mem(tree::Type::PTR, vptr_addr),
+            vtable_addr
+        );
+        stms->push_back(set_vptr);
+    }
     
     tree::Seq* seq = new tree::Seq(stms);
     tree::Exp* result = new tree::Eseq(tree::Type::PTR, seq, new tree::TempExp(tree::Type::PTR, obj_temp));
@@ -1758,44 +1898,58 @@ void ASTToTreeVisitor::visit(fdmj::CallExp* node) {
         
         string method_name = node->name->id;
         
-        // 获取对象的实际类型（需要通过语义分析）
-        // 这里应该从semant_map获取node->obj的类型
-        string class_name = class_var_class_name;
+        // 获取对象的实际类型（从语义分析）
+        string class_name;
+        if (semant_map != nullptr) {
+            AST_Semant* semant = semant_map->getSemant(node->obj);
+            if (semant != nullptr && semant->get_kind() == AST_Semant::Kind::Value) {
+                if (semant->get_type() == fdmj::TypeKind::CLASS) {
+                    variant<monostate, string, int> type_par = semant->get_type_par();
+                    if (holds_alternative<string>(type_par)) {
+                        class_name = get<string>(type_par);
+                    }
+                }
+            }
+        }
+        
         if (class_name.empty()) {
-            class_name = current_class;
-        }
-        
-        // 检查class_table
-        if (class_table == nullptr) {
-            cerr << "Error: class_table is null in CallExp" << endl;
+            cerr << "Error: Cannot determine class type for method call" << endl;
             visit_exp_result = nullptr;
             return;
         }
         
-        // 获取方法在虚函数表中的索引
-        int method_index = class_table->get_method_index(class_name, method_name);
+        // 获取方法在全局 vtable 中的索引
+        int method_index = class_table->get_method_pos(method_name);
         if (method_index < 0) {
-            cerr << "Error: Method " << method_name << " not found in class " << class_name << endl;
+            cerr << "Error: Method " << method_name << " not found" << endl;
             visit_exp_result = nullptr;
             return;
         }
         
-        // 获取vptr：*(obj_addr)
-        // 修正：Mem构造函数需要Type和Exp*两个参数
-        tree::Exp* vptr = new tree::Mem(tree::Type::PTR, obj_addr);
+        // 获取所有类的变量总数
+        Name_Maps* nm = semant_map->getNameMaps();
+        int total_vars = 0;
+        for (const auto& c : *nm->get_class_list()) {
+            set<string>* vars = nm->get_class_var_list(c);
+            total_vars += vars->size();
+            delete vars;
+        }
         
-        // 获取虚函数表：*(vptr)
-        tree::Exp* vtable = new tree::Mem(tree::Type::PTR, vptr);
+        // 计算方法在 vtable 中的偏移
+        int vtable_offset = (total_vars + method_index) * 4;
         
-        // 获取方法地址：*(vtable + method_index * 4)
-        tree::Exp* method_addr_exp = new tree::Mem(
-            tree::Type::PTR,
-            new tree::Binop(tree::Type::PTR, "+", vtable, new tree::Const(method_index * 4))
+        // 获取方法地址
+        tree::Exp* method_ptr_addr = new tree::Binop(
+            tree::Type::PTR, 
+            "+", 
+            obj_addr, 
+            new tree::Const(vtable_offset)
         );
+        tree::Exp* method_addr = new tree::Mem(tree::Type::PTR, method_ptr_addr);
         
-        // 准备参数（包括this）
+        // 准备参数
         vector<tree::Exp*>* args = new vector<tree::Exp*>();
-        args->push_back(obj_addr);  // this参数
+        args->push_back(obj_addr);  // this 参数
         
         if (node->par != nullptr) {
             for (auto* param : *node->par) {
@@ -1811,11 +1965,9 @@ void ASTToTreeVisitor::visit(fdmj::CallExp* node) {
         }
         
         // 创建函数调用
-        // 修正：Call构造函数需要Type, string, Exp*, vector<Exp*>* 四个参数
-        // 根据treep.hh: Call(Type t, string id, Exp *obj, std::vector<tree::Exp*> *args)
-        tree::Call* call = new tree::Call(tree::Type::INT, method_name, method_addr_exp, args);
+        tree::Call* call = new tree::Call(tree::Type::INT, method_name, method_addr, args);
         visit_exp_result = new Tr_ex(call);
-    } else {
+    }else {
         // 外部函数调用（保持HW3的实现）
         string extfun = node->name->id;
         vector<tree::Exp*>* args = nullptr;
