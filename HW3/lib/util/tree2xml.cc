@@ -66,8 +66,10 @@ void Tree2XML::visit(FuncDecl* node) {
     element->SetAttribute("last_temp", node->last_temp_num);
     element->SetAttribute("last_label", node->last_label_num);
     if (node->args != nullptr) {
+        int arg_idx = 0;
         for (auto arg : *node->args) {
-            element->SetAttribute("arg_temp", arg->name());
+            string attr_name = "arg_temp_" + to_string(arg_idx++);
+            element->SetAttribute(attr_name.c_str(), arg->name());
         }
     }
     if (node->stm != nullptr) {
@@ -293,6 +295,7 @@ void Tree2XML::visit(Call* node) {
         return;
     }
     XMLElement* element = doc->NewElement("Call");
+    element->SetAttribute("type", node->type == Type::INT ? "INT" : "PTR");
     element->SetAttribute("id", node->id.c_str());
     if (node->obj != nullptr) {
         node->obj->accept(*this);
@@ -320,6 +323,7 @@ void Tree2XML::visit(ExtCall* node) {
         return;
     }
     tinyxml2::XMLElement* element = doc->NewElement("ExtCall");
+    element->SetAttribute("type", node->type == Type::INT ? "INT" : "PTR");
     element->SetAttribute("extfun", node->extfun.c_str());
     tinyxml2::XMLElement* argsElement = doc->NewElement("Arguments");
     if (node->args != nullptr) {
