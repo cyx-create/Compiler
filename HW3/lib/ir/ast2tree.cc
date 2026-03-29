@@ -478,7 +478,7 @@ void ASTToTreeVisitor::visit(fdmj::MethodDecl* node) {
     // 创建新的Temp_map
     Temp_map* method_tm = new Temp_map();
     
-    // 使用 generate_method_var_table 创建 Method_var_table，保证一致性
+    // 使用 generate_method_var_table 创建 Method_var_table
     Method_var_table* mvt = generate_method_var_table(
         current_class, 
         method_name,
@@ -487,7 +487,7 @@ void ASTToTreeVisitor::visit(fdmj::MethodDecl* node) {
         semant_map
     );
     
-    // 获取 this_temp 用于构建参数列表
+    // 获取 this_temp
     tree::Temp* this_temp = mvt->get_var_temp("this");
     if (this_temp == nullptr) {
         cerr << "Error: this not found in method_var_table" << endl;
@@ -506,24 +506,38 @@ void ASTToTreeVisitor::visit(fdmj::MethodDecl* node) {
     current_class = this->current_class;
     current_method = method_name;
     
-    // 翻译方法体
-    vector<tree::Stm*>* stm_ir_list = new vector<tree::Stm*>();
+    // 收集所有语句（局部变量声明 + 方法体语句）
+    vector<tree::Stm*>* all_stms = new vector<tree::Stm*>();
+    
+    // 处理局部变量声明（初始化为0）
+    if (node->vdl != nullptr) {
+        for (auto* vd : *node->vdl) {
+            if (vd == nullptr) continue;
+            vd->accept(*this);
+            tree::Stm* init_stm = static_cast<tree::Stm*>(visit_tree_result);
+            if (init_stm != nullptr) {
+                all_stms->push_back(init_stm);
+            }
+        }
+    }
+    
+    // 翻译方法体语句
     if (node->sl != nullptr) {
         for (auto* stm : *node->sl) {
             if (stm == nullptr) continue;
             stm->accept(*this);
             tree::Stm* ir_stm = static_cast<tree::Stm*>(visit_tree_result);
             if (ir_stm != nullptr) {
-                stm_ir_list->push_back(ir_stm);
+                all_stms->push_back(ir_stm);
             }
         }
     }
     
-    tree::Seq* body_seq = new tree::Seq(stm_ir_list);
+    tree::Seq* body_seq = new tree::Seq(all_stms);
     
-    // 构建参数列表（只包含Temp*，不包含类型信息）
+    // 构建参数列表
     vector<tree::Temp*>* params = new vector<tree::Temp*>();
-    params->push_back(this_temp);  // 第一个参数是this
+    params->push_back(this_temp);
     
     if (node->fl != nullptr) {
         for (auto* formal : *node->fl) {
@@ -537,24 +551,20 @@ void ASTToTreeVisitor::visit(fdmj::MethodDecl* node) {
     }
     
     int last_temp;
-    if (stm_ir_list->empty() && node->sl == nullptr) {
-        // 空方法体：使用 next_temp（下一个可用编号）(-1?)
+    if (all_stms->empty()) {
         last_temp = method_temp_map->next_temp -1;
     } else {
-        // 非空方法体：使用最后使用的编号
-        last_temp = method_temp_map->next_temp -1;
+        last_temp = method_temp_map->next_temp - 1;
     }
     int last_label = method_temp_map->next_label - 1;
     
-    // 创建FuncDecl，return_type根据方法的返回类型设置
-    tree::Type return_type = tree::Type::INT;  // 默认int
+    tree::Type return_type = tree::Type::INT;
     if (node->type != nullptr) {
         return_type = fdmjTypeToTreeType(node->type->typeKind);
     }
     
     tree::FuncDecl* fd = new tree::FuncDecl(ir_func_name, params, body_seq, return_type, last_temp, last_label);
     
-    // 恢复原来的context
     method_var_table = old_mvt;
     method_temp_map = old_tm;
     current_class = old_class;
@@ -615,12 +625,16 @@ void ASTToTreeVisitor::visit(fdmj::If* node) {
     if (then_stm) sl->push_back(then_stm);
 
     if (node->stm2) {
+        // 有 else 分支
         sl->push_back(new tree::Jump(join_label));
         sl->push_back(new tree::LabelStm(else_label));
         if (else_stm) sl->push_back(else_stm);
         sl->push_back(new tree::LabelStm(join_label));
     } else {
+        // 没有 else 分支：执行完 then 后需要跳过后面的代码
+        sl->push_back(new tree::Jump(join_label));
         sl->push_back(new tree::LabelStm(else_label));
+        sl->push_back(new tree::LabelStm(join_label));
     }
 
     visit_tree_result = new tree::Seq(sl);
@@ -1498,6 +1512,25 @@ void ASTToTreeVisitor::visit(fdmj::ArrayExp* node) {
         return;
     }
     
+    // 如果数组地址是 BinOp 或 Mem（需要计算或间接访问），先存储到临时变量
+    tree::Binop* binop_addr = dynamic_cast<tree::Binop*>(arr_addr);
+    tree::Mem* mem_addr = dynamic_cast<tree::Mem*>(arr_addr);
+    
+    tree::Exp* final_arr_addr = arr_addr;
+    vector<tree::Stm*>* addr_stms = nullptr;
+    
+    // BinOp 或 Mem 都需要存储到临时变量
+    if (binop_addr != nullptr || mem_addr != nullptr) {
+        tree::Temp* addr_temp = method_temp_map->newtemp();
+        tree::Stm* store_addr = new tree::Move(
+            new tree::TempExp(tree::Type::PTR, addr_temp),
+            arr_addr
+        );
+        final_arr_addr = new tree::TempExp(tree::Type::PTR, addr_temp);
+        addr_stms = new vector<tree::Stm*>();
+        addr_stms->push_back(store_addr);
+    }
+    
     // 翻译索引表达式
     node->index->accept(*this);
     Tr_Exp* index_tr = visit_exp_result;
@@ -1512,7 +1545,13 @@ void ASTToTreeVisitor::visit(fdmj::ArrayExp* node) {
     }
     
     // 使用辅助函数生成带边界检查的元素访问
-    tree::Exp* elem_value = getArrayElementValue(arr_addr, index_exp);
+    tree::Exp* elem_value = getArrayElementValue(final_arr_addr, index_exp);
+    
+    // 如果有存储数组地址的语句，包装成 Eseq
+    if (addr_stms != nullptr) {
+        tree::Seq* addr_seq = new tree::Seq(addr_stms);
+        elem_value = new tree::Eseq(tree::Type::INT, addr_seq, elem_value);
+    }
     
     visit_exp_result = new Tr_ex(elem_value);
 }
@@ -1608,6 +1647,9 @@ void ASTToTreeVisitor::visit(fdmj::ClassVar* node) {
                     // 数组：返回解引用后的地址值（数组基地址）
                     tree::Exp* array_addr = new tree::Mem(tree::Type::PTR, var_addr);
                     visit_exp_result = new Tr_ex(array_addr);
+
+                    //18
+                    // visit_exp_result = new Tr_ex(var_addr);
                 } else if (vd->type->typeKind == fdmj::TypeKind::CLASS) {
                     // 类：返回解引用后的对象地址
                     tree::Exp* obj_addr = new tree::Mem(tree::Type::PTR, var_addr);
@@ -1678,7 +1720,7 @@ void ASTToTreeVisitor::visit(fdmj::Length* node) {
     // tree::Exp* result = new tree::Eseq(tree::Type::INT, seq, new tree::TempExp(tree::Type::INT, length_temp));
 
     // 21
-        // 直接使用 Move 作为 stm，不包装成 Seq
+    // 直接使用 Move 作为 stm，不包装成 Seq
     tree::Exp* result = new tree::Eseq(tree::Type::INT, store_length, new tree::TempExp(tree::Type::INT, length_temp));
     
     visit_exp_result = new Tr_ex(result);
