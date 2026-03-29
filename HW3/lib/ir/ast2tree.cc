@@ -154,14 +154,7 @@ Method_var_table* generate_method_var_table(string class_name, string method_nam
     auto* mvt = new Method_var_table();
     if (nm == nullptr || tm == nullptr) return mvt;
 
-    // 为非main方法添加this参数
-    if (class_name != "__$main__" || method_name != "main") {
-        tree::Temp* this_temp = tm->newtemp();
-        (*mvt->var_temp_map)["this"] = this_temp;
-        (*mvt->var_type_map)["this"] = tree::Type::PTR;
-    }
-    
-    // 添加局部变量 - 从Name_Maps获取类型
+    // 先添加局部变量（让它们的编号更小）
     set<string>* locals = nm->get_method_var_list(class_name, method_name);
     for (const auto& v : *locals) {
         (*mvt->var_temp_map)[v] = tm->newtemp();
@@ -182,7 +175,14 @@ Method_var_table* generate_method_var_table(string class_name, string method_nam
     }
     delete locals;
 
-    // 添加形式参数
+    // 再添加this参数（让它的编号在局部变量之后）
+    if (class_name != "__$main__" || method_name != "main") {
+        tree::Temp* this_temp = tm->newtemp();
+        (*mvt->var_temp_map)["this"] = this_temp;
+        (*mvt->var_type_map)["this"] = tree::Type::PTR;
+    }
+    
+    // 最后添加形式参数
     vector<Formal*>* formals = nm->get_method_formal_list(class_name, method_name);
     for (auto* f : *formals) {
         if (f == nullptr || f->id == nullptr) continue;
@@ -953,7 +953,6 @@ void ASTToTreeVisitor::visit(fdmj::Assign* node) {
         if (semant_map != nullptr) {
             AST_Semant* semant = semant_map->getSemant(class_var->obj);
             if (semant != nullptr && semant->get_kind() == AST_Semant::Kind::Value) {
-                // 如果是类类型，typeKind 应该是 CLASS
                 if (semant->get_type() == fdmj::TypeKind::CLASS) {
                     variant<monostate, string, int> type_par = semant->get_type_par();
                     if (holds_alternative<string>(type_par)) {
@@ -1015,6 +1014,22 @@ void ASTToTreeVisitor::visit(fdmj::Assign* node) {
             return;
         }
         
+        // 检查 arr_addr 是否是 Eseq（包含数组创建）
+        tree::Eseq* eseq_addr = dynamic_cast<tree::Eseq*>(arr_addr);
+        
+        tree::Exp* final_arr_addr = arr_addr;
+        tree::Stm* store_addr = nullptr;
+        
+        // 只有 Eseq 才需要先存储到临时变量
+        if (eseq_addr != nullptr) {
+            tree::Temp* addr_temp = method_temp_map->newtemp();
+            store_addr = new tree::Move(
+                new tree::TempExp(tree::Type::PTR, addr_temp),
+                arr_addr
+            );
+            final_arr_addr = new tree::TempExp(tree::Type::PTR, addr_temp);
+        }
+        
         // 翻译索引表达式
         array_exp->index->accept(*this);
         Tr_Exp* index_tr = visit_exp_result;
@@ -1042,10 +1057,19 @@ void ASTToTreeVisitor::visit(fdmj::Assign* node) {
         }
         
         // 获取带边界检查的元素内存位置
-        tree::Exp* elem_mem_with_check = getArrayElementForAssign(arr_addr, index_exp);
+        tree::Exp* elem_mem_with_check = getArrayElementForAssign(final_arr_addr, index_exp);
         
-        tree::Stm* assign_stm = new tree::Move(elem_mem_with_check, value);
-        visit_tree_result = assign_stm;
+        // 如果有存储数组地址的语句，包装成 Eseq
+        if (store_addr != nullptr) {
+            vector<tree::Stm*>* outer_stms = new vector<tree::Stm*>();
+            outer_stms->push_back(store_addr);
+            tree::Seq* outer_seq = new tree::Seq(outer_stms);
+            tree::Exp* dst_eseq = new tree::Eseq(tree::Type::PTR, outer_seq, elem_mem_with_check);
+            visit_tree_result = new tree::Move(dst_eseq, value);
+        } else {
+            // 直接赋值
+            visit_tree_result = new tree::Move(elem_mem_with_check, value);
+        }
         return;
     }
     
@@ -1744,6 +1768,10 @@ void ASTToTreeVisitor::visit(fdmj::NewArray* node) {
             return;
         }
         tree::Exp* inner_arr_addr = inner_arr_tr->unEx(method_temp_map)->exp;
+        if (inner_arr_addr == nullptr) {
+            visit_exp_result = nullptr;
+            return;
+        }
         
         // 外层数组的大小是1（只有一个元素，存储内层数组的地址）
         tree::Exp* size_exp = new tree::Const(1);
@@ -1790,6 +1818,7 @@ void ASTToTreeVisitor::visit(fdmj::NewArray* node) {
         stms->push_back(set_length);
         stms->push_back(store_inner);
         
+        // 创建Eseq，返回外层数组地址
         tree::Seq* seq = new tree::Seq(stms);
         tree::Exp* result = new tree::Eseq(tree::Type::PTR, seq, new tree::TempExp(tree::Type::PTR, outer_array_temp));
         
