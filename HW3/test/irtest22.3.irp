@@ -235,7 +235,9 @@
                         <Const value="1"/>
                     </BinOp>
                 </Return>
+                <Jump label="107"/>
                 <Label label="106"/>
+                <Label label="107"/>
             </Sequence>
             <Sequence>
                 <Label label="110"/>
