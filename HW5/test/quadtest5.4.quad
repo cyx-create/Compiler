@@ -1,4 +1,4 @@
-Function __$main__^main() last_label=110 last_temp=106:
+Function __$main__^main() last_label=110 last_temp=105:
   Block: Entry Label: L110
     LABEL L110; def: use: 
     MOVE t100:int <- Const:1; def: t100 use: 

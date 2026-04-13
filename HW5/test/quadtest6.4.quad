@@ -1,4 +1,4 @@
-Function __$main__^main() last_label=108 last_temp=123:
+Function __$main__^main() last_label=108 last_temp=124:
   Block: Entry Label: L108
     LABEL L108; def: use: 
     MOVE_EXTCALL t100:ptr <- malloc(Const:24); def: t100 use: 
@@ -27,10 +27,10 @@ Function __$main__^main() last_label=108 last_temp=123:
     LABEL L105; def: use: 
     EXTCALL exit(Const:-1); def: use: 
     LABEL L107; def: use: 
-    MOVE_BINOP t119:int <- (+, t101:int, Const:1); def: t119 use: t101 
-    MOVE_BINOP t120:int <- (*, t119:int, Const:4); def: t120 use: t119 
-    PTR_CALC t121:ptr <- t108:ptr + t120:int; def: t121 use: t108 t120 
-    LOAD t109:int <- Mem(t121:ptr); def: t109 use: t121 
+    MOVE_BINOP t121:int <- (+, t101:int, Const:1); def: t121 use: t101 
+    MOVE_BINOP t122:int <- (*, t121:int, Const:4); def: t122 use: t121 
+    PTR_CALC t123:ptr <- t108:ptr + t122:int; def: t123 use: t108 t122 
+    LOAD t109:int <- Mem(t123:ptr); def: t109 use: t123 
     EXTCALL putint(t109:int); def: use: t109 
     EXTCALL putch(Const:10); def: use: 
     MOVE_BINOP t101:int <- (+, t101:int, Const:1); def: t101 use: t101 

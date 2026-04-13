@@ -1,4 +1,4 @@
-Function __$main__^main() last_label=100 last_temp=119:
+Function __$main__^main() last_label=100 last_temp=116:
   Block: Entry Label: L100
     LABEL L100; def: use: 
     MOVE_EXTCALL t100:ptr <- malloc(Const:16); def: t100 use: 
@@ -11,12 +11,12 @@ Function __$main__^main() last_label=100 last_temp=119:
     STORE Const:3 -> Mem(t113:ptr); def: use: t113 
     MOVE t101:ptr <- Const:0; def: t101 use: 
     MOVE_EXTCALL t103:ptr <- malloc(Const:4); def: t103 use: 
-    PTR_CALC t115:ptr <- t103:ptr + Const:0; def: t115 use: t103 
-    STORE Name:C^m -> Mem(t115:ptr); def: use: t115 
+    PTR_CALC t114:ptr <- t103:ptr + Const:0; def: t114 use: t103 
+    STORE Name:C^m -> Mem(t114:ptr); def: use: t114 
     MOVE t101:ptr <- t103:ptr; def: t101 use: t103 
     PTR_CALC t116:ptr <- t101:ptr + Const:0; def: t116 use: t101 
     LOAD t106:ptr <- Mem(t116:ptr); def: t106 use: t116 
-    MOVE_CALL t107:int <- m[t106:ptr] (t101:ptr, t100:ptr); def: t107 use: t106 t101 t100 
+    MOVE_CALL t107:int <- m[t106:ptr] (t101:ptr, t100:ptr); def: t107 use: t100 t101 t106 
     EXTCALL putint(t107:int); def: use: t107 
     EXTCALL putch(Const:10); def: use: 
 Function C^m(t100, t101) last_label=103 last_temp=110:
