@@ -1,5 +1,5 @@
-<Program kind="PROGRAM" last_label_num="108" last_temp_num="123">
-    <funcdecl kind="FUNCDECL" name="__$main__^main" last_label_num="108" last_temp_num="123">
+<Program kind="PROGRAM" last_label_num="108" last_temp_num="124">
+    <funcdecl kind="FUNCDECL" name="__$main__^main" last_label_num="108" last_temp_num="124">
         <block kind="BLOCK" entry="108">
             <label kind="LABEL" name="108"/>
             <moveextcall kind="MOVE_EXTCALL" dst="100" temp_type="ptr">
@@ -188,45 +188,45 @@
                 </args>
             </extcall>
             <label kind="LABEL" name="107"/>
-            <movebinop kind="MOVE_BINOP" dst="119" temp_type="int" op="+">
+            <movebinop kind="MOVE_BINOP" dst="121" temp_type="int" op="+">
                 <left kind="TEMP" id="101" type="int"/>
                 <right kind="CONST" value="1"/>
                 <def>
-                    <temp id="119"/>
+                    <temp id="121"/>
                 </def>
                 <use>
                     <temp id="101"/>
                 </use>
             </movebinop>
-            <movebinop kind="MOVE_BINOP" dst="120" temp_type="int" op="*">
-                <left kind="TEMP" id="119" type="int"/>
+            <movebinop kind="MOVE_BINOP" dst="122" temp_type="int" op="*">
+                <left kind="TEMP" id="121" type="int"/>
                 <right kind="CONST" value="4"/>
                 <def>
-                    <temp id="120"/>
+                    <temp id="122"/>
                 </def>
                 <use>
-                    <temp id="119"/>
+                    <temp id="121"/>
                 </use>
             </movebinop>
             <ptrcalc kind="PTR_CALC">
-                <dst kind="TEMP" id="121" type="ptr"/>
+                <dst kind="TEMP" id="123" type="ptr"/>
                 <ptr kind="TEMP" id="108" type="ptr"/>
-                <offset kind="TEMP" id="120" type="int"/>
+                <offset kind="TEMP" id="122" type="int"/>
                 <def>
-                    <temp id="121"/>
+                    <temp id="123"/>
                 </def>
                 <use>
                     <temp id="108"/>
-                    <temp id="120"/>
+                    <temp id="122"/>
                 </use>
             </ptrcalc>
             <load kind="LOAD" dst="109" temp_type="int">
-                <src kind="TEMP" id="121" type="ptr"/>
+                <src kind="TEMP" id="123" type="ptr"/>
                 <def>
                     <temp id="109"/>
                 </def>
                 <use>
-                    <temp id="121"/>
+                    <temp id="123"/>
                 </use>
             </load>
             <extcall kind="EXTCALL" name="putint">

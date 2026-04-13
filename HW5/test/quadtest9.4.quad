@@ -1,4 +1,4 @@
-Function __$main__^main() last_label=100 last_temp=151:
+Function __$main__^main() last_label=100 last_temp=148:
   Block: Entry Label: L100
     LABEL L100; def: use: 
     MOVE t100:ptr <- Const:0; def: t100 use: 
@@ -8,15 +8,15 @@ Function __$main__^main() last_label=100 last_temp=151:
     STORE Name:A^f -> Mem(t118:ptr); def: use: t118 
     MOVE t100:ptr <- t103:ptr; def: t100 use: t103 
     MOVE_EXTCALL t104:ptr <- malloc(Const:20); def: t104 use: 
-    PTR_CALC t120:ptr <- t104:ptr + Const:16; def: t120 use: t104 
-    STORE Name:B^f -> Mem(t120:ptr); def: use: t120 
+    PTR_CALC t119:ptr <- t104:ptr + Const:16; def: t119 use: t104 
+    STORE Name:B^f -> Mem(t119:ptr); def: use: t119 
     MOVE t101:ptr <- t104:ptr; def: t101 use: t104 
     PTR_CALC t121:ptr <- t100:ptr + Const:16; def: t121 use: t100 
     LOAD t107:ptr <- Mem(t121:ptr); def: t107 use: t121 
-    CALL f[t107:ptr] (t100:ptr); def: use: t107 t100 
+    CALL f[t107:ptr] (t100:ptr); def: use: t100 t107 
     PTR_CALC t123:ptr <- t101:ptr + Const:16; def: t123 use: t101 
     LOAD t109:ptr <- Mem(t123:ptr); def: t109 use: t123 
-    CALL f[t109:ptr] (t101:ptr); def: use: t109 t101 
+    CALL f[t109:ptr] (t101:ptr); def: use: t101 t109 
     PTR_CALC t125:ptr <- t100:ptr + Const:0; def: t125 use: t100 
     LOAD t126:int <- Mem(t125:ptr); def: t126 use: t125 
     PTR_CALC t127:ptr <- t100:ptr + Const:4; def: t127 use: t100 
@@ -34,17 +34,17 @@ Function __$main__^main() last_label=100 last_temp=151:
     EXTCALL putint(t111:int); def: use: t111 
     EXTCALL putch(Const:10); def: use: 
     MOVE t100:ptr <- t101:ptr; def: t100 use: t101 
-    PTR_CALC t140:ptr <- t100:ptr + Const:0; def: t140 use: t100 
-    LOAD t141:int <- Mem(t140:ptr); def: t141 use: t140 
-    PTR_CALC t142:ptr <- t101:ptr + Const:0; def: t142 use: t101 
-    LOAD t143:int <- Mem(t142:ptr); def: t143 use: t142 
-    MOVE_BINOP t144:int <- (+, t141:int, t143:int); def: t144 use: t141 t143 
-    PTR_CALC t145:ptr <- t101:ptr + Const:8; def: t145 use: t101 
-    LOAD t146:int <- Mem(t145:ptr); def: t146 use: t145 
-    MOVE_BINOP t147:int <- (+, t144:int, t146:int); def: t147 use: t144 t146 
-    PTR_CALC t148:ptr <- t101:ptr + Const:12; def: t148 use: t101 
-    LOAD t149:int <- Mem(t148:ptr); def: t149 use: t148 
-    MOVE_BINOP t114:int <- (+, t147:int, t149:int); def: t114 use: t147 t149 
+    PTR_CALC t139:ptr <- t100:ptr + Const:0; def: t139 use: t100 
+    LOAD t140:int <- Mem(t139:ptr); def: t140 use: t139 
+    PTR_CALC t141:ptr <- t101:ptr + Const:0; def: t141 use: t101 
+    LOAD t142:int <- Mem(t141:ptr); def: t142 use: t141 
+    MOVE_BINOP t143:int <- (+, t140:int, t142:int); def: t143 use: t140 t142 
+    PTR_CALC t144:ptr <- t101:ptr + Const:8; def: t144 use: t101 
+    LOAD t145:int <- Mem(t144:ptr); def: t145 use: t144 
+    MOVE_BINOP t146:int <- (+, t143:int, t145:int); def: t146 use: t143 t145 
+    PTR_CALC t147:ptr <- t101:ptr + Const:12; def: t147 use: t101 
+    LOAD t148:int <- Mem(t147:ptr); def: t148 use: t147 
+    MOVE_BINOP t114:int <- (+, t146:int, t148:int); def: t114 use: t146 t148 
     EXTCALL putint(t114:int); def: use: t114 
     EXTCALL putch(Const:10); def: use: 
     RETURN Const:1; def: use: 

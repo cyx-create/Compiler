@@ -1,4 +1,4 @@
-Function __$main__^main() last_label=100 last_temp=113:
+Function __$main__^main() last_label=100 last_temp=111:
   Block: Entry Label: L100
     LABEL L100; def: use: 
     MOVE t100:ptr <- Const:0; def: t100 use: 
@@ -6,9 +6,9 @@ Function __$main__^main() last_label=100 last_temp=113:
     PTR_CALC t109:ptr <- t102:ptr + Const:0; def: t109 use: t102 
     STORE Name:C^m -> Mem(t109:ptr); def: use: t109 
     MOVE t100:ptr <- t102:ptr; def: t100 use: t102 
-    PTR_CALC t110:ptr <- t100:ptr + Const:0; def: t110 use: t100 
-    LOAD t104:ptr <- Mem(t110:ptr); def: t104 use: t110 
-    MOVE_CALL t105:int <- m[t104:ptr] (t100:ptr); def: t105 use: t104 t100 
+    PTR_CALC t111:ptr <- t100:ptr + Const:0; def: t111 use: t100 
+    LOAD t104:ptr <- Mem(t111:ptr); def: t104 use: t111 
+    MOVE_CALL t105:int <- m[t104:ptr] (t100:ptr); def: t105 use: t100 t104 
     EXTCALL putint(t105:int); def: use: t105 
     EXTCALL putch(Const:10); def: use: 
 Function C^m(t100) last_label=100 last_temp=101:

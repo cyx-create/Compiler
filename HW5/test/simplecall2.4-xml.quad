@@ -1,5 +1,5 @@
-<Program kind="PROGRAM" last_label_num="103" last_temp_num="119">
-    <funcdecl kind="FUNCDECL" name="__$main__^main" last_label_num="100" last_temp_num="119">
+<Program kind="PROGRAM" last_label_num="103" last_temp_num="116">
+    <funcdecl kind="FUNCDECL" name="__$main__^main" last_label_num="100" last_temp_num="116">
         <block kind="BLOCK" entry="100">
             <label kind="LABEL" name="100"/>
             <moveextcall kind="MOVE_EXTCALL" dst="100" temp_type="ptr">
@@ -94,11 +94,11 @@
                 </def>
             </moveextcall>
             <ptrcalc kind="PTR_CALC">
-                <dst kind="TEMP" id="115" type="ptr"/>
+                <dst kind="TEMP" id="114" type="ptr"/>
                 <ptr kind="TEMP" id="103" type="ptr"/>
                 <offset kind="CONST" value="0"/>
                 <def>
-                    <temp id="115"/>
+                    <temp id="114"/>
                 </def>
                 <use>
                     <temp id="103"/>
@@ -106,9 +106,9 @@
             </ptrcalc>
             <store kind="STORE">
                 <src kind="NAME" name="C^m"/>
-                <dst kind="TEMP" id="115" type="ptr"/>
+                <dst kind="TEMP" id="114" type="ptr"/>
                 <use>
-                    <temp id="115"/>
+                    <temp id="114"/>
                 </use>
             </store>
             <move kind="MOVE" dst="101" temp_type="ptr">
@@ -151,14 +151,19 @@
                             <value kind="TEMP" id="100" type="ptr"/>
                         </arg>
                     </args>
+                    <use>
+                        <temp id="100"/>
+                        <temp id="101"/>
+                        <temp id="106"/>
+                    </use>
                 </call>
                 <def>
                     <temp id="107"/>
                 </def>
                 <use>
-                    <temp id="106"/>
-                    <temp id="101"/>
                     <temp id="100"/>
+                    <temp id="101"/>
+                    <temp id="106"/>
                 </use>
             </movecall>
             <extcall kind="EXTCALL" name="putint">

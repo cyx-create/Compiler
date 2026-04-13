@@ -1,4 +1,4 @@
-Function __$main__^main() last_label=100 last_temp=121:
+Function __$main__^main() last_label=100 last_temp=119:
   Block: Entry Label: L100
     LABEL L100; def: use: 
     MOVE t100:ptr <- Const:0; def: t100 use: 
@@ -10,11 +10,11 @@ Function __$main__^main() last_label=100 last_temp=121:
     PTR_CALC t112:ptr <- t100:ptr + Const:0; def: t112 use: t100 
     STORE Const:1 -> Mem(t112:ptr); def: use: t112 
     MOVE_EXTCALL t104:ptr <- malloc(Const:12); def: t104 use: 
-    PTR_CALC t114:ptr <- t104:ptr + Const:8; def: t114 use: t104 
-    STORE Name:B^f -> Mem(t114:ptr); def: use: t114 
+    PTR_CALC t113:ptr <- t104:ptr + Const:8; def: t113 use: t104 
+    STORE Name:B^f -> Mem(t113:ptr); def: use: t113 
     MOVE t101:ptr <- t104:ptr; def: t101 use: t104 
-    PTR_CALC t115:ptr <- t101:ptr + Const:4; def: t115 use: t101 
-    STORE Const:10 -> Mem(t115:ptr); def: use: t115 
+    PTR_CALC t114:ptr <- t101:ptr + Const:4; def: t114 use: t101 
+    STORE Const:10 -> Mem(t114:ptr); def: use: t114 
     PTR_CALC t116:ptr <- t100:ptr + Const:0; def: t116 use: t100 
     LOAD t117:int <- Mem(t116:ptr); def: t117 use: t116 
     PTR_CALC t118:ptr <- t101:ptr + Const:4; def: t118 use: t101 

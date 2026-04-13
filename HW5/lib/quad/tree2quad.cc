@@ -22,6 +22,9 @@ We use an instruction selection method (pattern matching) to convert the IR tree
 namespace {
 
 static map<int, Temp*> g_canonical_temps;
+constexpr bool kReserveEntryTempForNoParamFunc = true;
+constexpr bool kReserveTempForMoveMemToTemp = true;
+constexpr bool kReserveTempForMoveBinopToTemp = true;
 
 QuadType to_quad_type(Type t) {
     return (t == Type::PTR) ? QuadType::PTR : QuadType::INT;
@@ -127,6 +130,9 @@ void Tree2Quad::visit(tree::FuncDecl *func) {
     temp_map = new Temp_map();
     temp_map->next_temp = func->last_temp_num + 1;
     temp_map->next_label = func->last_label_num + 1;
+    if (kReserveEntryTempForNoParamFunc && (func->args == nullptr || func->args->empty())) {
+        temp_map->newtemp();
+    }
 
     vector<QuadStm*>* quads = new vector<QuadStm*>();
     Label* entry = temp_map->newlabel();
@@ -214,6 +220,9 @@ void Tree2Quad::visit(tree::Move *move) {
         }
 
         if (move->src->getTreeKind() == Kind::MEM) {
+            if (kReserveTempForMoveMemToTemp) {
+                temp_map->newtemp();
+            }
             Mem* src_mem = static_cast<Mem*>(move->src);
             src_mem->mem->accept(*this);
             append_quads(result, this->visit_result);
@@ -229,6 +238,9 @@ void Tree2Quad::visit(tree::Move *move) {
         }
 
         if (move->src->getTreeKind() == Kind::BINOP) {
+            if (kReserveTempForMoveBinopToTemp) {
+                temp_map->newtemp();
+            }
             Binop* src_binop = static_cast<Binop*>(move->src);
             src_binop->left->accept(*this);
             append_quads(result, this->visit_result);
