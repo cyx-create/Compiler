@@ -56,6 +56,14 @@ void append_quads(vector<QuadStm*>* dst, vector<QuadStm*>* src) {
     dst->insert(dst->end(), src->begin(), src->end());
 }
 
+// Nested CALL/EXTCALL under MOVE_CALL/MOVE_EXTCALL: outer stmt already carries
+// def/use for dataflow; clearing inner avoids duplicate <def>/<use> in quad XML.
+void clear_def_use_on_statement(QuadStm* stm) {
+    if (stm == nullptr) return;
+    if (stm->def != nullptr) stm->def->clear();
+    if (stm->use != nullptr) stm->use->clear();
+}
+
 QuadTerm* temp_term_from_temp_exp(TempExp* temp_exp) {
     return new QuadTerm(new QuadTemp(temp_exp->temp, to_quad_type(temp_exp->type)));
 }
@@ -202,6 +210,7 @@ void Tree2Quad::visit(tree::Move *move) {
             def->insert(canonical_temp(dst_temp_exp->temp));
             for (auto* t : *call->use) use->insert(t);
             result->push_back(new QuadMoveCall(dst_temp, call, def, use));
+            clear_def_use_on_statement(call);
             visit_result = result;
             return;
         }
@@ -215,6 +224,7 @@ void Tree2Quad::visit(tree::Move *move) {
             def->insert(canonical_temp(dst_temp_exp->temp));
             for (auto* t : *extcall->use) use->insert(t);
             result->push_back(new QuadMoveExtCall(dst_temp, extcall, def, use));
+            clear_def_use_on_statement(extcall);
             visit_result = result;
             return;
         }
@@ -298,6 +308,7 @@ void Tree2Quad::visit(tree::Move *move) {
             call_def->insert(canonical_temp(tmp));
             for (auto* t : *call->use) call_use->insert(t);
             result->push_back(new QuadMoveCall(dst_tmp, call, call_def, call_use));
+            clear_def_use_on_statement(call);
             src_term = new QuadTerm(dst_tmp);
         } else if (move->src->getTreeKind() == Kind::EXTCALL) {
             vector<QuadStm*>* pre = new vector<QuadStm*>();
@@ -312,6 +323,7 @@ void Tree2Quad::visit(tree::Move *move) {
             call_def->insert(canonical_temp(tmp));
             for (auto* t : *extcall->use) call_use->insert(t);
             result->push_back(new QuadMoveExtCall(dst_tmp, extcall, call_def, call_use));
+            clear_def_use_on_statement(extcall);
             src_term = new QuadTerm(dst_tmp);
         } else {
             move->src->accept(*this);
@@ -506,6 +518,7 @@ void Tree2Quad::visit(tree::Call *call) {
     def->insert(canonical_temp(t));
     for (auto* u : *qcall->use) use->insert(u);
     visit_result->push_back(new QuadMoveCall(dst, qcall, def, use));
+    clear_def_use_on_statement(qcall);
     output_term = new QuadTerm(dst);
 }
 
@@ -524,5 +537,6 @@ void Tree2Quad::visit(tree::ExtCall *extcall) {
     def->insert(canonical_temp(t));
     for (auto* u : *qext->use) use->insert(u);
     visit_result->push_back(new QuadMoveExtCall(dst, qext, def, use));
+    clear_def_use_on_statement(qext);
     output_term = new QuadTerm(dst);
 }
