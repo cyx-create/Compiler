@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /root/compilerworker/fducompilerh2026/HW6
+CMAKE_SOURCE_DIR = /root/fducompilerh2026/fducompilerh2026/HW6
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /root/compilerworker/fducompilerh2026/HW6/build
+CMAKE_BINARY_DIR = /root/fducompilerh2026/fducompilerh2026/HW6/build
 
 # Include any dependencies generated for this target.
 include lib/util/CMakeFiles/util.dir/depend.make
@@ -72,58 +72,58 @@ include lib/util/CMakeFiles/util.dir/flags.make
 lib/util/CMakeFiles/util.dir/flow2xml.cc.o: lib/util/CMakeFiles/util.dir/flags.make
 lib/util/CMakeFiles/util.dir/flow2xml.cc.o: ../lib/util/flow2xml.cc
 lib/util/CMakeFiles/util.dir/flow2xml.cc.o: lib/util/CMakeFiles/util.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object lib/util/CMakeFiles/util.dir/flow2xml.cc.o"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/util/CMakeFiles/util.dir/flow2xml.cc.o -MF CMakeFiles/util.dir/flow2xml.cc.o.d -o CMakeFiles/util.dir/flow2xml.cc.o -c /root/compilerworker/fducompilerh2026/HW6/lib/util/flow2xml.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object lib/util/CMakeFiles/util.dir/flow2xml.cc.o"
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/util/CMakeFiles/util.dir/flow2xml.cc.o -MF CMakeFiles/util.dir/flow2xml.cc.o.d -o CMakeFiles/util.dir/flow2xml.cc.o -c /root/fducompilerh2026/fducompilerh2026/HW6/lib/util/flow2xml.cc
 
 lib/util/CMakeFiles/util.dir/flow2xml.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/util.dir/flow2xml.cc.i"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/compilerworker/fducompilerh2026/HW6/lib/util/flow2xml.cc > CMakeFiles/util.dir/flow2xml.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/fducompilerh2026/fducompilerh2026/HW6/lib/util/flow2xml.cc > CMakeFiles/util.dir/flow2xml.cc.i
 
 lib/util/CMakeFiles/util.dir/flow2xml.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/util.dir/flow2xml.cc.s"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/compilerworker/fducompilerh2026/HW6/lib/util/flow2xml.cc -o CMakeFiles/util.dir/flow2xml.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/fducompilerh2026/fducompilerh2026/HW6/lib/util/flow2xml.cc -o CMakeFiles/util.dir/flow2xml.cc.s
 
 lib/util/CMakeFiles/util.dir/print_config.cc.o: lib/util/CMakeFiles/util.dir/flags.make
 lib/util/CMakeFiles/util.dir/print_config.cc.o: ../lib/util/print_config.cc
 lib/util/CMakeFiles/util.dir/print_config.cc.o: lib/util/CMakeFiles/util.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object lib/util/CMakeFiles/util.dir/print_config.cc.o"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/util/CMakeFiles/util.dir/print_config.cc.o -MF CMakeFiles/util.dir/print_config.cc.o.d -o CMakeFiles/util.dir/print_config.cc.o -c /root/compilerworker/fducompilerh2026/HW6/lib/util/print_config.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object lib/util/CMakeFiles/util.dir/print_config.cc.o"
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/util/CMakeFiles/util.dir/print_config.cc.o -MF CMakeFiles/util.dir/print_config.cc.o.d -o CMakeFiles/util.dir/print_config.cc.o -c /root/fducompilerh2026/fducompilerh2026/HW6/lib/util/print_config.cc
 
 lib/util/CMakeFiles/util.dir/print_config.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/util.dir/print_config.cc.i"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/compilerworker/fducompilerh2026/HW6/lib/util/print_config.cc > CMakeFiles/util.dir/print_config.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/fducompilerh2026/fducompilerh2026/HW6/lib/util/print_config.cc > CMakeFiles/util.dir/print_config.cc.i
 
 lib/util/CMakeFiles/util.dir/print_config.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/util.dir/print_config.cc.s"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/compilerworker/fducompilerh2026/HW6/lib/util/print_config.cc -o CMakeFiles/util.dir/print_config.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/fducompilerh2026/fducompilerh2026/HW6/lib/util/print_config.cc -o CMakeFiles/util.dir/print_config.cc.s
 
 lib/util/CMakeFiles/util.dir/quad2xml.cc.o: lib/util/CMakeFiles/util.dir/flags.make
 lib/util/CMakeFiles/util.dir/quad2xml.cc.o: ../lib/util/quad2xml.cc
 lib/util/CMakeFiles/util.dir/quad2xml.cc.o: lib/util/CMakeFiles/util.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object lib/util/CMakeFiles/util.dir/quad2xml.cc.o"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/util/CMakeFiles/util.dir/quad2xml.cc.o -MF CMakeFiles/util.dir/quad2xml.cc.o.d -o CMakeFiles/util.dir/quad2xml.cc.o -c /root/compilerworker/fducompilerh2026/HW6/lib/util/quad2xml.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object lib/util/CMakeFiles/util.dir/quad2xml.cc.o"
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/util/CMakeFiles/util.dir/quad2xml.cc.o -MF CMakeFiles/util.dir/quad2xml.cc.o.d -o CMakeFiles/util.dir/quad2xml.cc.o -c /root/fducompilerh2026/fducompilerh2026/HW6/lib/util/quad2xml.cc
 
 lib/util/CMakeFiles/util.dir/quad2xml.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/util.dir/quad2xml.cc.i"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/compilerworker/fducompilerh2026/HW6/lib/util/quad2xml.cc > CMakeFiles/util.dir/quad2xml.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/fducompilerh2026/fducompilerh2026/HW6/lib/util/quad2xml.cc > CMakeFiles/util.dir/quad2xml.cc.i
 
 lib/util/CMakeFiles/util.dir/quad2xml.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/util.dir/quad2xml.cc.s"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/compilerworker/fducompilerh2026/HW6/lib/util/quad2xml.cc -o CMakeFiles/util.dir/quad2xml.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/fducompilerh2026/fducompilerh2026/HW6/lib/util/quad2xml.cc -o CMakeFiles/util.dir/quad2xml.cc.s
 
 lib/util/CMakeFiles/util.dir/xml2quad.cc.o: lib/util/CMakeFiles/util.dir/flags.make
 lib/util/CMakeFiles/util.dir/xml2quad.cc.o: ../lib/util/xml2quad.cc
 lib/util/CMakeFiles/util.dir/xml2quad.cc.o: lib/util/CMakeFiles/util.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object lib/util/CMakeFiles/util.dir/xml2quad.cc.o"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/util/CMakeFiles/util.dir/xml2quad.cc.o -MF CMakeFiles/util.dir/xml2quad.cc.o.d -o CMakeFiles/util.dir/xml2quad.cc.o -c /root/compilerworker/fducompilerh2026/HW6/lib/util/xml2quad.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object lib/util/CMakeFiles/util.dir/xml2quad.cc.o"
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/util/CMakeFiles/util.dir/xml2quad.cc.o -MF CMakeFiles/util.dir/xml2quad.cc.o.d -o CMakeFiles/util.dir/xml2quad.cc.o -c /root/fducompilerh2026/fducompilerh2026/HW6/lib/util/xml2quad.cc
 
 lib/util/CMakeFiles/util.dir/xml2quad.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/util.dir/xml2quad.cc.i"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/compilerworker/fducompilerh2026/HW6/lib/util/xml2quad.cc > CMakeFiles/util.dir/xml2quad.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/fducompilerh2026/fducompilerh2026/HW6/lib/util/xml2quad.cc > CMakeFiles/util.dir/xml2quad.cc.i
 
 lib/util/CMakeFiles/util.dir/xml2quad.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/util.dir/xml2quad.cc.s"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/compilerworker/fducompilerh2026/HW6/lib/util/xml2quad.cc -o CMakeFiles/util.dir/xml2quad.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/fducompilerh2026/fducompilerh2026/HW6/lib/util/xml2quad.cc -o CMakeFiles/util.dir/xml2quad.cc.s
 
 util: lib/util/CMakeFiles/util.dir/flow2xml.cc.o
 util: lib/util/CMakeFiles/util.dir/print_config.cc.o
@@ -137,10 +137,10 @@ lib/util/CMakeFiles/util.dir/build: util
 .PHONY : lib/util/CMakeFiles/util.dir/build
 
 lib/util/CMakeFiles/util.dir/clean:
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/util && $(CMAKE_COMMAND) -P CMakeFiles/util.dir/cmake_clean.cmake
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util && $(CMAKE_COMMAND) -P CMakeFiles/util.dir/cmake_clean.cmake
 .PHONY : lib/util/CMakeFiles/util.dir/clean
 
 lib/util/CMakeFiles/util.dir/depend:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/compilerworker/fducompilerh2026/HW6 /root/compilerworker/fducompilerh2026/HW6/lib/util /root/compilerworker/fducompilerh2026/HW6/build /root/compilerworker/fducompilerh2026/HW6/build/lib/util /root/compilerworker/fducompilerh2026/HW6/build/lib/util/CMakeFiles/util.dir/DependInfo.cmake --color=$(COLOR)
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/fducompilerh2026/fducompilerh2026/HW6 /root/fducompilerh2026/fducompilerh2026/HW6/lib/util /root/fducompilerh2026/fducompilerh2026/HW6/build /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util/CMakeFiles/util.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : lib/util/CMakeFiles/util.dir/depend
 

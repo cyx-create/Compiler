@@ -8,10 +8,10 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/root/compilerworker/fducompilerh2026/HW6/lib/util/flow2xml.cc" "lib/util/CMakeFiles/util.dir/flow2xml.cc.o" "gcc" "lib/util/CMakeFiles/util.dir/flow2xml.cc.o.d"
-  "/root/compilerworker/fducompilerh2026/HW6/lib/util/print_config.cc" "lib/util/CMakeFiles/util.dir/print_config.cc.o" "gcc" "lib/util/CMakeFiles/util.dir/print_config.cc.o.d"
-  "/root/compilerworker/fducompilerh2026/HW6/lib/util/quad2xml.cc" "lib/util/CMakeFiles/util.dir/quad2xml.cc.o" "gcc" "lib/util/CMakeFiles/util.dir/quad2xml.cc.o.d"
-  "/root/compilerworker/fducompilerh2026/HW6/lib/util/xml2quad.cc" "lib/util/CMakeFiles/util.dir/xml2quad.cc.o" "gcc" "lib/util/CMakeFiles/util.dir/xml2quad.cc.o.d"
+  "/root/fducompilerh2026/fducompilerh2026/HW6/lib/util/flow2xml.cc" "lib/util/CMakeFiles/util.dir/flow2xml.cc.o" "gcc" "lib/util/CMakeFiles/util.dir/flow2xml.cc.o.d"
+  "/root/fducompilerh2026/fducompilerh2026/HW6/lib/util/print_config.cc" "lib/util/CMakeFiles/util.dir/print_config.cc.o" "gcc" "lib/util/CMakeFiles/util.dir/print_config.cc.o.d"
+  "/root/fducompilerh2026/fducompilerh2026/HW6/lib/util/quad2xml.cc" "lib/util/CMakeFiles/util.dir/quad2xml.cc.o" "gcc" "lib/util/CMakeFiles/util.dir/quad2xml.cc.o.d"
+  "/root/fducompilerh2026/fducompilerh2026/HW6/lib/util/xml2quad.cc" "lib/util/CMakeFiles/util.dir/xml2quad.cc.o" "gcc" "lib/util/CMakeFiles/util.dir/xml2quad.cc.o.d"
   )
 
 # Targets to which this target links.

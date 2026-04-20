@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/root/compilerworker/fducompilerh2026/HW6/include/ir -I/root/compilerworker/fducompilerh2026/HW6/include/quad -I/root/compilerworker/fducompilerh2026/HW6/include/quadflow -I/root/compilerworker/fducompilerh2026/HW6/include/util -I/root/compilerworker/fducompilerh2026/HW6/vendor/tinyxml2
+CXX_INCLUDES = -I/root/fducompilerh2026/fducompilerh2026/HW6/include/ir -I/root/fducompilerh2026/fducompilerh2026/HW6/include/quad -I/root/fducompilerh2026/fducompilerh2026/HW6/include/quadflow -I/root/fducompilerh2026/fducompilerh2026/HW6/include/util -I/root/fducompilerh2026/fducompilerh2026/HW6/vendor/tinyxml2
 
 CXX_FLAGS = -std=gnu++17
 

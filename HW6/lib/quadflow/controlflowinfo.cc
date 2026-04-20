@@ -435,6 +435,7 @@ void ControlFlowInfo::computeDominanceFrontiers() {
         }
     }
     ensureEveryBlockKey(dominanceFrontiers, allBlocks);
-    // Next ::operator new(sizeof(FuncFlowInfo)) is main's new FuncFlowInfo (after printEverything).
+    // Bump-pool hook (dataflowinfo.cc): the very next allocation of sizeof(FuncFlowInfo)
+    // must be tools/main's `new FuncFlowInfo` right after this computeEverything() returns.
     mark_next_funcflow_new_from_pool();
 }

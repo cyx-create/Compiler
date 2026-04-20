@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/root/compilerworker/fducompilerh2026/HW6/tools/main/main.cc" "tools/main/CMakeFiles/main.dir/main.cc.o" "gcc" "tools/main/CMakeFiles/main.dir/main.cc.o.d"
+  "/root/fducompilerh2026/fducompilerh2026/HW6/tools/main/main.cc" "tools/main/CMakeFiles/main.dir/main.cc.o" "gcc" "tools/main/CMakeFiles/main.dir/main.cc.o.d"
   )
 
 # Targets to which this target links.

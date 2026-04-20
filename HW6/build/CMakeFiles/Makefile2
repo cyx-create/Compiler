@@ -54,10 +54,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /root/compilerworker/fducompilerh2026/HW6
+CMAKE_SOURCE_DIR = /root/fducompilerh2026/fducompilerh2026/HW6
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /root/compilerworker/fducompilerh2026/HW6/build
+CMAKE_BINARY_DIR = /root/fducompilerh2026/fducompilerh2026/HW6/build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -213,14 +213,14 @@ vendor/tinyxml2/clean: vendor/tinyxml2/CMakeFiles/vendor_xml.dir/clean
 lib/util/CMakeFiles/util.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles --progress-num=8,9,10,11 "Built target util"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles --progress-num=8,9,10,11 "Built target util"
 .PHONY : lib/util/CMakeFiles/util.dir/all
 
 # Build rule for subdir invocation for target.
 lib/util/CMakeFiles/util.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles 4
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/util/CMakeFiles/util.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles 0
 .PHONY : lib/util/CMakeFiles/util.dir/rule
 
 # Convenience name for target.
@@ -239,14 +239,14 @@ lib/util/CMakeFiles/util.dir/clean:
 lib/quad/CMakeFiles/quad.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/quad/CMakeFiles/quad.dir/build.make lib/quad/CMakeFiles/quad.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/quad/CMakeFiles/quad.dir/build.make lib/quad/CMakeFiles/quad.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles --progress-num=3,4 "Built target quad"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles --progress-num=3,4 "Built target quad"
 .PHONY : lib/quad/CMakeFiles/quad.dir/all
 
 # Build rule for subdir invocation for target.
 lib/quad/CMakeFiles/quad.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quad/CMakeFiles/quad.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles 0
 .PHONY : lib/quad/CMakeFiles/quad.dir/rule
 
 # Convenience name for target.
@@ -265,14 +265,14 @@ lib/quad/CMakeFiles/quad.dir/clean:
 lib/quadflow/CMakeFiles/quadflow.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles --progress-num=5,6,7 "Built target quadflow"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles --progress-num=5,6,7 "Built target quadflow"
 .PHONY : lib/quadflow/CMakeFiles/quadflow.dir/all
 
 # Build rule for subdir invocation for target.
 lib/quadflow/CMakeFiles/quadflow.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quadflow/CMakeFiles/quadflow.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles 0
 .PHONY : lib/quadflow/CMakeFiles/quadflow.dir/rule
 
 # Convenience name for target.
@@ -294,14 +294,14 @@ tools/main/CMakeFiles/main.dir/all: lib/quadflow/CMakeFiles/quadflow.dir/all
 tools/main/CMakeFiles/main.dir/all: vendor/tinyxml2/CMakeFiles/vendor_xml.dir/all
 	$(MAKE) $(MAKESILENT) -f tools/main/CMakeFiles/main.dir/build.make tools/main/CMakeFiles/main.dir/depend
 	$(MAKE) $(MAKESILENT) -f tools/main/CMakeFiles/main.dir/build.make tools/main/CMakeFiles/main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles --progress-num=1,2 "Built target main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles --progress-num=1,2 "Built target main"
 .PHONY : tools/main/CMakeFiles/main.dir/all
 
 # Build rule for subdir invocation for target.
 tools/main/CMakeFiles/main.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles 12
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tools/main/CMakeFiles/main.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles 0
 .PHONY : tools/main/CMakeFiles/main.dir/rule
 
 # Convenience name for target.
@@ -320,14 +320,14 @@ tools/main/CMakeFiles/main.dir/clean:
 vendor/tinyxml2/CMakeFiles/vendor_xml.dir/all:
 	$(MAKE) $(MAKESILENT) -f vendor/tinyxml2/CMakeFiles/vendor_xml.dir/build.make vendor/tinyxml2/CMakeFiles/vendor_xml.dir/depend
 	$(MAKE) $(MAKESILENT) -f vendor/tinyxml2/CMakeFiles/vendor_xml.dir/build.make vendor/tinyxml2/CMakeFiles/vendor_xml.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles --progress-num=12 "Built target vendor_xml"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles --progress-num=12 "Built target vendor_xml"
 .PHONY : vendor/tinyxml2/CMakeFiles/vendor_xml.dir/all
 
 # Build rule for subdir invocation for target.
 vendor/tinyxml2/CMakeFiles/vendor_xml.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles 1
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 vendor/tinyxml2/CMakeFiles/vendor_xml.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles 0
 .PHONY : vendor/tinyxml2/CMakeFiles/vendor_xml.dir/rule
 
 # Convenience name for target.

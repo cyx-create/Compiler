@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /root/compilerworker/fducompilerh2026/HW6
+CMAKE_SOURCE_DIR = /root/fducompilerh2026/fducompilerh2026/HW6
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /root/compilerworker/fducompilerh2026/HW6/build
+CMAKE_BINARY_DIR = /root/fducompilerh2026/fducompilerh2026/HW6/build
 
 # Include any dependencies generated for this target.
 include vendor/tinyxml2/CMakeFiles/vendor_xml.dir/depend.make
@@ -72,16 +72,16 @@ include vendor/tinyxml2/CMakeFiles/vendor_xml.dir/flags.make
 vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.o: vendor/tinyxml2/CMakeFiles/vendor_xml.dir/flags.make
 vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.o: ../vendor/tinyxml2/tinyxml2.cc
 vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.o: vendor/tinyxml2/CMakeFiles/vendor_xml.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.o"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/vendor/tinyxml2 && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.o -MF CMakeFiles/vendor_xml.dir/tinyxml2.cc.o.d -o CMakeFiles/vendor_xml.dir/tinyxml2.cc.o -c /root/compilerworker/fducompilerh2026/HW6/vendor/tinyxml2/tinyxml2.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.o"
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/vendor/tinyxml2 && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.o -MF CMakeFiles/vendor_xml.dir/tinyxml2.cc.o.d -o CMakeFiles/vendor_xml.dir/tinyxml2.cc.o -c /root/fducompilerh2026/fducompilerh2026/HW6/vendor/tinyxml2/tinyxml2.cc
 
 vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/vendor_xml.dir/tinyxml2.cc.i"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/vendor/tinyxml2 && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/compilerworker/fducompilerh2026/HW6/vendor/tinyxml2/tinyxml2.cc > CMakeFiles/vendor_xml.dir/tinyxml2.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/vendor/tinyxml2 && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/fducompilerh2026/fducompilerh2026/HW6/vendor/tinyxml2/tinyxml2.cc > CMakeFiles/vendor_xml.dir/tinyxml2.cc.i
 
 vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/vendor_xml.dir/tinyxml2.cc.s"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/vendor/tinyxml2 && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/compilerworker/fducompilerh2026/HW6/vendor/tinyxml2/tinyxml2.cc -o CMakeFiles/vendor_xml.dir/tinyxml2.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/vendor/tinyxml2 && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/fducompilerh2026/fducompilerh2026/HW6/vendor/tinyxml2/tinyxml2.cc -o CMakeFiles/vendor_xml.dir/tinyxml2.cc.s
 
 vendor_xml: vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.o
 vendor_xml: vendor/tinyxml2/CMakeFiles/vendor_xml.dir/build.make
@@ -92,10 +92,10 @@ vendor/tinyxml2/CMakeFiles/vendor_xml.dir/build: vendor_xml
 .PHONY : vendor/tinyxml2/CMakeFiles/vendor_xml.dir/build
 
 vendor/tinyxml2/CMakeFiles/vendor_xml.dir/clean:
-	cd /root/compilerworker/fducompilerh2026/HW6/build/vendor/tinyxml2 && $(CMAKE_COMMAND) -P CMakeFiles/vendor_xml.dir/cmake_clean.cmake
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/vendor/tinyxml2 && $(CMAKE_COMMAND) -P CMakeFiles/vendor_xml.dir/cmake_clean.cmake
 .PHONY : vendor/tinyxml2/CMakeFiles/vendor_xml.dir/clean
 
 vendor/tinyxml2/CMakeFiles/vendor_xml.dir/depend:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/compilerworker/fducompilerh2026/HW6 /root/compilerworker/fducompilerh2026/HW6/vendor/tinyxml2 /root/compilerworker/fducompilerh2026/HW6/build /root/compilerworker/fducompilerh2026/HW6/build/vendor/tinyxml2 /root/compilerworker/fducompilerh2026/HW6/build/vendor/tinyxml2/CMakeFiles/vendor_xml.dir/DependInfo.cmake --color=$(COLOR)
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/fducompilerh2026/fducompilerh2026/HW6 /root/fducompilerh2026/fducompilerh2026/HW6/vendor/tinyxml2 /root/fducompilerh2026/fducompilerh2026/HW6/build /root/fducompilerh2026/fducompilerh2026/HW6/build/vendor/tinyxml2 /root/fducompilerh2026/fducompilerh2026/HW6/build/vendor/tinyxml2/CMakeFiles/vendor_xml.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : vendor/tinyxml2/CMakeFiles/vendor_xml.dir/depend
 

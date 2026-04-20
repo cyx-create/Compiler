@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /root/compilerworker/fducompilerh2026/HW6
+CMAKE_SOURCE_DIR = /root/fducompilerh2026/fducompilerh2026/HW6
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /root/compilerworker/fducompilerh2026/HW6/build
+CMAKE_BINARY_DIR = /root/fducompilerh2026/fducompilerh2026/HW6/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,14 +87,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -E cmake_progress_start /root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles /root/compilerworker/fducompilerh2026/HW6/build/lib/util//CMakeFiles/progress.marks
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/util/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles 0
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -E cmake_progress_start /root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util//CMakeFiles/progress.marks
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/util/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/util/clean
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/util/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,22 +103,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/util/preinstall
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/util/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/util/preinstall
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/util/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 lib/util/CMakeFiles/util.dir/rule:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/util/CMakeFiles/util.dir/rule
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/util/CMakeFiles/util.dir/rule
 .PHONY : lib/util/CMakeFiles/util.dir/rule
 
 # Convenience name for target.
@@ -127,7 +127,7 @@ util: lib/util/CMakeFiles/util.dir/rule
 
 # fast build rule for target.
 util/fast:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/build
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/build
 .PHONY : util/fast
 
 flow2xml.o: flow2xml.cc.o
@@ -135,7 +135,7 @@ flow2xml.o: flow2xml.cc.o
 
 # target to build an object file
 flow2xml.cc.o:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/flow2xml.cc.o
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/flow2xml.cc.o
 .PHONY : flow2xml.cc.o
 
 flow2xml.i: flow2xml.cc.i
@@ -143,7 +143,7 @@ flow2xml.i: flow2xml.cc.i
 
 # target to preprocess a source file
 flow2xml.cc.i:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/flow2xml.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/flow2xml.cc.i
 .PHONY : flow2xml.cc.i
 
 flow2xml.s: flow2xml.cc.s
@@ -151,7 +151,7 @@ flow2xml.s: flow2xml.cc.s
 
 # target to generate assembly for a file
 flow2xml.cc.s:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/flow2xml.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/flow2xml.cc.s
 .PHONY : flow2xml.cc.s
 
 print_config.o: print_config.cc.o
@@ -159,7 +159,7 @@ print_config.o: print_config.cc.o
 
 # target to build an object file
 print_config.cc.o:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/print_config.cc.o
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/print_config.cc.o
 .PHONY : print_config.cc.o
 
 print_config.i: print_config.cc.i
@@ -167,7 +167,7 @@ print_config.i: print_config.cc.i
 
 # target to preprocess a source file
 print_config.cc.i:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/print_config.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/print_config.cc.i
 .PHONY : print_config.cc.i
 
 print_config.s: print_config.cc.s
@@ -175,7 +175,7 @@ print_config.s: print_config.cc.s
 
 # target to generate assembly for a file
 print_config.cc.s:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/print_config.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/print_config.cc.s
 .PHONY : print_config.cc.s
 
 quad2xml.o: quad2xml.cc.o
@@ -183,7 +183,7 @@ quad2xml.o: quad2xml.cc.o
 
 # target to build an object file
 quad2xml.cc.o:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/quad2xml.cc.o
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/quad2xml.cc.o
 .PHONY : quad2xml.cc.o
 
 quad2xml.i: quad2xml.cc.i
@@ -191,7 +191,7 @@ quad2xml.i: quad2xml.cc.i
 
 # target to preprocess a source file
 quad2xml.cc.i:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/quad2xml.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/quad2xml.cc.i
 .PHONY : quad2xml.cc.i
 
 quad2xml.s: quad2xml.cc.s
@@ -199,7 +199,7 @@ quad2xml.s: quad2xml.cc.s
 
 # target to generate assembly for a file
 quad2xml.cc.s:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/quad2xml.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/quad2xml.cc.s
 .PHONY : quad2xml.cc.s
 
 xml2quad.o: xml2quad.cc.o
@@ -207,7 +207,7 @@ xml2quad.o: xml2quad.cc.o
 
 # target to build an object file
 xml2quad.cc.o:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/xml2quad.cc.o
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/xml2quad.cc.o
 .PHONY : xml2quad.cc.o
 
 xml2quad.i: xml2quad.cc.i
@@ -215,7 +215,7 @@ xml2quad.i: xml2quad.cc.i
 
 # target to preprocess a source file
 xml2quad.cc.i:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/xml2quad.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/xml2quad.cc.i
 .PHONY : xml2quad.cc.i
 
 xml2quad.s: xml2quad.cc.s
@@ -223,7 +223,7 @@ xml2quad.s: xml2quad.cc.s
 
 # target to generate assembly for a file
 xml2quad.cc.s:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/xml2quad.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/util/CMakeFiles/util.dir/build.make lib/util/CMakeFiles/util.dir/xml2quad.cc.s
 .PHONY : xml2quad.cc.s
 
 # Help Target
@@ -258,6 +258,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

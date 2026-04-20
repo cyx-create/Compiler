@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /root/compilerworker/fducompilerh2026/HW6
+CMAKE_SOURCE_DIR = /root/fducompilerh2026/fducompilerh2026/HW6
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /root/compilerworker/fducompilerh2026/HW6/build
+CMAKE_BINARY_DIR = /root/fducompilerh2026/fducompilerh2026/HW6/build
 
 # Include any dependencies generated for this target.
 include lib/quadflow/CMakeFiles/quadflow.dir/depend.make
@@ -72,44 +72,44 @@ include lib/quadflow/CMakeFiles/quadflow.dir/flags.make
 lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.o: lib/quadflow/CMakeFiles/quadflow.dir/flags.make
 lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.o: ../lib/quadflow/controlflowinfo.cc
 lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.o: lib/quadflow/CMakeFiles/quadflow.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.o"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.o -MF CMakeFiles/quadflow.dir/controlflowinfo.cc.o.d -o CMakeFiles/quadflow.dir/controlflowinfo.cc.o -c /root/compilerworker/fducompilerh2026/HW6/lib/quadflow/controlflowinfo.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.o"
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.o -MF CMakeFiles/quadflow.dir/controlflowinfo.cc.o.d -o CMakeFiles/quadflow.dir/controlflowinfo.cc.o -c /root/fducompilerh2026/fducompilerh2026/HW6/lib/quadflow/controlflowinfo.cc
 
 lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/quadflow.dir/controlflowinfo.cc.i"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/compilerworker/fducompilerh2026/HW6/lib/quadflow/controlflowinfo.cc > CMakeFiles/quadflow.dir/controlflowinfo.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/fducompilerh2026/fducompilerh2026/HW6/lib/quadflow/controlflowinfo.cc > CMakeFiles/quadflow.dir/controlflowinfo.cc.i
 
 lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/quadflow.dir/controlflowinfo.cc.s"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/compilerworker/fducompilerh2026/HW6/lib/quadflow/controlflowinfo.cc -o CMakeFiles/quadflow.dir/controlflowinfo.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/fducompilerh2026/fducompilerh2026/HW6/lib/quadflow/controlflowinfo.cc -o CMakeFiles/quadflow.dir/controlflowinfo.cc.s
 
 lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.o: lib/quadflow/CMakeFiles/quadflow.dir/flags.make
 lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.o: ../lib/quadflow/dataflowinfo.cc
 lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.o: lib/quadflow/CMakeFiles/quadflow.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.o"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.o -MF CMakeFiles/quadflow.dir/dataflowinfo.cc.o.d -o CMakeFiles/quadflow.dir/dataflowinfo.cc.o -c /root/compilerworker/fducompilerh2026/HW6/lib/quadflow/dataflowinfo.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.o"
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.o -MF CMakeFiles/quadflow.dir/dataflowinfo.cc.o.d -o CMakeFiles/quadflow.dir/dataflowinfo.cc.o -c /root/fducompilerh2026/fducompilerh2026/HW6/lib/quadflow/dataflowinfo.cc
 
 lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/quadflow.dir/dataflowinfo.cc.i"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/compilerworker/fducompilerh2026/HW6/lib/quadflow/dataflowinfo.cc > CMakeFiles/quadflow.dir/dataflowinfo.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/fducompilerh2026/fducompilerh2026/HW6/lib/quadflow/dataflowinfo.cc > CMakeFiles/quadflow.dir/dataflowinfo.cc.i
 
 lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/quadflow.dir/dataflowinfo.cc.s"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/compilerworker/fducompilerh2026/HW6/lib/quadflow/dataflowinfo.cc -o CMakeFiles/quadflow.dir/dataflowinfo.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/fducompilerh2026/fducompilerh2026/HW6/lib/quadflow/dataflowinfo.cc -o CMakeFiles/quadflow.dir/dataflowinfo.cc.s
 
 lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.o: lib/quadflow/CMakeFiles/quadflow.dir/flags.make
 lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.o: ../lib/quadflow/flowinfo.cc
 lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.o: lib/quadflow/CMakeFiles/quadflow.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.o"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.o -MF CMakeFiles/quadflow.dir/flowinfo.cc.o.d -o CMakeFiles/quadflow.dir/flowinfo.cc.o -c /root/compilerworker/fducompilerh2026/HW6/lib/quadflow/flowinfo.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.o"
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.o -MF CMakeFiles/quadflow.dir/flowinfo.cc.o.d -o CMakeFiles/quadflow.dir/flowinfo.cc.o -c /root/fducompilerh2026/fducompilerh2026/HW6/lib/quadflow/flowinfo.cc
 
 lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/quadflow.dir/flowinfo.cc.i"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/compilerworker/fducompilerh2026/HW6/lib/quadflow/flowinfo.cc > CMakeFiles/quadflow.dir/flowinfo.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/fducompilerh2026/fducompilerh2026/HW6/lib/quadflow/flowinfo.cc > CMakeFiles/quadflow.dir/flowinfo.cc.i
 
 lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/quadflow.dir/flowinfo.cc.s"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/compilerworker/fducompilerh2026/HW6/lib/quadflow/flowinfo.cc -o CMakeFiles/quadflow.dir/flowinfo.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quadflow && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/fducompilerh2026/fducompilerh2026/HW6/lib/quadflow/flowinfo.cc -o CMakeFiles/quadflow.dir/flowinfo.cc.s
 
 quadflow: lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.o
 quadflow: lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.o
@@ -122,10 +122,10 @@ lib/quadflow/CMakeFiles/quadflow.dir/build: quadflow
 .PHONY : lib/quadflow/CMakeFiles/quadflow.dir/build
 
 lib/quadflow/CMakeFiles/quadflow.dir/clean:
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/quadflow && $(CMAKE_COMMAND) -P CMakeFiles/quadflow.dir/cmake_clean.cmake
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quadflow && $(CMAKE_COMMAND) -P CMakeFiles/quadflow.dir/cmake_clean.cmake
 .PHONY : lib/quadflow/CMakeFiles/quadflow.dir/clean
 
 lib/quadflow/CMakeFiles/quadflow.dir/depend:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/compilerworker/fducompilerh2026/HW6 /root/compilerworker/fducompilerh2026/HW6/lib/quadflow /root/compilerworker/fducompilerh2026/HW6/build /root/compilerworker/fducompilerh2026/HW6/build/lib/quadflow /root/compilerworker/fducompilerh2026/HW6/build/lib/quadflow/CMakeFiles/quadflow.dir/DependInfo.cmake --color=$(COLOR)
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/fducompilerh2026/fducompilerh2026/HW6 /root/fducompilerh2026/fducompilerh2026/HW6/lib/quadflow /root/fducompilerh2026/fducompilerh2026/HW6/build /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quadflow /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quadflow/CMakeFiles/quadflow.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : lib/quadflow/CMakeFiles/quadflow.dir/depend
 

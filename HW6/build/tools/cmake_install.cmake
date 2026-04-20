@@ -1,4 +1,4 @@
-# Install script for directory: /root/compilerworker/fducompilerh2026/HW6/tools
+# Install script for directory: /root/fducompilerh2026/fducompilerh2026/HW6/tools
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -44,6 +44,6 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/root/compilerworker/fducompilerh2026/HW6/build/tools/main/cmake_install.cmake")
+  include("/root/fducompilerh2026/fducompilerh2026/HW6/build/tools/main/cmake_install.cmake")
 endif()
 

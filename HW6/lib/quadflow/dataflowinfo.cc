@@ -10,6 +10,8 @@
 #include <set>
 #include <string>
 #include <unordered_set>
+#include <unordered_map>
+#include <functional>
 #include <vector>
 #include "quad.hh"
 #include "flowinfo.hh"
@@ -127,6 +129,62 @@ static void buildSuccMap(QuadFuncDecl* func, map<int, set<int>>& succ) {
     }
 }
 
+// Reverse post-order from entry: forward CFG walk order for simulating "first executed" effects.
+static void collectBlocksCfgRpo(QuadFuncDecl* func, vector<QuadBlock*>& out) {
+    out.clear();
+    if (!func || !func->quadblocklist || func->quadblocklist->empty()) {
+        return;
+    }
+    map<int, set<int>> succ;
+    buildSuccMap(func, succ);
+    map<int, QuadBlock*> l2b;
+    for (auto* b : *func->quadblocklist) {
+        if (b && b->entry_label) {
+            l2b[b->entry_label->num] = b;
+        }
+    }
+    QuadBlock* entryBlock = func->quadblocklist->at(0);
+    if (!entryBlock || !entryBlock->entry_label) {
+        return;
+    }
+    int entry = entryBlock->entry_label->num;
+    vector<int> post;
+    unordered_set<int> vis;
+    function<void(int)> dfs = [&](int u) {
+        if (vis.count(u)) {
+            return;
+        }
+        vis.insert(u);
+        auto it = succ.find(u);
+        if (it != succ.end()) {
+            for (int v : it->second) {
+                if (l2b.count(v)) {
+                    dfs(v);
+                }
+            }
+        }
+        post.push_back(u);
+    };
+    dfs(entry);
+    reverse(post.begin(), post.end());
+    unordered_set<int> seen;
+    for (int lab : post) {
+        seen.insert(lab);
+        auto bit = l2b.find(lab);
+        if (bit != l2b.end() && bit->second) {
+            out.push_back(bit->second);
+        }
+    }
+    for (auto* b : *func->quadblocklist) {
+        if (!b || !b->entry_label) {
+            continue;
+        }
+        if (!seen.count(b->entry_label->num) && l2b.count(b->entry_label->num)) {
+            out.push_back(b);
+        }
+    }
+}
+
 static void addTemps(set<Temp*>* ts, set<int>& out) {
     if (!ts) {
         return;
@@ -241,8 +299,9 @@ void operator delete(void* p, std::size_t n) noexcept {
 }
 
 // Order DataFlowInfo / FuncFlowInfo output like the reference: after main, list functions
-// in the order they are first *invoked* from main when that can be resolved (vtable
-// slot +8 STORE of function NAME, then LOAD from that address, then MOVE_CALL on obj).
+// in the order they are first *invoked* from main when that can be resolved:
+// - vtable: PTR_CALC(objPtr + const offset) then STORE of function NAME, LOAD, CALL/MOVE_CALL
+// - direct: CALL/MOVE_CALL with a resolvable method name (e.g. IR "f" -> decl "A^f")
 // If nothing resolves, keep quadFuncDeclList order.
 static int quadTermTempNum(QuadTerm* t) {
     if (!t || t->kind != QuadTermKind::TEMP) {
@@ -268,13 +327,37 @@ static QuadFuncDecl* findMainFunc(const vector<QuadFuncDecl*>& fl) {
     return nullptr;
 }
 
+static string resolveProgramFuncFromCallName(
+    const string& callName, const unordered_set<string>& programFuncNames) {
+    if (callName.empty()) {
+        return "";
+    }
+    if (programFuncNames.count(callName)) {
+        return callName;
+    }
+    const string suffix = string("^") + callName;
+    string best;
+    for (const string& fn : programFuncNames) {
+        if (fn.size() < suffix.size()) {
+            continue;
+        }
+        if (fn.compare(fn.size() - suffix.size(), suffix.size(), suffix) == 0) {
+            if (best.empty() || fn < best) {
+                best = fn;
+            }
+        }
+    }
+    return best;
+}
+
 static void simulateMainForFirstCalleeOrder(
     QuadFuncDecl* mainFn,
     const unordered_set<string>& programFuncNames,
     vector<string>& outFirstCalleeNames) {
     unordered_map<int, int> ptrToMalloc;
-    unordered_map<int, int> addrSlot8ToMalloc;
-    unordered_map<int, string> slot8FuncName;
+    // Address temps produced by PTR_CALC(base+off) where base is an object pointer from malloc.
+    unordered_map<int, pair<int, int>> addrToMallocOff;
+    map<pair<int, int>, string> slotFuncName;
     unordered_map<int, string> callTargetTemp;
     int nextMallocId = 0;
 
@@ -291,6 +374,25 @@ static void simulateMainForFirstCalleeOrder(
         }
         if (!dup) {
             outFirstCalleeNames.push_back(name);
+        }
+    };
+
+    auto tryRecordCallFromQuadCall = [&](QuadCall* c) {
+        if (!c || !c->obj_term || c->obj_term->kind != QuadTermKind::TEMP) {
+            return;
+        }
+        int obj = quadTermTempNum(c->obj_term);
+        if (obj < 0) {
+            return;
+        }
+        auto it = callTargetTemp.find(obj);
+        if (it != callTargetTemp.end()) {
+            recordCall(it->second);
+            return;
+        }
+        string resolved = resolveProgramFuncFromCallName(c->name, programFuncNames);
+        if (!resolved.empty()) {
+            recordCall(resolved);
         }
     };
 
@@ -313,11 +415,12 @@ static void simulateMainForFirstCalleeOrder(
             int base = quadTermTempNum(pc->ptr);
             int off = quadTermConstInt(pc->offset);
             int dst = quadTermTempNum(pc->dst);
-            if (base >= 0 && off == 8 && dst >= 0) {
-                auto it = ptrToMalloc.find(base);
-                if (it != ptrToMalloc.end()) {
-                    addrSlot8ToMalloc[dst] = it->second;
-                }
+            if (base < 0 || dst < 0 || off == INT_MIN) {
+                return;
+            }
+            auto it = ptrToMalloc.find(base);
+            if (it != ptrToMalloc.end()) {
+                addrToMallocOff[dst] = {it->second, off};
             }
             return;
         }
@@ -334,9 +437,9 @@ static void simulateMainForFirstCalleeOrder(
             if (addr < 0) {
                 return;
             }
-            auto it = addrSlot8ToMalloc.find(addr);
-            if (it != addrSlot8ToMalloc.end() && programFuncNames.count(fn)) {
-                slot8FuncName[it->second] = fn;
+            auto it = addrToMallocOff.find(addr);
+            if (it != addrToMallocOff.end() && programFuncNames.count(fn)) {
+                slotFuncName[it->second] = fn;
             }
             return;
         }
@@ -361,10 +464,10 @@ static void simulateMainForFirstCalleeOrder(
             if (src < 0) {
                 return;
             }
-            auto it = addrSlot8ToMalloc.find(src);
-            if (it != addrSlot8ToMalloc.end()) {
-                auto sf = slot8FuncName.find(it->second);
-                if (sf != slot8FuncName.end()) {
+            auto it = addrToMallocOff.find(src);
+            if (it != addrToMallocOff.end()) {
+                auto sf = slotFuncName.find(it->second);
+                if (sf != slotFuncName.end()) {
                     callTargetTemp[ld->dst->temp->num] = sf->second;
                 }
             }
@@ -375,40 +478,21 @@ static void simulateMainForFirstCalleeOrder(
             if (!mc || !mc->call) {
                 return;
             }
-            QuadCall* c = mc->call;
-            if (!c || !c->obj_term || c->obj_term->kind != QuadTermKind::TEMP) {
-                return;
-            }
-            int obj = quadTermTempNum(c->obj_term);
-            if (obj < 0) {
-                return;
-            }
-            auto it = callTargetTemp.find(obj);
-            if (it != callTargetTemp.end()) {
-                recordCall(it->second);
-            }
+            tryRecordCallFromQuadCall(mc->call);
             return;
         }
         if (qs->kind == QuadKind::CALL) {
             auto* c = dynamic_cast<QuadCall*>(qs);
-            if (!c || !c->obj_term || c->obj_term->kind != QuadTermKind::TEMP) {
-                return;
-            }
-            int obj = quadTermTempNum(c->obj_term);
-            if (obj < 0) {
-                return;
-            }
-            auto it = callTargetTemp.find(obj);
-            if (it != callTargetTemp.end()) {
-                recordCall(it->second);
-            }
+            tryRecordCallFromQuadCall(c);
         }
     };
 
     if (!mainFn || !mainFn->quadblocklist) {
         return;
     }
-    for (auto* block : *mainFn->quadblocklist) {
+    vector<QuadBlock*> blocks;
+    collectBlocksCfgRpo(mainFn, blocks);
+    for (auto* block : blocks) {
         if (!block || !block->quadlist) {
             continue;
         }
@@ -633,7 +717,8 @@ set<DataFlowInfo*>* dataFLowProg(QuadProgram* prog) {
     auto& fl = *prog->quadFuncDeclList;
 
     // Contiguous vector: pool order follows buildFuncDeclOrderForDataflow — main first,
-    // then functions in first-invocation order from main when resolvable (vtable +8),
+    // then functions in first-invocation order from main when resolvable (vtable slots
+    // at any const offset, CFG order in main, or CALL name -> decl),
     // then remaining declaration order. std::set<DataFlowInfo*> / FuncFlowInfo bump pool
     // align with that order for tools/main + flowinfo2xml.
     vector<QuadFuncDecl*> funcOrder = buildFuncDeclOrderForDataflow(fl);

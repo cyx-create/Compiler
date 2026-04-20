@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /root/compilerworker/fducompilerh2026/HW6
+CMAKE_SOURCE_DIR = /root/fducompilerh2026/fducompilerh2026/HW6
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /root/compilerworker/fducompilerh2026/HW6/build
+CMAKE_BINARY_DIR = /root/fducompilerh2026/fducompilerh2026/HW6/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,14 +87,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -E cmake_progress_start /root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles /root/compilerworker/fducompilerh2026/HW6/build/lib/quad//CMakeFiles/progress.marks
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quad/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles 0
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -E cmake_progress_start /root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quad//CMakeFiles/progress.marks
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quad/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quad/clean
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quad/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,22 +103,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quad/preinstall
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quad/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quad/preinstall
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quad/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 lib/quad/CMakeFiles/quad.dir/rule:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quad/CMakeFiles/quad.dir/rule
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quad/CMakeFiles/quad.dir/rule
 .PHONY : lib/quad/CMakeFiles/quad.dir/rule
 
 # Convenience name for target.
@@ -127,7 +127,7 @@ quad: lib/quad/CMakeFiles/quad.dir/rule
 
 # fast build rule for target.
 quad/fast:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quad/CMakeFiles/quad.dir/build.make lib/quad/CMakeFiles/quad.dir/build
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quad/CMakeFiles/quad.dir/build.make lib/quad/CMakeFiles/quad.dir/build
 .PHONY : quad/fast
 
 blocking.o: blocking.cc.o
@@ -135,7 +135,7 @@ blocking.o: blocking.cc.o
 
 # target to build an object file
 blocking.cc.o:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quad/CMakeFiles/quad.dir/build.make lib/quad/CMakeFiles/quad.dir/blocking.cc.o
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quad/CMakeFiles/quad.dir/build.make lib/quad/CMakeFiles/quad.dir/blocking.cc.o
 .PHONY : blocking.cc.o
 
 blocking.i: blocking.cc.i
@@ -143,7 +143,7 @@ blocking.i: blocking.cc.i
 
 # target to preprocess a source file
 blocking.cc.i:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quad/CMakeFiles/quad.dir/build.make lib/quad/CMakeFiles/quad.dir/blocking.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quad/CMakeFiles/quad.dir/build.make lib/quad/CMakeFiles/quad.dir/blocking.cc.i
 .PHONY : blocking.cc.i
 
 blocking.s: blocking.cc.s
@@ -151,7 +151,7 @@ blocking.s: blocking.cc.s
 
 # target to generate assembly for a file
 blocking.cc.s:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quad/CMakeFiles/quad.dir/build.make lib/quad/CMakeFiles/quad.dir/blocking.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quad/CMakeFiles/quad.dir/build.make lib/quad/CMakeFiles/quad.dir/blocking.cc.s
 .PHONY : blocking.cc.s
 
 quad.o: quad.cc.o
@@ -159,7 +159,7 @@ quad.o: quad.cc.o
 
 # target to build an object file
 quad.cc.o:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quad/CMakeFiles/quad.dir/build.make lib/quad/CMakeFiles/quad.dir/quad.cc.o
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quad/CMakeFiles/quad.dir/build.make lib/quad/CMakeFiles/quad.dir/quad.cc.o
 .PHONY : quad.cc.o
 
 quad.i: quad.cc.i
@@ -167,7 +167,7 @@ quad.i: quad.cc.i
 
 # target to preprocess a source file
 quad.cc.i:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quad/CMakeFiles/quad.dir/build.make lib/quad/CMakeFiles/quad.dir/quad.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quad/CMakeFiles/quad.dir/build.make lib/quad/CMakeFiles/quad.dir/quad.cc.i
 .PHONY : quad.cc.i
 
 quad.s: quad.cc.s
@@ -175,7 +175,7 @@ quad.s: quad.cc.s
 
 # target to generate assembly for a file
 quad.cc.s:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quad/CMakeFiles/quad.dir/build.make lib/quad/CMakeFiles/quad.dir/quad.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quad/CMakeFiles/quad.dir/build.make lib/quad/CMakeFiles/quad.dir/quad.cc.s
 .PHONY : quad.cc.s
 
 # Help Target
@@ -204,6 +204,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

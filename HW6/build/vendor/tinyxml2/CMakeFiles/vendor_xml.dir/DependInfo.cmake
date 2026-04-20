@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/root/compilerworker/fducompilerh2026/HW6/vendor/tinyxml2/tinyxml2.cc" "vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.o" "gcc" "vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.o.d"
+  "/root/fducompilerh2026/fducompilerh2026/HW6/vendor/tinyxml2/tinyxml2.cc" "vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.o" "gcc" "vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.o.d"
   )
 
 # Targets to which this target links.
