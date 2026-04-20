@@ -8,8 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/root/compilerworker/fducompilerh2026/HW6/lib/quad/blocking.cc" "lib/quad/CMakeFiles/quad.dir/blocking.cc.o" "gcc" "lib/quad/CMakeFiles/quad.dir/blocking.cc.o.d"
-  "/root/compilerworker/fducompilerh2026/HW6/lib/quad/quad.cc" "lib/quad/CMakeFiles/quad.dir/quad.cc.o" "gcc" "lib/quad/CMakeFiles/quad.dir/quad.cc.o.d"
+  "/root/fducompilerh2026/fducompilerh2026/HW6/lib/quad/blocking.cc" "lib/quad/CMakeFiles/quad.dir/blocking.cc.o" "gcc" "lib/quad/CMakeFiles/quad.dir/blocking.cc.o.d"
+  "/root/fducompilerh2026/fducompilerh2026/HW6/lib/quad/quad.cc" "lib/quad/CMakeFiles/quad.dir/quad.cc.o" "gcc" "lib/quad/CMakeFiles/quad.dir/quad.cc.o.d"
   )
 
 # Targets to which this target links.

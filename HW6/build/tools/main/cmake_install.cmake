@@ -1,4 +1,4 @@
-# Install script for directory: /root/compilerworker/fducompilerh2026/HW6/tools/main
+# Install script for directory: /root/fducompilerh2026/fducompilerh2026/HW6/tools/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

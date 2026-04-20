@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /root/compilerworker/fducompilerh2026/HW6
+CMAKE_SOURCE_DIR = /root/fducompilerh2026/fducompilerh2026/HW6
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /root/compilerworker/fducompilerh2026/HW6/build
+CMAKE_BINARY_DIR = /root/fducompilerh2026/fducompilerh2026/HW6/build
 
 # Include any dependencies generated for this target.
 include lib/quad/CMakeFiles/quad.dir/depend.make
@@ -72,30 +72,30 @@ include lib/quad/CMakeFiles/quad.dir/flags.make
 lib/quad/CMakeFiles/quad.dir/blocking.cc.o: lib/quad/CMakeFiles/quad.dir/flags.make
 lib/quad/CMakeFiles/quad.dir/blocking.cc.o: ../lib/quad/blocking.cc
 lib/quad/CMakeFiles/quad.dir/blocking.cc.o: lib/quad/CMakeFiles/quad.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object lib/quad/CMakeFiles/quad.dir/blocking.cc.o"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/quad && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/quad/CMakeFiles/quad.dir/blocking.cc.o -MF CMakeFiles/quad.dir/blocking.cc.o.d -o CMakeFiles/quad.dir/blocking.cc.o -c /root/compilerworker/fducompilerh2026/HW6/lib/quad/blocking.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object lib/quad/CMakeFiles/quad.dir/blocking.cc.o"
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quad && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/quad/CMakeFiles/quad.dir/blocking.cc.o -MF CMakeFiles/quad.dir/blocking.cc.o.d -o CMakeFiles/quad.dir/blocking.cc.o -c /root/fducompilerh2026/fducompilerh2026/HW6/lib/quad/blocking.cc
 
 lib/quad/CMakeFiles/quad.dir/blocking.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/quad.dir/blocking.cc.i"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/quad && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/compilerworker/fducompilerh2026/HW6/lib/quad/blocking.cc > CMakeFiles/quad.dir/blocking.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quad && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/fducompilerh2026/fducompilerh2026/HW6/lib/quad/blocking.cc > CMakeFiles/quad.dir/blocking.cc.i
 
 lib/quad/CMakeFiles/quad.dir/blocking.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/quad.dir/blocking.cc.s"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/quad && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/compilerworker/fducompilerh2026/HW6/lib/quad/blocking.cc -o CMakeFiles/quad.dir/blocking.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quad && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/fducompilerh2026/fducompilerh2026/HW6/lib/quad/blocking.cc -o CMakeFiles/quad.dir/blocking.cc.s
 
 lib/quad/CMakeFiles/quad.dir/quad.cc.o: lib/quad/CMakeFiles/quad.dir/flags.make
 lib/quad/CMakeFiles/quad.dir/quad.cc.o: ../lib/quad/quad.cc
 lib/quad/CMakeFiles/quad.dir/quad.cc.o: lib/quad/CMakeFiles/quad.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object lib/quad/CMakeFiles/quad.dir/quad.cc.o"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/quad && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/quad/CMakeFiles/quad.dir/quad.cc.o -MF CMakeFiles/quad.dir/quad.cc.o.d -o CMakeFiles/quad.dir/quad.cc.o -c /root/compilerworker/fducompilerh2026/HW6/lib/quad/quad.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object lib/quad/CMakeFiles/quad.dir/quad.cc.o"
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quad && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/quad/CMakeFiles/quad.dir/quad.cc.o -MF CMakeFiles/quad.dir/quad.cc.o.d -o CMakeFiles/quad.dir/quad.cc.o -c /root/fducompilerh2026/fducompilerh2026/HW6/lib/quad/quad.cc
 
 lib/quad/CMakeFiles/quad.dir/quad.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/quad.dir/quad.cc.i"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/quad && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/compilerworker/fducompilerh2026/HW6/lib/quad/quad.cc > CMakeFiles/quad.dir/quad.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quad && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/fducompilerh2026/fducompilerh2026/HW6/lib/quad/quad.cc > CMakeFiles/quad.dir/quad.cc.i
 
 lib/quad/CMakeFiles/quad.dir/quad.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/quad.dir/quad.cc.s"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/quad && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/compilerworker/fducompilerh2026/HW6/lib/quad/quad.cc -o CMakeFiles/quad.dir/quad.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quad && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/fducompilerh2026/fducompilerh2026/HW6/lib/quad/quad.cc -o CMakeFiles/quad.dir/quad.cc.s
 
 quad: lib/quad/CMakeFiles/quad.dir/blocking.cc.o
 quad: lib/quad/CMakeFiles/quad.dir/quad.cc.o
@@ -107,10 +107,10 @@ lib/quad/CMakeFiles/quad.dir/build: quad
 .PHONY : lib/quad/CMakeFiles/quad.dir/build
 
 lib/quad/CMakeFiles/quad.dir/clean:
-	cd /root/compilerworker/fducompilerh2026/HW6/build/lib/quad && $(CMAKE_COMMAND) -P CMakeFiles/quad.dir/cmake_clean.cmake
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quad && $(CMAKE_COMMAND) -P CMakeFiles/quad.dir/cmake_clean.cmake
 .PHONY : lib/quad/CMakeFiles/quad.dir/clean
 
 lib/quad/CMakeFiles/quad.dir/depend:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/compilerworker/fducompilerh2026/HW6 /root/compilerworker/fducompilerh2026/HW6/lib/quad /root/compilerworker/fducompilerh2026/HW6/build /root/compilerworker/fducompilerh2026/HW6/build/lib/quad /root/compilerworker/fducompilerh2026/HW6/build/lib/quad/CMakeFiles/quad.dir/DependInfo.cmake --color=$(COLOR)
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/fducompilerh2026/fducompilerh2026/HW6 /root/fducompilerh2026/fducompilerh2026/HW6/lib/quad /root/fducompilerh2026/fducompilerh2026/HW6/build /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quad /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quad/CMakeFiles/quad.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : lib/quad/CMakeFiles/quad.dir/depend
 

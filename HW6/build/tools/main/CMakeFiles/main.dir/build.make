@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /root/compilerworker/fducompilerh2026/HW6
+CMAKE_SOURCE_DIR = /root/fducompilerh2026/fducompilerh2026/HW6
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /root/compilerworker/fducompilerh2026/HW6/build
+CMAKE_BINARY_DIR = /root/fducompilerh2026/fducompilerh2026/HW6/build
 
 # Include any dependencies generated for this target.
 include tools/main/CMakeFiles/main.dir/depend.make
@@ -72,16 +72,16 @@ include tools/main/CMakeFiles/main.dir/flags.make
 tools/main/CMakeFiles/main.dir/main.cc.o: tools/main/CMakeFiles/main.dir/flags.make
 tools/main/CMakeFiles/main.dir/main.cc.o: ../tools/main/main.cc
 tools/main/CMakeFiles/main.dir/main.cc.o: tools/main/CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object tools/main/CMakeFiles/main.dir/main.cc.o"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/tools/main && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tools/main/CMakeFiles/main.dir/main.cc.o -MF CMakeFiles/main.dir/main.cc.o.d -o CMakeFiles/main.dir/main.cc.o -c /root/compilerworker/fducompilerh2026/HW6/tools/main/main.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object tools/main/CMakeFiles/main.dir/main.cc.o"
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/tools/main && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tools/main/CMakeFiles/main.dir/main.cc.o -MF CMakeFiles/main.dir/main.cc.o.d -o CMakeFiles/main.dir/main.cc.o -c /root/fducompilerh2026/fducompilerh2026/HW6/tools/main/main.cc
 
 tools/main/CMakeFiles/main.dir/main.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/main.dir/main.cc.i"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/tools/main && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/compilerworker/fducompilerh2026/HW6/tools/main/main.cc > CMakeFiles/main.dir/main.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/tools/main && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/fducompilerh2026/fducompilerh2026/HW6/tools/main/main.cc > CMakeFiles/main.dir/main.cc.i
 
 tools/main/CMakeFiles/main.dir/main.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/main.dir/main.cc.s"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/tools/main && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/compilerworker/fducompilerh2026/HW6/tools/main/main.cc -o CMakeFiles/main.dir/main.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/tools/main && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/fducompilerh2026/fducompilerh2026/HW6/tools/main/main.cc -o CMakeFiles/main.dir/main.cc.s
 
 # Object files for target main
 main_OBJECTS = \
@@ -89,16 +89,16 @@ main_OBJECTS = \
 
 # External object files for target main
 main_EXTERNAL_OBJECTS = \
-"/root/compilerworker/fducompilerh2026/HW6/build/lib/util/CMakeFiles/util.dir/flow2xml.cc.o" \
-"/root/compilerworker/fducompilerh2026/HW6/build/lib/util/CMakeFiles/util.dir/print_config.cc.o" \
-"/root/compilerworker/fducompilerh2026/HW6/build/lib/util/CMakeFiles/util.dir/quad2xml.cc.o" \
-"/root/compilerworker/fducompilerh2026/HW6/build/lib/util/CMakeFiles/util.dir/xml2quad.cc.o" \
-"/root/compilerworker/fducompilerh2026/HW6/build/lib/quad/CMakeFiles/quad.dir/blocking.cc.o" \
-"/root/compilerworker/fducompilerh2026/HW6/build/lib/quad/CMakeFiles/quad.dir/quad.cc.o" \
-"/root/compilerworker/fducompilerh2026/HW6/build/lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.o" \
-"/root/compilerworker/fducompilerh2026/HW6/build/lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.o" \
-"/root/compilerworker/fducompilerh2026/HW6/build/lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.o" \
-"/root/compilerworker/fducompilerh2026/HW6/build/vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.o"
+"/root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util/CMakeFiles/util.dir/flow2xml.cc.o" \
+"/root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util/CMakeFiles/util.dir/print_config.cc.o" \
+"/root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util/CMakeFiles/util.dir/quad2xml.cc.o" \
+"/root/fducompilerh2026/fducompilerh2026/HW6/build/lib/util/CMakeFiles/util.dir/xml2quad.cc.o" \
+"/root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quad/CMakeFiles/quad.dir/blocking.cc.o" \
+"/root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quad/CMakeFiles/quad.dir/quad.cc.o" \
+"/root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.o" \
+"/root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.o" \
+"/root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.o" \
+"/root/fducompilerh2026/fducompilerh2026/HW6/build/vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.o"
 
 tools/main/main: tools/main/CMakeFiles/main.dir/main.cc.o
 tools/main/main: lib/util/CMakeFiles/util.dir/flow2xml.cc.o
@@ -113,18 +113,18 @@ tools/main/main: lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.o
 tools/main/main: vendor/tinyxml2/CMakeFiles/vendor_xml.dir/tinyxml2.cc.o
 tools/main/main: tools/main/CMakeFiles/main.dir/build.make
 tools/main/main: tools/main/CMakeFiles/main.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable main"
-	cd /root/compilerworker/fducompilerh2026/HW6/build/tools/main && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/main.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable main"
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/tools/main && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/main.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 tools/main/CMakeFiles/main.dir/build: tools/main/main
 .PHONY : tools/main/CMakeFiles/main.dir/build
 
 tools/main/CMakeFiles/main.dir/clean:
-	cd /root/compilerworker/fducompilerh2026/HW6/build/tools/main && $(CMAKE_COMMAND) -P CMakeFiles/main.dir/cmake_clean.cmake
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build/tools/main && $(CMAKE_COMMAND) -P CMakeFiles/main.dir/cmake_clean.cmake
 .PHONY : tools/main/CMakeFiles/main.dir/clean
 
 tools/main/CMakeFiles/main.dir/depend:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/compilerworker/fducompilerh2026/HW6 /root/compilerworker/fducompilerh2026/HW6/tools/main /root/compilerworker/fducompilerh2026/HW6/build /root/compilerworker/fducompilerh2026/HW6/build/tools/main /root/compilerworker/fducompilerh2026/HW6/build/tools/main/CMakeFiles/main.dir/DependInfo.cmake --color=$(COLOR)
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/fducompilerh2026/fducompilerh2026/HW6 /root/fducompilerh2026/fducompilerh2026/HW6/tools/main /root/fducompilerh2026/fducompilerh2026/HW6/build /root/fducompilerh2026/fducompilerh2026/HW6/build/tools/main /root/fducompilerh2026/fducompilerh2026/HW6/build/tools/main/CMakeFiles/main.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : tools/main/CMakeFiles/main.dir/depend
 

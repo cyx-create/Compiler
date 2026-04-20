@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /root/compilerworker/fducompilerh2026/HW6
+CMAKE_SOURCE_DIR = /root/fducompilerh2026/fducompilerh2026/HW6
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /root/compilerworker/fducompilerh2026/HW6/build
+CMAKE_BINARY_DIR = /root/fducompilerh2026/fducompilerh2026/HW6/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,14 +87,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -E cmake_progress_start /root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles /root/compilerworker/fducompilerh2026/HW6/build/lib/quadflow//CMakeFiles/progress.marks
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quadflow/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/compilerworker/fducompilerh2026/HW6/build/CMakeFiles 0
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -E cmake_progress_start /root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles /root/fducompilerh2026/fducompilerh2026/HW6/build/lib/quadflow//CMakeFiles/progress.marks
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quadflow/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/fducompilerh2026/fducompilerh2026/HW6/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quadflow/clean
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quadflow/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,22 +103,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quadflow/preinstall
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quadflow/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quadflow/preinstall
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quadflow/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 lib/quadflow/CMakeFiles/quadflow.dir/rule:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quadflow/CMakeFiles/quadflow.dir/rule
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/quadflow/CMakeFiles/quadflow.dir/rule
 .PHONY : lib/quadflow/CMakeFiles/quadflow.dir/rule
 
 # Convenience name for target.
@@ -127,7 +127,7 @@ quadflow: lib/quadflow/CMakeFiles/quadflow.dir/rule
 
 # fast build rule for target.
 quadflow/fast:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/build
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/build
 .PHONY : quadflow/fast
 
 controlflowinfo.o: controlflowinfo.cc.o
@@ -135,7 +135,7 @@ controlflowinfo.o: controlflowinfo.cc.o
 
 # target to build an object file
 controlflowinfo.cc.o:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.o
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.o
 .PHONY : controlflowinfo.cc.o
 
 controlflowinfo.i: controlflowinfo.cc.i
@@ -143,7 +143,7 @@ controlflowinfo.i: controlflowinfo.cc.i
 
 # target to preprocess a source file
 controlflowinfo.cc.i:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.i
 .PHONY : controlflowinfo.cc.i
 
 controlflowinfo.s: controlflowinfo.cc.s
@@ -151,7 +151,7 @@ controlflowinfo.s: controlflowinfo.cc.s
 
 # target to generate assembly for a file
 controlflowinfo.cc.s:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/controlflowinfo.cc.s
 .PHONY : controlflowinfo.cc.s
 
 dataflowinfo.o: dataflowinfo.cc.o
@@ -159,7 +159,7 @@ dataflowinfo.o: dataflowinfo.cc.o
 
 # target to build an object file
 dataflowinfo.cc.o:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.o
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.o
 .PHONY : dataflowinfo.cc.o
 
 dataflowinfo.i: dataflowinfo.cc.i
@@ -167,7 +167,7 @@ dataflowinfo.i: dataflowinfo.cc.i
 
 # target to preprocess a source file
 dataflowinfo.cc.i:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.i
 .PHONY : dataflowinfo.cc.i
 
 dataflowinfo.s: dataflowinfo.cc.s
@@ -175,7 +175,7 @@ dataflowinfo.s: dataflowinfo.cc.s
 
 # target to generate assembly for a file
 dataflowinfo.cc.s:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/dataflowinfo.cc.s
 .PHONY : dataflowinfo.cc.s
 
 flowinfo.o: flowinfo.cc.o
@@ -183,7 +183,7 @@ flowinfo.o: flowinfo.cc.o
 
 # target to build an object file
 flowinfo.cc.o:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.o
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.o
 .PHONY : flowinfo.cc.o
 
 flowinfo.i: flowinfo.cc.i
@@ -191,7 +191,7 @@ flowinfo.i: flowinfo.cc.i
 
 # target to preprocess a source file
 flowinfo.cc.i:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.i
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.i
 .PHONY : flowinfo.cc.i
 
 flowinfo.s: flowinfo.cc.s
@@ -199,7 +199,7 @@ flowinfo.s: flowinfo.cc.s
 
 # target to generate assembly for a file
 flowinfo.cc.s:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.s
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(MAKE) $(MAKESILENT) -f lib/quadflow/CMakeFiles/quadflow.dir/build.make lib/quadflow/CMakeFiles/quadflow.dir/flowinfo.cc.s
 .PHONY : flowinfo.cc.s
 
 # Help Target
@@ -231,6 +231,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /root/compilerworker/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /root/fducompilerh2026/fducompilerh2026/HW6/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 
