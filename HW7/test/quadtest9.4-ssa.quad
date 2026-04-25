@@ -14,10 +14,10 @@ Function __$main__^main() last_label=100 last_temp=151:
     MOVE t10101:ptr <- t10400:ptr; def: t10101 use: t10400 
     PTR_CALC t12100:ptr <- t10001:ptr + Const:16; def: t12100 use: t10001 
     LOAD t10700:ptr <- Mem(t12100:ptr); def: t10700 use: t12100 
-    CALL f[t10700:ptr] (t10001:ptr); def: use: t10001 t10700 
+    CALL f[t10700:ptr] (t10001:ptr); def: use: t10700 t10001 
     PTR_CALC t12300:ptr <- t10101:ptr + Const:16; def: t12300 use: t10101 
     LOAD t10900:ptr <- Mem(t12300:ptr); def: t10900 use: t12300 
-    CALL f[t10900:ptr] (t10101:ptr); def: use: t10101 t10900 
+    CALL f[t10900:ptr] (t10101:ptr); def: use: t10900 t10101 
     PTR_CALC t12500:ptr <- t10001:ptr + Const:0; def: t12500 use: t10001 
     LOAD t12600:int <- Mem(t12500:ptr); def: t12600 use: t12500 
     PTR_CALC t12700:ptr <- t10001:ptr + Const:4; def: t12700 use: t10001 
