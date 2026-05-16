@@ -442,6 +442,10 @@ lib/opt/CMakeFiles/opt.dir/loophoistfunc.cc.o: ../lib/opt/loophoistfunc.cc \
   /usr/include/c++/11/bits/hashtable_policy.h \
   /usr/include/c++/11/bits/unordered_map.h \
   /usr/include/c++/11/pstl/execution_defs.h \
+  /usr/include/c++/11/numeric \
+  /usr/include/c++/11/bits/stl_numeric.h \
+  /usr/include/c++/11/bit \
+  /usr/include/c++/11/pstl/glue_numeric_defs.h \
   ../include/quad/quad.hh \
   ../vendor/tinyxml2/tinyxml2.hh \
   /usr/include/c++/11/climits \
@@ -680,6 +684,8 @@ lib/opt/CMakeFiles/opt.dir/loophoistfunc.cc.o: ../lib/opt/loophoistfunc.cc \
 
 /usr/include/c++/11/bits/stl_deque.h:
 
+/usr/include/c++/11/bits/stl_numeric.h:
+
 /usr/include/c++/11/bits/stl_uninitialized.h:
 
 /usr/include/c++/11/bits/stl_queue.h:
@@ -691,6 +697,8 @@ lib/opt/CMakeFiles/opt.dir/loophoistfunc.cc.o: ../lib/opt/loophoistfunc.cc \
 /usr/include/c++/11/bits/stringfwd.h:
 
 /usr/include/c++/11/bits/memoryfwd.h:
+
+/usr/include/c++/11/pstl/glue_numeric_defs.h:
 
 /usr/include/c++/11/bits/exception.h:
 
@@ -868,6 +876,8 @@ lib/opt/CMakeFiles/opt.dir/loophoistfunc.cc.o: ../lib/opt/loophoistfunc.cc \
 
 /usr/include/c++/11/bits/stl_set.h:
 
+/usr/include/c++/11/bit:
+
 /usr/include/c++/11/bits/stl_iterator_base_types.h:
 
 /usr/include/c++/11/cstdlib:
@@ -953,6 +963,8 @@ lib/opt/CMakeFiles/opt.dir/loophoistfunc.cc.o: ../lib/opt/loophoistfunc.cc \
 /usr/include/c++/11/ext/new_allocator.h:
 
 /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h:
+
+/usr/include/c++/11/numeric:
 
 /usr/include/strings.h:
 

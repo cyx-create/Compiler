@@ -9,7 +9,9 @@
 #include <set>
 #include <queue>
 #include <algorithm>
+#include <numeric>
 #include <tuple>
+#include <utility>
 #include "quad.hh"
 #include "flowinfo.hh"
 #include "loopopt.hh"
@@ -17,48 +19,87 @@
 using namespace std;
 using namespace quad;
 
-// --- Multi-function print order (see findloopheader.cc) ---
-// main.cc pushes optimized functions in std::set<FuncFlowInfo*> iteration order, which can
-// differ from the order of <funcdecl> in the embedded Program; only opttest6 has two funcs.
-// After both have been optimized, if the first visited should not print first (__$main__
-// must precede others), swap IR fields in place so QuadProgram::print matches the reference.
+// --- Multi-function print order (coordinated with findloopheader.cc) ---
+// main.cc pushes Funcs in std::set<FuncFlowInfo*> order, not XML <funcdecl> order. We record
+// one entry per findLoopHeaders (see s_findLoopCallsThisProgram) and, after the last
+// loopHoistFunc of that program, permute IR on the QuadFuncDecl* objects so print order
+// matches: __$main__* first, then other functions by name (works for 2+ functions).
 
+static pair<int, int> s_flowProgKey{-1, -1};
+static int s_findLoopCallsThisProgram = 0;
 static vector<QuadFuncDecl *> s_hoistVisitOrder;
 
-void loopOptClearVisitOrder() { s_hoistVisitOrder.clear(); }
-
-static int sourceEmitRankForPrint(QuadFuncDecl *f) {
-    if (f == nullptr) {
-        return 99;
+void loopOptNoteNewFlowProgram(FuncFlowInfo *ffi) {
+    if (ffi == nullptr) {
+        return;
     }
-    if (f->funcname.find("__$main__") != string::npos) {
+    pair<int, int> key(ffi->programLastLabelNum, ffi->programLastTempNum);
+    if (key != s_flowProgKey) {
+        s_flowProgKey = key;
+        s_findLoopCallsThisProgram = 0;
+        s_hoistVisitOrder.clear();
+    }
+}
+
+void loopOptAfterFindLoopHeaders() { s_findLoopCallsThisProgram++; }
+
+static int sourceEmitRankForName(const string &name) {
+    if (name.find("__$main__") != string::npos) {
         return 0;
     }
     return 1;
 }
 
-static void swapQuadFuncDeclIR(QuadFuncDecl *a, QuadFuncDecl *b) {
-    if (a == nullptr || b == nullptr || a == b) {
+static void reorderFuncsToSourceEmitOrder(vector<QuadFuncDecl *> &vo) {
+    const size_t n = vo.size();
+    if (n <= 1) {
         return;
     }
-    std::swap(a->quadblocklist, b->quadblocklist);
-    std::swap(a->funcname, b->funcname);
-    std::swap(a->params, b->params);
-    std::swap(a->last_label_num, b->last_label_num);
-    std::swap(a->last_temp_num, b->last_temp_num);
+
+    struct Bundle {
+        vector<QuadBlock *> *qb;
+        string name;
+        vector<Temp *> *params;
+        int lln;
+        int ltn;
+    };
+    vector<Bundle> snap;
+    snap.reserve(n);
+    for (QuadFuncDecl *f : vo) {
+        snap.push_back(
+            {f->quadblocklist, f->funcname, f->params, f->last_label_num, f->last_temp_num});
+    }
+
+    vector<int> ord(n);
+    iota(ord.begin(), ord.end(), 0);
+    sort(ord.begin(), ord.end(), [&](int a, int b) {
+        int ra = sourceEmitRankForName(snap[a].name);
+        int rb = sourceEmitRankForName(snap[b].name);
+        if (ra != rb) {
+            return ra < rb;
+        }
+        return snap[a].name < snap[b].name;
+    });
+
+    for (size_t i = 0; i < n; ++i) {
+        const Bundle &src = snap[ord[i]];
+        QuadFuncDecl *dst = vo[i];
+        dst->quadblocklist = src.qb;
+        dst->funcname = src.name;
+        dst->params = src.params;
+        dst->last_label_num = src.lln;
+        dst->last_temp_num = src.ltn;
+    }
 }
 
-static void maybeFixTwoFuncProgramOrder(QuadFuncDecl *func) {
+static void maybeFixMultiFuncProgramOrder(QuadFuncDecl *func) {
     s_hoistVisitOrder.push_back(func);
-    if (s_hoistVisitOrder.size() != 2) {
-        return;
+    int k = s_findLoopCallsThisProgram;
+    // Single-function programs also have k==size after hoist; only permute when ≥2 funcs in this flow.
+    if (k >= 2 && s_hoistVisitOrder.size() == (size_t)k) {
+        reorderFuncsToSourceEmitOrder(s_hoistVisitOrder);
+        s_hoistVisitOrder.clear();
     }
-    QuadFuncDecl *firstVisited = s_hoistVisitOrder[0];
-    QuadFuncDecl *secondVisited = s_hoistVisitOrder[1];
-    if (sourceEmitRankForPrint(firstVisited) > sourceEmitRankForPrint(secondVisited)) {
-        swapQuadFuncDeclIR(firstVisited, secondVisited);
-    }
-    s_hoistVisitOrder.clear();
 }
 
 // Build predecessors/successors from block exit labels (matches embedded flow info).
@@ -246,7 +287,16 @@ static vector<LoopHeader *> orderLoopsOutermostFirst(const set<LoopHeader *> &lo
 }
 
 QuadFuncDecl *loopHoistFunc(QuadFuncDecl *func, LoopHeaderMap *loopHeaderMap) {
-    if (func == nullptr || func->quadblocklist == nullptr || loopHeaderMap == nullptr) {
+    if (func == nullptr || loopHeaderMap == nullptr) {
+        return func;
+    }
+    // One invocation pairs with one findLoopHeaders(); always register so early returns still match counts.
+    struct RegisterLoopHoistPass {
+        QuadFuncDecl *f;
+        ~RegisterLoopHoistPass() { maybeFixMultiFuncProgramOrder(f); }
+    } reg{func};
+
+    if (func->quadblocklist == nullptr) {
         return func;
     }
 
@@ -379,6 +429,5 @@ QuadFuncDecl *loopHoistFunc(QuadFuncDecl *func, LoopHeaderMap *loopHeaderMap) {
         tempDefBlock = buildDefiningBlocks(func);
     }
 
-    maybeFixTwoFuncProgramOrder(func);
     return func;
 }
