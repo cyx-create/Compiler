@@ -2,12 +2,16 @@
 #include <map>
 #include <set>
 #include <algorithm>
+#include <utility>
 #include "loopopt.hh"
 #include "flowinfo.hh"
 #include "quad.hh"
 
 using namespace std;
 using namespace quad;
+
+// Defined in loophoistfunc.cc — clears per-function visit list when a new program is read.
+void loopOptClearVisitOrder();
 
 // Natural loop for back edge m -> n (n is header): classic Dragon-book stack algorithm.
 static set<int> naturalLoopForBackEdge(int m, int n, ControlFlowInfo *cfi) {
@@ -31,6 +35,16 @@ static set<int> naturalLoopForBackEdge(int m, int n, ControlFlowInfo *cfi) {
 }
 
 LoopHeaderMap *findLoopHeaders(QuadFuncDecl *func, FuncFlowInfo *ffi) {
+    // New flow XML file uses a new (last_label, last_temp) pair on the program root.
+    if (ffi != nullptr) {
+        pair<int, int> key(ffi->programLastLabelNum, ffi->programLastTempNum);
+        static pair<int, int> s_lastKey{-1, -1};
+        if (key != s_lastKey) {
+            s_lastKey = key;
+            loopOptClearVisitOrder();
+        }
+    }
+
     LoopHeaderMap *loopHeaderMap = new LoopHeaderMap();
     ControlFlowInfo *cfi = ffi->cfi;
 

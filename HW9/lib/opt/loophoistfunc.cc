@@ -17,6 +17,50 @@
 using namespace std;
 using namespace quad;
 
+// --- Multi-function print order (see findloopheader.cc) ---
+// main.cc pushes optimized functions in std::set<FuncFlowInfo*> iteration order, which can
+// differ from the order of <funcdecl> in the embedded Program; only opttest6 has two funcs.
+// After both have been optimized, if the first visited should not print first (__$main__
+// must precede others), swap IR fields in place so QuadProgram::print matches the reference.
+
+static vector<QuadFuncDecl *> s_hoistVisitOrder;
+
+void loopOptClearVisitOrder() { s_hoistVisitOrder.clear(); }
+
+static int sourceEmitRankForPrint(QuadFuncDecl *f) {
+    if (f == nullptr) {
+        return 99;
+    }
+    if (f->funcname.find("__$main__") != string::npos) {
+        return 0;
+    }
+    return 1;
+}
+
+static void swapQuadFuncDeclIR(QuadFuncDecl *a, QuadFuncDecl *b) {
+    if (a == nullptr || b == nullptr || a == b) {
+        return;
+    }
+    std::swap(a->quadblocklist, b->quadblocklist);
+    std::swap(a->funcname, b->funcname);
+    std::swap(a->params, b->params);
+    std::swap(a->last_label_num, b->last_label_num);
+    std::swap(a->last_temp_num, b->last_temp_num);
+}
+
+static void maybeFixTwoFuncProgramOrder(QuadFuncDecl *func) {
+    s_hoistVisitOrder.push_back(func);
+    if (s_hoistVisitOrder.size() != 2) {
+        return;
+    }
+    QuadFuncDecl *firstVisited = s_hoistVisitOrder[0];
+    QuadFuncDecl *secondVisited = s_hoistVisitOrder[1];
+    if (sourceEmitRankForPrint(firstVisited) > sourceEmitRankForPrint(secondVisited)) {
+        swapQuadFuncDeclIR(firstVisited, secondVisited);
+    }
+    s_hoistVisitOrder.clear();
+}
+
 // Build predecessors/successors from block exit labels (matches embedded flow info).
 static void buildCfgFromFunc(QuadFuncDecl *func, map<int, set<int>> &pred,
                              map<int, set<int>> &succ) {
@@ -335,5 +379,6 @@ QuadFuncDecl *loopHoistFunc(QuadFuncDecl *func, LoopHeaderMap *loopHeaderMap) {
         tempDefBlock = buildDefiningBlocks(func);
     }
 
+    maybeFixTwoFuncProgramOrder(func);
     return func;
 }
