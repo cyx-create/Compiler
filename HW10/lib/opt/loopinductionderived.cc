@@ -44,21 +44,14 @@ static map<QuadStm*, int> computeGlobalOrder(QuadFuncDecl* func) {
     return order;
 }
 
-static bool tryParseAffineFromMul(
-    int mulTemp,
-    const DefUseChain& du,
+static bool parseMulBinopAffine(
+    QuadMoveBinop* mul,
     int basicPhiTemp,
     int basicBackedgeTemp,
     int& coeff,
     int& basicRefTemp
 ) {
-    VarDefInfo* mulDef = du.getDef(mulTemp);
-    if (mulDef == nullptr || mulDef->defStm == nullptr
-        || mulDef->defStm->kind != QuadKind::MOVE_BINOP) {
-        return false;
-    }
-    QuadMoveBinop* mul = dynamic_cast<QuadMoveBinop*>(mulDef->defStm);
-    if (mul == nullptr) {
+    if (mul == nullptr || mul->binop != "*") {
         return false;
     }
 
@@ -84,6 +77,75 @@ static bool tryParseAffineFromMul(
     return false;
 }
 
+static bool tryParseAffineFromMul(
+    int mulTemp,
+    const DefUseChain& du,
+    int basicPhiTemp,
+    int basicBackedgeTemp,
+    int& coeff,
+    int& basicRefTemp
+) {
+    VarDefInfo* mulDef = du.getDef(mulTemp);
+    if (mulDef == nullptr || mulDef->defStm == nullptr
+        || mulDef->defStm->kind != QuadKind::MOVE_BINOP) {
+        return false;
+    }
+    QuadMoveBinop* mul = dynamic_cast<QuadMoveBinop*>(mulDef->defStm);
+    return parseMulBinopAffine(mul, basicPhiTemp, basicBackedgeTemp, coeff, basicRefTemp);
+}
+
+static bool parseLinearDerivedIV(
+    QuadMoveBinop* binop,
+    int basicPhiTemp,
+    int basicBackedgeTemp,
+    AffineIVExpr& expr,
+    int& sourceTempNum,
+    size_t& sourceOrder,
+    const map<QuadStm*, int>& globalOrder,
+    QuadStm* defStm
+) {
+    if (binop == nullptr || (binop->binop != "+" && binop->binop != "-")) {
+        return false;
+    }
+
+    int leftTemp = getTempNumFromTerm(binop->left);
+    int rightTemp = getTempNumFromTerm(binop->right);
+    bool leftIsConst = binop->left != nullptr && binop->left->kind == QuadTermKind::CONST;
+    bool rightIsConst = binop->right != nullptr && binop->right->kind == QuadTermKind::CONST;
+
+    int basicRefTemp = -1;
+    int constant = 0;
+
+    if (!leftIsConst && rightIsConst) {
+        basicRefTemp = leftTemp;
+        constant = getConstFromTerm(binop->right);
+        if (binop->binop == "-") {
+            constant = -constant;
+        }
+    } else if (leftIsConst && !rightIsConst) {
+        basicRefTemp = rightTemp;
+        constant = getConstFromTerm(binop->left);
+        if (binop->binop == "-") {
+            constant = -constant;
+        }
+    } else {
+        return false;
+    }
+
+    if (basicRefTemp != basicPhiTemp && basicRefTemp != basicBackedgeTemp) {
+        return false;
+    }
+
+    expr.basicTempNum = basicPhiTemp;
+    expr.basicCoeff = 1;
+    expr.constant = constant;
+    sourceTempNum = basicRefTemp;
+    auto orderIt = globalOrder.find(defStm);
+    sourceOrder = orderIt != globalOrder.end() ? static_cast<size_t>(orderIt->second)
+        : static_cast<size_t>(-1);
+    return true;
+}
+
 static bool parseDerivedIV(
     QuadStm* defStm,
     const DefUseChain& du,
@@ -100,6 +162,22 @@ static bool parseDerivedIV(
     QuadMoveBinop* binop = dynamic_cast<QuadMoveBinop*>(defStm);
     if (binop == nullptr) {
         return false;
+    }
+
+    if (binop->binop == "*") {
+        int coeff = 0;
+        int basicRefTemp = -1;
+        if (!parseMulBinopAffine(binop, basicPhiTemp, basicBackedgeTemp, coeff, basicRefTemp)) {
+            return false;
+        }
+        expr.basicTempNum = basicPhiTemp;
+        expr.basicCoeff = coeff;
+        expr.constant = 0;
+        sourceTempNum = basicRefTemp;
+        auto orderIt = globalOrder.find(defStm);
+        sourceOrder = orderIt != globalOrder.end() ? static_cast<size_t>(orderIt->second)
+            : static_cast<size_t>(-1);
+        return true;
     }
 
     if (binop->binop != "+" && binop->binop != "-") {
@@ -128,7 +206,8 @@ static bool parseDerivedIV(
             constant = -constant;
         }
     } else {
-        return false;
+        return parseLinearDerivedIV(
+            binop, basicPhiTemp, basicBackedgeTemp, expr, sourceTempNum, sourceOrder, globalOrder, defStm);
     }
 
     if (mulTemp == -1) {
@@ -138,7 +217,8 @@ static bool parseDerivedIV(
     int basicRefTemp = -1;
     if (!tryParseAffineFromMul(mulTemp, du, basicPhiTemp, basicBackedgeTemp,
                                coeff, basicRefTemp)) {
-        return false;
+        return parseLinearDerivedIV(
+            binop, basicPhiTemp, basicBackedgeTemp, expr, sourceTempNum, sourceOrder, globalOrder, defStm);
     }
 
     expr.basicTempNum = basicPhiTemp;
@@ -158,18 +238,25 @@ static bool parseDerivedIV(
 }
 
 static bool sourceAfterBasicUpdate(
-    int sourceTempNum,
+    const DerivedInductionVar& div,
     const DefUseChain& du,
     int basicBackedgeTemp
 ) {
-    VarDefInfo* sourceDef = du.getDef(sourceTempNum);
+    if (div.expr.basicCoeff == 1 && div.sourceTempNum == basicBackedgeTemp) {
+        return true;
+    }
+    if (div.expr.basicCoeff == 1 && div.sourceTempNum != basicBackedgeTemp) {
+        return false;
+    }
+
+    VarDefInfo* sourceDef = du.getDef(div.sourceTempNum);
     if (sourceDef == nullptr || sourceDef->defStm == nullptr
         || sourceDef->defStm->kind != QuadKind::MOVE_BINOP) {
-        return false;
+        return div.sourceTempNum == basicBackedgeTemp;
     }
     QuadMoveBinop* mul = dynamic_cast<QuadMoveBinop*>(sourceDef->defStm);
     if (mul == nullptr) {
-        return false;
+        return div.sourceTempNum == basicBackedgeTemp;
     }
     int leftTemp = getTempNumFromTerm(mul->left);
     int rightTemp = getTempNumFromTerm(mul->right);
@@ -317,6 +404,35 @@ map<int, vector<DerivedInductionVar>> discoverDerivedInductionVars(
                 }
             }
         }
+    }
+
+    for (LoopHeader* loopHeader : loopHeaderMap->funcLoopHeaders[func]) {
+        if (loopHeader == nullptr) {
+            continue;
+        }
+        int headerLabel = loopHeader->headerLabel;
+        if (!result.count(headerLabel)) {
+            continue;
+        }
+
+        vector<DerivedInductionVar>& divs = result[headerLabel];
+        vector<DerivedInductionVar> filtered;
+        for (const DerivedInductionVar& d : divs) {
+            bool intermediate = false;
+            for (const DerivedInductionVar& other : divs) {
+                if (other.tempNum == d.tempNum) {
+                    continue;
+                }
+                if (other.sourceTempNum == d.tempNum) {
+                    intermediate = true;
+                    break;
+                }
+            }
+            if (!intermediate) {
+                filtered.push_back(d);
+            }
+        }
+        divs = filtered;
     }
 
     return result;

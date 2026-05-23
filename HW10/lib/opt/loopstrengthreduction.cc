@@ -21,22 +21,57 @@ static int getTempNumFromTerm(QuadTerm* term) {
 }
 
 static bool sourceAfterBasicUpdate(
-    int sourceTempNum,
+    const DerivedInductionVar& div,
     const DefUseChain& du,
     int basicBackedgeTemp
 ) {
-    VarDefInfo* sourceDef = du.getDef(sourceTempNum);
+    if (div.expr.basicCoeff == 1 && div.sourceTempNum == basicBackedgeTemp) {
+        return true;
+    }
+    if (div.expr.basicCoeff == 1 && div.sourceTempNum != basicBackedgeTemp) {
+        return false;
+    }
+
+    VarDefInfo* sourceDef = du.getDef(div.sourceTempNum);
     if (sourceDef == nullptr || sourceDef->defStm == nullptr
         || sourceDef->defStm->kind != QuadKind::MOVE_BINOP) {
-        return false;
+        return div.sourceTempNum == basicBackedgeTemp;
     }
     QuadMoveBinop* mul = dynamic_cast<QuadMoveBinop*>(sourceDef->defStm);
     if (mul == nullptr) {
-        return false;
+        return div.sourceTempNum == basicBackedgeTemp;
     }
     int leftTemp = getTempNumFromTerm(mul->left);
     int rightTemp = getTempNumFromTerm(mul->right);
     return leftTemp == basicBackedgeTemp || rightTemp == basicBackedgeTemp;
+}
+
+static bool derivedHasExternalUse(const DefUseChain& du, int derivedTemp, QuadStm* defStm) {
+    VarDefInfo* defInfo = du.getDef(derivedTemp);
+    if (defInfo == nullptr) {
+        return false;
+    }
+    for (const auto& useLoc : defInfo->useSet) {
+        QuadStm* useStm = useLoc.second;
+        if (useStm == defStm) {
+            continue;
+        }
+        if (useStm == nullptr) {
+            continue;
+        }
+        switch (useStm->kind) {
+            case QuadKind::CJUMP:
+            case QuadKind::EXTCALL:
+            case QuadKind::CALL:
+            case QuadKind::RETURN:
+            case QuadKind::STORE:
+            case QuadKind::PHI:
+                return true;
+            default:
+                break;
+        }
+    }
+    return false;
 }
 
 static const BasicInductionVar* findBasicIV(
@@ -221,6 +256,9 @@ StrengthReductionPlan generateStrengthReductionPlan(
             if (biv == nullptr) {
                 continue;
             }
+            if (!derivedHasExternalUse(du, div.tempNum, div.defStm)) {
+                continue;
+            }
 
             StrengthReductionPlan::ReplacementIV repl;
             repl.map.headerLabel = headerLabel;
@@ -237,7 +275,7 @@ StrengthReductionPlan generateStrengthReductionPlan(
             repl.initExpr.constant = div.expr.constant;
             repl.initExpr.initTempNum = biv->initTempNum;
             repl.initExpr.sourceAfterBasicUpdate = sourceAfterBasicUpdate(
-                div.sourceTempNum, du, biv->backedgeTempNum);
+                div, du, biv->backedgeTempNum);
             repl.initExpr.basicStepValue = biv->step;
             repl.initExpr.basicStepTempNum = biv->stepTempNum;
 
@@ -248,7 +286,7 @@ StrengthReductionPlan generateStrengthReductionPlan(
             int nextAux = repl.initTemps.newInitAdjustedSourceTemp != -1
                 ? repl.initTemps.newInitAdjustedSourceTemp + 1
                 : repl.map.newBackedgeTemp + 1;
-            if (abs(div.expr.basicCoeff) != 1) {
+            if (abs(div.expr.basicCoeff) != 1 || div.expr.basicCoeff < 0) {
                 repl.initTemps.newInitIntermediateTemp =
                     allocateTemp(usedTemps, nextAux);
                 nextAux = repl.initTemps.newInitIntermediateTemp + 1;

@@ -70,13 +70,13 @@ static QuadStm* findBackedgeUpdate(
         }
         int leftTemp = getTempNumFromTerm(binop->left);
         int rightTemp = getTempNumFromTerm(binop->right);
-        int leftConst = binop->left != nullptr && binop->left->kind == QuadTermKind::CONST
-            ? binop->left->get_const() : -1;
-        int rightConst = binop->right != nullptr && binop->right->kind == QuadTermKind::CONST
-            ? binop->right->get_const() : -1;
+        bool leftIsConst = binop->left != nullptr && binop->left->kind == QuadTermKind::CONST;
+        bool rightIsConst = binop->right != nullptr && binop->right->kind == QuadTermKind::CONST;
+        int leftConst = leftIsConst ? binop->left->get_const() : 0;
+        int rightConst = rightIsConst ? binop->right->get_const() : 0;
 
         if (leftTemp == phiTemp && binop->binop == "+") {
-            if (rightConst != -1) {
+            if (rightIsConst) {
                 step = rightConst;
                 stepTempNum = -1;
                 return stm;
@@ -88,7 +88,7 @@ static QuadStm* findBackedgeUpdate(
             }
         }
         if (leftTemp == phiTemp && binop->binop == "-") {
-            if (rightConst != -1) {
+            if (rightIsConst) {
                 step = -rightConst;
                 stepTempNum = -1;
                 return stm;
@@ -100,7 +100,7 @@ static QuadStm* findBackedgeUpdate(
             }
         }
         if (rightTemp == phiTemp && binop->binop == "+") {
-            if (leftConst != -1) {
+            if (leftIsConst) {
                 step = leftConst;
                 stepTempNum = -1;
                 return stm;
@@ -191,6 +191,22 @@ map<int, vector<BasicInductionVar>> discoverBasicInductionVars(
             int stepTempNum = -1;
             QuadStm* updateStm = findBackedgeUpdate(
                 backedgeTemp, phiTemp, backBlockIt->second, step, stepTempNum);
+            if (updateStm == nullptr) {
+                for (int bodyLabel : bodyBlocks) {
+                    if (bodyLabel == backedgeLabel) {
+                        continue;
+                    }
+                    auto bodyIt = labelToBlock.find(bodyLabel);
+                    if (bodyIt == labelToBlock.end()) {
+                        continue;
+                    }
+                    updateStm = findBackedgeUpdate(
+                        backedgeTemp, phiTemp, bodyIt->second, step, stepTempNum);
+                    if (updateStm != nullptr) {
+                        break;
+                    }
+                }
+            }
             if (updateStm == nullptr) {
                 continue;
             }
