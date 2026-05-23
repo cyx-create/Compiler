@@ -1,0 +1,2 @@
+/usr/bin/ar qc libquadflow.a CMakeFiles/quadflow.dir/controlflowinfo.cc.o CMakeFiles/quadflow.dir/dataflowinfo.cc.o CMakeFiles/quadflow.dir/flowinfo.cc.o
+/usr/bin/ranlib libquadflow.a
