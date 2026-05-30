@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <set>
 #include <string>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -30,10 +29,15 @@ static bool isMoveExtCallStmt(const quad::QuadStm *stm) {
     return stm != nullptr && stm->kind == quad::QuadKind::MOVE_EXTCALL;
 }
 
+static bool isExtCallLikeStmt(const quad::QuadStm *stm) {
+    return stm != nullptr &&
+           (stm->kind == quad::QuadKind::MOVE_EXTCALL ||
+            stm->kind == quad::QuadKind::EXTCALL);
+}
+
 struct SelectionContext {
     int &nextTempNum;
     const advDFG &graph;
-    std::unordered_map<int, int> constToTemp;
     const std::vector<const advDFGNode *> *blockNodes = nullptr;
 };
 
@@ -75,11 +79,6 @@ static tree::Temp *materializeConstMovw(
     StatementBundle &bundle,
     int value
 ) {
-    auto it = ctx.constToTemp.find(value);
-    if (it != ctx.constToTemp.end()) {
-        return makeTemp(it->second);
-    }
-
     int tempNum = allocateScratchTemp(ctx);
     tree::Temp *temp = makeTemp(tempNum);
     appendOper(
@@ -88,7 +87,6 @@ static tree::Temp *materializeConstMovw(
         {temp},
         {}
     );
-    ctx.constToTemp[value] = tempNum;
     return temp;
 }
 
@@ -150,6 +148,23 @@ static bool chainUsedOnlyByLoad(const advDFG &graph, int chainId) {
     return hasUser;
 }
 
+static bool storeNeedsExplicitChain(
+    const advDFG &graph,
+    const quad::QuadStore *store,
+    const quad::QuadPtrCalc *ptrCalc
+) {
+    if (store == nullptr) {
+        return false;
+    }
+    if (store->src->kind == quad::QuadTermKind::TEMP) {
+        return true;
+    }
+    if (store->src->kind == quad::QuadTermKind::NAME) {
+        return ptrCalcConstOffset(ptrCalc) != 0;
+    }
+    return false;
+}
+
 static bool hasTempStoreChainAtOffsetZero(
     const advDFG &graph,
     int baseTempNum
@@ -176,30 +191,6 @@ static bool hasTempStoreChainAtOffsetZero(
                 return true;
             }
         }
-    }
-    return false;
-}
-
-static bool storeNeedsExplicitChain(
-    const advDFG &graph,
-    const quad::QuadStore *store,
-    const quad::QuadPtrCalc *ptrCalc
-) {
-    if (store == nullptr) {
-        return false;
-    }
-    if (store->src->kind == quad::QuadTermKind::TEMP) {
-        if (ptrCalcConstOffset(ptrCalc) == 0) {
-            return true;
-        }
-        if (hasTempStoreChainAtOffsetZero(
-                graph, ptrCalcBaseTempNum(ptrCalc))) {
-            return true;
-        }
-        return false;
-    }
-    if (store->src->kind == quad::QuadTermKind::NAME) {
-        return ptrCalcConstOffset(ptrCalc) != 0;
     }
     return false;
 }
@@ -398,6 +389,350 @@ static int nextCallUsingObjectAfter(
     return -1;
 }
 
+static bool isSubConstBinop(const quad::QuadStm *stm);
+
+static bool isConstMoveStmt(const quad::QuadStm *stm) {
+    if (stm == nullptr || stm->kind != quad::QuadKind::MOVE) {
+        return false;
+    }
+    auto *move = dynamic_cast<const quad::QuadMove *>(stm);
+    return move != nullptr && move->src != nullptr &&
+           move->src->kind == quad::QuadTermKind::CONST;
+}
+
+static bool extCallWinsOverAdjacentConstMove(size_t movIndex, size_t extIndex) {
+    return extIndex == movIndex + 1;
+}
+
+static bool stmtUsesTempAsCallArg(
+    const quad::QuadStm *stm,
+    int tempNum
+) {
+    if (stm == nullptr || tempNum < 0) {
+        return false;
+    }
+
+    const quad::QuadCall *call = nullptr;
+    if (stm->kind == quad::QuadKind::CALL) {
+        call = dynamic_cast<const quad::QuadCall *>(stm);
+    } else if (stm->kind == quad::QuadKind::MOVE_CALL) {
+        auto *moveCall = dynamic_cast<const quad::QuadMoveCall *>(stm);
+        call = moveCall == nullptr ? nullptr : moveCall->call;
+    }
+    if (call == nullptr || call->args == nullptr) {
+        return false;
+    }
+
+    for (auto *arg : *call->args) {
+        if (arg != nullptr && arg->kind == quad::QuadTermKind::TEMP &&
+            arg->get_temp()->temp->num == tempNum) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool moveUsedAsCallArgumentAfter(
+    const std::vector<const advDFGNode *> &nodes,
+    int tempNum,
+    size_t afterIndex
+) {
+    if (tempNum < 0) {
+        return false;
+    }
+    for (size_t i = afterIndex + 1; i < nodes.size(); ++i) {
+        if (nodes[i] == nullptr || nodes[i]->quadStatement == nullptr) {
+            continue;
+        }
+        if (stmtUsesTempAsCallArg(nodes[i]->quadStatement, tempNum)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static int firstPendingNameStoreIndex(
+    const advDFG &graph,
+    const std::vector<const advDFGNode *> &nodes,
+    const quad::QuadMove *move
+) {
+    if (move == nullptr || move->src == nullptr ||
+        move->src->kind != quad::QuadTermKind::TEMP) {
+        return -1;
+    }
+    int srcNum = move->src->get_temp()->temp->num;
+    for (size_t i = 0; i < nodes.size(); ++i) {
+        if (nodes[i] == nullptr || nodes[i]->quadStatement == nullptr ||
+            nodes[i]->quadStatement->kind != quad::QuadKind::STORE) {
+            continue;
+        }
+        auto *store = dynamic_cast<const quad::QuadStore *>(nodes[i]->quadStatement);
+        if (store == nullptr || store->src == nullptr ||
+            store->src->kind != quad::QuadTermKind::NAME) {
+            continue;
+        }
+        if (nodes[i]->chainUsed < 0) {
+            if (store->dst != nullptr &&
+                store->dst->kind == quad::QuadTermKind::TEMP &&
+                store->dst->get_temp()->temp->num == srcNum) {
+                return static_cast<int>(i);
+            }
+            continue;
+        }
+        auto *chainNode = findChainDefNode(graph, nodes[i]->chainUsed);
+        auto *ptrCalc = chainNode == nullptr
+                            ? nullptr
+                            : dynamic_cast<const quad::QuadPtrCalc *>(
+                                  chainNode->quadStatement);
+        if (ptrCalc != nullptr && ptrCalcBaseTempNum(ptrCalc) == srcNum) {
+            return static_cast<int>(i);
+        }
+    }
+    return -1;
+}
+
+static bool pendingNameStoreToMoveSrc(
+    const advDFG &graph,
+    const std::vector<const advDFGNode *> &nodes,
+    const std::vector<bool> &scheduled,
+    const quad::QuadMove *move
+) {
+    if (move == nullptr || move->src == nullptr ||
+        move->src->kind != quad::QuadTermKind::TEMP) {
+        return false;
+    }
+    int srcNum = move->src->get_temp()->temp->num;
+    for (size_t i = 0; i < nodes.size(); ++i) {
+        if (scheduled[i] || nodes[i] == nullptr ||
+            nodes[i]->quadStatement == nullptr ||
+            nodes[i]->quadStatement->kind != quad::QuadKind::STORE) {
+            continue;
+        }
+        auto *store = dynamic_cast<const quad::QuadStore *>(nodes[i]->quadStatement);
+        if (store == nullptr || store->src == nullptr ||
+            store->src->kind != quad::QuadTermKind::NAME) {
+            continue;
+        }
+        if (nodes[i]->chainUsed < 0) {
+            if (store->dst != nullptr &&
+                store->dst->kind == quad::QuadTermKind::TEMP &&
+                store->dst->get_temp()->temp->num == srcNum) {
+                return true;
+            }
+            continue;
+        }
+        auto *chainNode = findChainDefNode(graph, nodes[i]->chainUsed);
+        auto *ptrCalc = chainNode == nullptr
+                            ? nullptr
+                            : dynamic_cast<const quad::QuadPtrCalc *>(
+                                  chainNode->quadStatement);
+        if (ptrCalc != nullptr && ptrCalcBaseTempNum(ptrCalc) == srcNum) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool isMallocMoveExtCall(const quad::QuadStm *stm) {
+    if (stm == nullptr || stm->kind != quad::QuadKind::MOVE_EXTCALL) {
+        return false;
+    }
+    auto *moveExt = dynamic_cast<const quad::QuadMoveExtCall *>(stm);
+    return moveExt != nullptr && moveExt->extcall != nullptr &&
+           moveExt->extcall->extfun == "malloc";
+}
+
+static bool allMallocExtCallsScheduledInBlock(
+    const std::vector<const advDFGNode *> &nodes,
+    const std::vector<bool> &scheduled
+) {
+    bool hasMalloc = false;
+    for (size_t i = 0; i < nodes.size(); ++i) {
+        if (nodes[i] == nullptr || nodes[i]->quadStatement == nullptr ||
+            !isMallocMoveExtCall(nodes[i]->quadStatement)) {
+            continue;
+        }
+        hasMalloc = true;
+        if (!scheduled[i]) {
+            return false;
+        }
+    }
+    return hasMalloc;
+}
+
+static int countMallocExtCallsInBlock(
+    const std::vector<const advDFGNode *> &nodes
+) {
+    int count = 0;
+    for (auto *node : nodes) {
+        if (node == nullptr || node->quadStatement == nullptr ||
+            !isMallocMoveExtCall(node->quadStatement)) {
+            continue;
+        }
+        ++count;
+    }
+    return count;
+}
+
+static bool tempIsMallocResultInBlock(
+    const std::vector<const advDFGNode *> &nodes,
+    int tempNum
+) {
+    if (tempNum < 0) {
+        return false;
+    }
+    for (auto *node : nodes) {
+        if (node == nullptr || node->quadStatement == nullptr ||
+            !isMallocMoveExtCall(node->quadStatement)) {
+            continue;
+        }
+        auto *moveExt = dynamic_cast<const quad::QuadMoveExtCall *>(
+            node->quadStatement);
+        if (moveExt != nullptr && moveExt->dst != nullptr &&
+            moveExt->dst->temp->num == tempNum) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static int countCallsInBlock(const std::vector<const advDFGNode *> &nodes) {
+    int count = 0;
+    for (auto *node : nodes) {
+        if (node == nullptr || node->quadStatement == nullptr) {
+            continue;
+        }
+        if (node->quadStatement->kind == quad::QuadKind::CALL ||
+            node->quadStatement->kind == quad::QuadKind::MOVE_CALL) {
+            ++count;
+        }
+    }
+    return count;
+}
+
+static bool loadResultFeedsCallObjectInBlock(
+    const std::vector<const advDFGNode *> &nodes,
+    size_t loadIndex
+) {
+    if (loadIndex >= nodes.size() || nodes[loadIndex] == nullptr ||
+        nodes[loadIndex]->quadStatement == nullptr ||
+        nodes[loadIndex]->quadStatement->kind != quad::QuadKind::LOAD) {
+        return false;
+    }
+    auto *load = dynamic_cast<const quad::QuadLoad *>(nodes[loadIndex]->quadStatement);
+    if (load == nullptr || load->dst == nullptr) {
+        return false;
+    }
+    int dstNum = load->dst->temp->num;
+    for (size_t i = loadIndex + 1; i < nodes.size(); ++i) {
+        if (nodes[i] == nullptr || nodes[i]->quadStatement == nullptr) {
+            continue;
+        }
+        if (callObjectTempForStmt(nodes[i]->quadStatement) == dstNum) {
+            return true;
+        }
+        if (nodes[i]->quadStatement->kind == quad::QuadKind::MOVE) {
+            auto *move = dynamic_cast<const quad::QuadMove *>(nodes[i]->quadStatement);
+            if (move != nullptr && move->src != nullptr &&
+                move->src->kind == quad::QuadTermKind::TEMP &&
+                move->src->get_temp()->temp->num == dstNum &&
+                move->dst != nullptr) {
+                int moveDst = move->dst->temp->num;
+                for (size_t j = i + 1; j < nodes.size(); ++j) {
+                    if (nodes[j] != nullptr &&
+                        callObjectTempForStmt(nodes[j]->quadStatement) == moveDst) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+static bool blockHasUnscheduledLoadFedCall(
+    const std::vector<const advDFGNode *> &nodes,
+    const std::vector<bool> &scheduled
+) {
+    for (size_t i = 0; i < nodes.size(); ++i) {
+        if (scheduled[i] || nodes[i] == nullptr ||
+            nodes[i]->quadStatement == nullptr ||
+            nodes[i]->quadStatement->kind != quad::QuadKind::LOAD) {
+            continue;
+        }
+        if (loadResultFeedsCallObjectInBlock(nodes, i)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool tempDefinedByMoveInBlock(
+    const std::vector<const advDFGNode *> &nodes,
+    int tempNum
+) {
+    if (tempNum < 0) {
+        return false;
+    }
+    for (auto *node : nodes) {
+        if (node == nullptr || node->quadStatement == nullptr ||
+            node->quadStatement->kind != quad::QuadKind::MOVE) {
+            continue;
+        }
+        auto *move = dynamic_cast<const quad::QuadMove *>(node->quadStatement);
+        if (move != nullptr && move->dst != nullptr &&
+            move->dst->temp->num == tempNum) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool moveDstUsedByUnscheduledLoadInBlock(
+    const advDFG &graph,
+    const std::vector<const advDFGNode *> &nodes,
+    const std::vector<bool> &scheduled,
+    int dstNum
+) {
+    if (dstNum < 0) {
+        return false;
+    }
+    for (size_t i = 0; i < nodes.size(); ++i) {
+        if (scheduled[i] || nodes[i] == nullptr ||
+            nodes[i]->quadStatement == nullptr ||
+            nodes[i]->quadStatement->kind != quad::QuadKind::LOAD) {
+            continue;
+        }
+        auto *load = dynamic_cast<const quad::QuadLoad *>(nodes[i]->quadStatement);
+        if (load == nullptr || load->src == nullptr) {
+            continue;
+        }
+        if (load->src->kind == quad::QuadTermKind::TEMP &&
+            load->src->get_temp()->temp->num == dstNum) {
+            return true;
+        }
+    }
+    for (size_t i = 0; i < nodes.size(); ++i) {
+        if (scheduled[i] || nodes[i] == nullptr ||
+            nodes[i]->chainUsed < 0) {
+            continue;
+        }
+        auto *chainNode = findChainDefNode(graph, nodes[i]->chainUsed);
+        auto *ptrCalc = chainNode == nullptr
+                            ? nullptr
+                            : dynamic_cast<const quad::QuadPtrCalc *>(
+                                  chainNode->quadStatement);
+        if (ptrCalc == nullptr || ptrCalcBaseTempNum(ptrCalc) != dstNum) {
+            continue;
+        }
+        if (nodes[i]->quadStatement != nullptr &&
+            nodes[i]->quadStatement->kind == quad::QuadKind::LOAD) {
+            return true;
+        }
+    }
+    return false;
+}
+
 static int loadDefiningTempBefore(
     const std::vector<const advDFGNode *> &nodes,
     int tempNum,
@@ -496,6 +831,7 @@ static bool allMoveExtCallsBeforeScheduled(
             return false;
         }
     }
+
     return true;
 }
 
@@ -519,8 +855,8 @@ static bool hasAddConstBinopInBlock(
 static bool storeConstChainNeedsExplicitPtrCalc(
     const quad::QuadPtrCalc *ptrCalc
 ) {
-    int off = ptrCalcConstOffset(ptrCalc);
-    return off >= 24;
+    (void)ptrCalc;
+    return false;
 }
 
 static void emitLoadWithChain(
@@ -800,8 +1136,39 @@ static bool ptrCalcNeedsExplicitBundle(
 
     if (chainUsedOnlyByLoad(graph, node->chainDefined)) {
         auto *ptrCalc = dynamic_cast<const quad::QuadPtrCalc *>(node->quadStatement);
-        if (ptrCalc != nullptr && ptrCalcConstOffset(ptrCalc) >= 8) {
-            return true;
+        if (ptrCalc != nullptr) {
+            if (ptrCalcConstOffset(ptrCalc) >= 8) {
+                return true;
+            }
+            if (ptrCalcConstOffset(ptrCalc) == 0 && nodes != nullptr &&
+                countCallsInBlock(*nodes) >= 2) {
+                int loadIdx = -1;
+                for (size_t i = 0; i < nodes->size(); ++i) {
+                    if ((*nodes)[i] != nullptr &&
+                        (*nodes)[i]->chainUsed == node->chainDefined &&
+                        (*nodes)[i]->quadStatement != nullptr &&
+                        (*nodes)[i]->quadStatement->kind == quad::QuadKind::LOAD) {
+                        loadIdx = static_cast<int>(i);
+                        break;
+                    }
+                }
+                if (loadIdx >= 0) {
+                    for (size_t i = 0; i < nodes->size(); ++i) {
+                        if ((*nodes)[i] == nullptr ||
+                            (*nodes)[i]->quadStatement == nullptr) {
+                            continue;
+                        }
+                        auto kind = (*nodes)[i]->quadStatement->kind;
+                        if (kind != quad::QuadKind::CALL &&
+                            kind != quad::QuadKind::MOVE_CALL) {
+                            continue;
+                        }
+                        if (static_cast<int>(i) < loadIdx) {
+                            return true;
+                        }
+                    }
+                }
+            }
         }
         return false;
     }
@@ -809,6 +1176,43 @@ static bool ptrCalcNeedsExplicitBundle(
     auto *ptrCalc = dynamic_cast<const quad::QuadPtrCalc *>(node->quadStatement);
     if (ptrCalc == nullptr) {
         return false;
+    }
+
+    if (ptrCalcConstOffset(ptrCalc) < 0 && nodes != nullptr) {
+        bool onlyStore = true;
+        for (auto *chainUser : graph.getNodes()) {
+            if (chainUser == nullptr ||
+                chainUser->chainUsed != node->chainDefined ||
+                chainUser->quadStatement == nullptr) {
+                continue;
+            }
+            if (chainUser->quadStatement->kind != quad::QuadKind::STORE) {
+                onlyStore = false;
+                break;
+            }
+        }
+        if (onlyStore) {
+            int ptrCalcIndex = nodeIndexInBlock(*nodes, node);
+            if (ptrCalcIndex >= 0) {
+                for (auto *chainUser : graph.getNodes()) {
+                    if (chainUser == nullptr ||
+                        chainUser->chainUsed != node->chainDefined ||
+                        chainUser->quadStatement == nullptr ||
+                        chainUser->quadStatement->kind != quad::QuadKind::STORE) {
+                        continue;
+                    }
+                    int storeIndex = nodeIndexInBlock(*nodes, chainUser);
+                    if (storeIndex > ptrCalcIndex &&
+                        hasInterleavedMulBetween(
+                            *nodes,
+                            static_cast<size_t>(ptrCalcIndex),
+                            static_cast<size_t>(storeIndex))) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
     }
 
     for (auto *user : graph.getNodes()) {
@@ -843,26 +1247,6 @@ static bool ptrCalcNeedsExplicitBundle(
             }
             if (storeConstChainNeedsExplicitPtrCalc(ptrCalc)) {
                 return true;
-            }
-            if (ptrCalcConstOffset(ptrCalc) < 0 && nodes != nullptr) {
-                int ptrCalcIndex = nodeIndexInBlock(*nodes, node);
-                if (ptrCalcIndex >= 0) {
-                    for (auto *user : graph.getNodes()) {
-                        if (user == nullptr || user->chainUsed != node->chainDefined ||
-                            user->quadStatement == nullptr ||
-                            user->quadStatement->kind != quad::QuadKind::STORE) {
-                            continue;
-                        }
-                        int storeIndex = nodeIndexInBlock(*nodes, user);
-                        if (storeIndex > ptrCalcIndex &&
-                            hasInterleavedMulBetween(
-                                *nodes,
-                                static_cast<size_t>(ptrCalcIndex),
-                                static_cast<size_t>(storeIndex))) {
-                            return true;
-                        }
-                    }
-                }
             }
         }
     }
@@ -1021,6 +1405,15 @@ static StatementBundle buildBundle(
                     "sub `d0, `s0, #" + std::to_string(rightConst),
                     {dst},
                     {makeTemp(leftNum)}
+                );
+            } else if (binop->binop == "-" && leftConst >= 0 && rightConst >= 0) {
+                tree::Temp *leftTemp = materializeConstMovw(ctx, bundle, leftConst);
+                tree::Temp *rightTemp = materializeConstMovw(ctx, bundle, rightConst);
+                appendOper(
+                    bundle,
+                    "sub `d0, `s0, `s1",
+                    {dst},
+                    {leftTemp, rightTemp}
                 );
             } else if (binop->binop == "*" && rightConst >= 0 && leftNum >= 0) {
                 tree::Temp *constTemp = materializeConstMovw(ctx, bundle, rightConst);
@@ -1183,9 +1576,6 @@ static int ptrCalcSchedulePriority(
         blockHasMulBinop(nodes)) {
         return 1;
     }
-    if (off >= 24) {
-        return 1;
-    }
     for (auto *user : graph.getNodes()) {
         if (user == nullptr || user->chainUsed != node->chainDefined ||
             user->quadStatement == nullptr ||
@@ -1342,6 +1732,32 @@ static bool loadFedCallObjectShouldDefer(
         }
         return true;
     }
+
+    int loadIdx = loadDefiningTempBefore(
+        nodes, move->src->get_temp()->temp->num, moveIndex);
+    if (loadIdx >= 0 && countCallsInBlock(nodes) >= 2) {
+        for (size_t j = 0; j < nodes.size(); ++j) {
+            if (scheduled[j] || j == moveIndex) {
+                continue;
+            }
+            if (isSubConstBinop(nodes[j]->quadStatement)) {
+                return true;
+            }
+            if (nodes[j]->quadStatement != nullptr &&
+                nodes[j]->quadStatement->kind == quad::QuadKind::MOVE) {
+                auto *otherMove = dynamic_cast<const quad::QuadMove *>(
+                    nodes[j]->quadStatement);
+                if (otherMove != nullptr && otherMove->src != nullptr &&
+                    otherMove->src->kind == quad::QuadTermKind::TEMP) {
+                    int otherLoadIdx = loadDefiningTempBefore(
+                        nodes, otherMove->src->get_temp()->temp->num, j);
+                    if (otherLoadIdx < 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
     return false;
 }
 
@@ -1434,10 +1850,6 @@ static int moveTempSchedulePriority(
         if (ptrCalc == nullptr || ptrCalcBaseTempNum(ptrCalc) != srcNum) {
             continue;
         }
-        int off = ptrCalcConstOffset(ptrCalc);
-        if (off >= 24) {
-            return 1;
-        }
         for (auto *user : graph.getNodes()) {
             if (user == nullptr || user->chainUsed != node->chainDefined ||
                 user->quadStatement == nullptr ||
@@ -1465,6 +1877,131 @@ static int moveTempSchedulePriority(
         }
     }
     return 3;
+}
+
+static bool isSubConstBinop(const quad::QuadStm *stm) {
+    if (stm == nullptr || stm->kind != quad::QuadKind::MOVE_BINOP) {
+        return false;
+    }
+    auto *binop = dynamic_cast<const quad::QuadMoveBinop *>(stm);
+    return binop != nullptr && binop->binop == "-" &&
+           binop->right->kind == quad::QuadTermKind::CONST;
+}
+
+static bool isMulBinopStmt(const quad::QuadStm *stm) {
+    if (stm == nullptr || stm->kind != quad::QuadKind::MOVE_BINOP) {
+        return false;
+    }
+    auto *binop = dynamic_cast<const quad::QuadMoveBinop *>(stm);
+    return binop != nullptr && binop->binop == "*";
+}
+
+static bool isAddConstBinop(const quad::QuadStm *stm) {
+    if (stm == nullptr || stm->kind != quad::QuadKind::MOVE_BINOP) {
+        return false;
+    }
+    auto *binop = dynamic_cast<const quad::QuadMoveBinop *>(stm);
+    return binop != nullptr && binop->binop == "+" &&
+           binop->right->kind == quad::QuadTermKind::CONST;
+}
+
+static bool isAddBinop(const quad::QuadStm *stm) {
+    if (stm == nullptr || stm->kind != quad::QuadKind::MOVE_BINOP) {
+        return false;
+    }
+    auto *binop = dynamic_cast<const quad::QuadMoveBinop *>(stm);
+    return binop != nullptr && binop->binop == "+";
+}
+
+static bool hasUnscheduledMulBefore(
+    const std::vector<const advDFGNode *> &nodes,
+    const std::vector<bool> &scheduled,
+    size_t beforeIndex
+) {
+    for (size_t i = 0; i < beforeIndex && i < nodes.size(); ++i) {
+        if (scheduled[i] || nodes[i] == nullptr ||
+            nodes[i]->quadStatement == nullptr) {
+            continue;
+        }
+        if (isMulBinopStmt(nodes[i]->quadStatement)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool hasUnscheduledMulInBlock(
+    const std::vector<const advDFGNode *> &nodes,
+    const std::vector<bool> &scheduled
+) {
+    for (size_t i = 0; i < nodes.size(); ++i) {
+        if (scheduled[i] || nodes[i] == nullptr ||
+            nodes[i]->quadStatement == nullptr) {
+            continue;
+        }
+        if (isMulBinopStmt(nodes[i]->quadStatement)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool hasUnscheduledMulAfter(
+    const std::vector<const advDFGNode *> &nodes,
+    const std::vector<bool> &scheduled,
+    size_t afterIndex
+) {
+    for (size_t i = afterIndex + 1; i < nodes.size(); ++i) {
+        if (scheduled[i] || nodes[i] == nullptr ||
+            nodes[i]->quadStatement == nullptr) {
+            continue;
+        }
+        if (isMulBinopStmt(nodes[i]->quadStatement)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool blockHasUnscheduledCallArgMoveBefore(
+    const std::vector<const advDFGNode *> &nodes,
+    const std::vector<bool> &scheduled,
+    size_t beforeIndex,
+    int exceptTempNum
+) {
+    for (size_t i = 0; i < beforeIndex && i < nodes.size(); ++i) {
+        if (scheduled[i] || nodes[i] == nullptr ||
+            nodes[i]->quadStatement == nullptr ||
+            nodes[i]->quadStatement->kind != quad::QuadKind::MOVE) {
+            continue;
+        }
+        auto *move = dynamic_cast<const quad::QuadMove *>(nodes[i]->quadStatement);
+        if (move == nullptr || move->dst == nullptr ||
+            move->dst->temp->num == exceptTempNum) {
+            continue;
+        }
+        if (moveUsedAsCallArgumentAfter(
+                nodes, move->dst->temp->num, i)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static int firstCallIndexInBlock(
+    const std::vector<const advDFGNode *> &nodes
+) {
+    for (size_t i = 0; i < nodes.size(); ++i) {
+        if (nodes[i] == nullptr || nodes[i]->quadStatement == nullptr) {
+            continue;
+        }
+        auto kind = nodes[i]->quadStatement->kind;
+        if (kind == quad::QuadKind::CALL ||
+            kind == quad::QuadKind::MOVE_CALL) {
+            return static_cast<int>(i);
+        }
+    }
+    return -1;
 }
 
 static int schedulePriority(
@@ -1686,6 +2223,53 @@ static bool chainCopyBasePtrCalcShouldDefer(
         nodes, scheduled, index, definedTemps);
 }
 
+static bool ptrCalcHasUnscheduledInterleavedMulBeforeStore(
+    const advDFG &graph,
+    const std::vector<const advDFGNode *> &nodes,
+    const std::vector<bool> &scheduled,
+    size_t ptrCalcIndex
+) {
+    if (ptrCalcIndex >= nodes.size() || nodes[ptrCalcIndex] == nullptr) {
+        return false;
+    }
+    if (!ptrCalcNeedsExplicitBundle(
+            graph, nodes[ptrCalcIndex], &nodes)) {
+        return false;
+    }
+    auto *ptrCalc = dynamic_cast<const quad::QuadPtrCalc *>(
+        nodes[ptrCalcIndex]->quadStatement);
+    if (ptrCalc == nullptr || ptrCalcConstOffset(ptrCalc) >= 0) {
+        return false;
+    }
+    for (auto *user : graph.getNodes()) {
+        if (user == nullptr ||
+            user->chainUsed != nodes[ptrCalcIndex]->chainDefined ||
+            user->quadStatement == nullptr ||
+            user->quadStatement->kind != quad::QuadKind::STORE) {
+            continue;
+        }
+        int storeIndex = nodeIndexInBlock(nodes, user);
+        if (storeIndex <= static_cast<int>(ptrCalcIndex) ||
+            !hasInterleavedMulBetween(
+                nodes,
+                ptrCalcIndex,
+                static_cast<size_t>(storeIndex))) {
+            continue;
+        }
+        for (size_t i = ptrCalcIndex + 1;
+             i < static_cast<size_t>(storeIndex) && i < nodes.size(); ++i) {
+            if (scheduled[i] || nodes[i] == nullptr ||
+                nodes[i]->quadStatement == nullptr) {
+                continue;
+            }
+            if (isMulBinopStmt(nodes[i]->quadStatement)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 static int effectiveSchedulePriority(
     const advDFG &graph,
     const std::vector<const advDFGNode *> &nodes,
@@ -1703,58 +2287,26 @@ static int effectiveSchedulePriority(
         return priority;
     }
 
-    if (priority == 1 && nodes[index]->quadStatement != nullptr &&
-        nodes[index]->quadStatement->kind == quad::QuadKind::MOVE) {
-        auto *move = dynamic_cast<const quad::QuadMove *>(nodes[index]->quadStatement);
-        if (move != nullptr && move->src != nullptr &&
-            move->src->kind == quad::QuadTermKind::TEMP) {
-            int srcNum = move->src->get_temp()->temp->num;
-            for (size_t j = 0; j < nodes.size(); ++j) {
-                if (scheduled[j] || j == index) {
-                    continue;
-                }
-                if (nodes[j]->quadStatement == nullptr ||
-                    nodes[j]->quadStatement->kind != quad::QuadKind::STORE) {
-                    continue;
-                }
-                int off = storeOffsetOnBase(graph, nodes[j]);
-                if (off < 0 || off >= 24) {
-                    continue;
-                }
-                auto *store = dynamic_cast<const quad::QuadStore *>(
-                    nodes[j]->quadStatement);
-                if (store == nullptr) {
-                    continue;
-                }
-                bool usesBase = false;
-                if (nodes[j]->chainUsed >= 0) {
-                    auto *chainNode = findChainDefNode(
-                        graph, nodes[j]->chainUsed);
-                    auto *ptrCalc = chainNode == nullptr
-                                        ? nullptr
-                                        : dynamic_cast<const quad::QuadPtrCalc *>(
-                                              chainNode->quadStatement);
-                    usesBase = ptrCalc != nullptr &&
-                               ptrCalcBaseTempNum(ptrCalc) == srcNum;
-                } else if (store->dst != nullptr &&
-                           store->dst->kind == quad::QuadTermKind::TEMP) {
-                    usesBase = store->dst->get_temp()->temp->num == srcNum;
-                }
-                if (!usesBase) {
-                    continue;
-                }
-                bool storeReady = true;
-                for (int temp : nodes[j]->tempsUsed) {
-                    if (definedTemps.count(temp) == 0) {
-                        storeReady = false;
-                        break;
-                    }
-                }
-                if (storeReady) {
-                    return 3;
-                }
+    if (nodes[index]->quadStatement != nullptr &&
+        nodes[index]->quadStatement->kind == quad::QuadKind::LOAD &&
+        nodes[index]->chainUsed >= 0) {
+        auto *chainNode = findChainDefNode(graph, nodes[index]->chainUsed);
+        if (chainNode != nullptr &&
+            ptrCalcNeedsExplicitBundle(graph, chainNode, &nodes) &&
+            countCallsInBlock(nodes) >= 2) {
+            int firstCallIdx = firstCallIndexInBlock(nodes);
+            if (firstCallIdx >= 0 &&
+                !scheduled[static_cast<size_t>(firstCallIdx)]) {
+                return 4;
             }
         }
+    }
+
+    if (nodes[index]->quadStatement != nullptr &&
+        nodes[index]->quadStatement->kind == quad::QuadKind::PTR_CALC &&
+        ptrCalcHasUnscheduledInterleavedMulBeforeStore(
+            graph, nodes, scheduled, index)) {
+        return 4;
     }
 
     if (priority <= 2 && nodes[index]->quadStatement != nullptr &&
@@ -1849,15 +2401,6 @@ static int effectiveSchedulePriority(
     return priority;
 }
 
-static bool isSubConstBinop(const quad::QuadStm *stm) {
-    if (stm == nullptr || stm->kind != quad::QuadKind::MOVE_BINOP) {
-        return false;
-    }
-    auto *binop = dynamic_cast<const quad::QuadMoveBinop *>(stm);
-    return binop != nullptr && binop->binop == "-" &&
-           binop->right->kind == quad::QuadTermKind::CONST;
-}
-
 static int schedulePriority(
     const advDFG &graph,
     const StatementBundle &bundle,
@@ -1877,6 +2420,66 @@ static int schedulePriority(
             if (move->src->kind == quad::QuadTermKind::CONST) {
                 return 0;
             }
+            if (move->dst != nullptr &&
+                move->src->kind == quad::QuadTermKind::TEMP) {
+                bool callArg = moveUsedAsCallArgumentAfter(
+                    nodes, move->dst->temp->num, bundle.quadIndex);
+                bool pendingName = pendingNameStoreToMoveSrc(
+                    graph, nodes, scheduled, move);
+                if (callArg) {
+                    if (pendingName) {
+                        if (tempIsMallocResultInBlock(
+                                nodes, move->src->get_temp()->temp->num)) {
+                            int nameStoreIdx = firstPendingNameStoreIndex(
+                                graph, nodes, move);
+                            bool loadInBlock = moveDstUsedByUnscheduledLoadInBlock(
+                                graph, nodes, scheduled,
+                                move->dst->temp->num);
+                            if (nameStoreIdx >= 0 &&
+                                !scheduled[static_cast<size_t>(nameStoreIdx)] &&
+                                loadInBlock &&
+                                blockHasUnscheduledCallArgMoveBefore(
+                                    nodes,
+                                    scheduled,
+                                    static_cast<size_t>(nameStoreIdx),
+                                    move->dst->temp->num)) {
+                                return 3;
+                            }
+                            if (!loadInBlock) {
+                                return 0;
+                            }
+                        } else {
+                            return 3;
+                        }
+                    } else if (allMallocExtCallsScheduledInBlock(nodes, scheduled) &&
+                        !tempDefinedByMoveInBlock(
+                            nodes, move->src->get_temp()->temp->num)) {
+                        return 0;
+                    }
+                } else if (pendingName &&
+                           tempIsMallocResultInBlock(
+                               nodes, move->src->get_temp()->temp->num)) {
+                    int nameStoreIdx = firstPendingNameStoreIndex(
+                        graph, nodes, move);
+                    bool loadInBlock = moveDstUsedByUnscheduledLoadInBlock(
+                        graph, nodes, scheduled, move->dst->temp->num);
+                    if (nameStoreIdx >= 0 &&
+                        !scheduled[static_cast<size_t>(nameStoreIdx)] &&
+                        loadInBlock &&
+                        (blockHasUnscheduledCallArgMoveBefore(
+                             nodes,
+                             scheduled,
+                             static_cast<size_t>(nameStoreIdx),
+                             move->dst->temp->num) ||
+                         (static_cast<int>(bundle.quadIndex) > nameStoreIdx &&
+                          countMallocExtCallsInBlock(nodes) <= 1))) {
+                        return 3;
+                    }
+                    if (!loadInBlock) {
+                        return 0;
+                    }
+                }
+            }
             return moveTempSchedulePriority(
                 graph, move, bundle.quadIndex, nodes, scheduled);
         }
@@ -1890,6 +2493,19 @@ static int schedulePriority(
                                     ? nullptr
                                     : dynamic_cast<const quad::QuadPtrCalc *>(
                                           chainNode->quadStatement);
+                if (ptrCalc != nullptr &&
+                    ptrCalcNeedsExplicitBundle(graph, chainNode, &nodes) &&
+                    countCallsInBlock(nodes) >= 2) {
+                    int firstCallIdx = firstCallIndexInBlock(nodes);
+                    if (firstCallIdx >= 0 &&
+                        !scheduled[static_cast<size_t>(firstCallIdx)]) {
+                        return 4;
+                    }
+                    if (firstCallIdx >= 0 &&
+                        scheduled[static_cast<size_t>(firstCallIdx)]) {
+                        return 0;
+                    }
+                }
                 if (ptrCalc != nullptr &&
                     ptrCalcConstOffset(ptrCalc) == 0 &&
                     !tempDefinedInBlock(
@@ -1907,14 +2523,31 @@ static int schedulePriority(
             }
             if (binop->binop == "+" &&
                 binop->right->kind == quad::QuadTermKind::CONST) {
+                if (blockHasUnscheduledLoadFedCall(nodes, scheduled)) {
+                    return 3;
+                }
+                return 1;
+            }
+            if (binop->binop == "+" &&
+                binop->right->kind == quad::QuadTermKind::TEMP &&
+                binop->left->kind == quad::QuadTermKind::TEMP &&
+                hasUnscheduledMulBefore(
+                    nodes, scheduled, bundle.quadIndex)) {
+                return 4;
+            }
+            if (binop->binop == "+" &&
+                hasUnscheduledMulAfter(
+                    nodes, scheduled, bundle.quadIndex)) {
+                return 4;
+            }
+            if (binop->binop == "+" &&
+                binop->right->kind == quad::QuadTermKind::TEMP) {
+                if (blockHasUnscheduledLoadFedCall(nodes, scheduled)) {
+                    return 3;
+                }
                 return 1;
             }
             if (binop->binop == "-") {
-                if (binop->right->kind == quad::QuadTermKind::CONST &&
-                    binop->right->get_const() == 1 &&
-                    hasAddConstBinopInBlock(nodes)) {
-                    return 1;
-                }
                 if (mulBinopScheduledInBlock(nodes, scheduled)) {
                     return 1;
                 }
@@ -1963,6 +2596,17 @@ static bool moveExtCallBarrierAllows(
     const std::vector<bool> &scheduled,
     const std::set<int> &definedTemps
 ) {
+    if (candidatePriority == 0 &&
+        candidateIndex == 0 &&
+        isConstMoveStmt(nodes[candidateIndex]->quadStatement) &&
+        candidateIndex + 1 < nodes.size() &&
+        nodes[candidateIndex + 1] != nullptr &&
+        nodes[candidateIndex + 1]->quadStatement != nullptr &&
+        isExtCallLikeStmt(nodes[candidateIndex + 1]->quadStatement) &&
+        !scheduled[candidateIndex + 1]) {
+        return false;
+    }
+
     if (candidatePriority == 0 &&
         hasEarlierMoveExtCall(nodes, candidateIndex) &&
         !anyMoveExtCallScheduled(nodes, scheduled)) {
@@ -2025,31 +2669,21 @@ static bool moveExtCallBarrierAllows(
 
     if (nodes[candidateIndex] != nullptr &&
         nodes[candidateIndex]->quadStatement != nullptr &&
-        nodes[candidateIndex]->quadStatement->kind == quad::QuadKind::PTR_CALC &&
-        ptrCalcHasPendingInterleavedMul(
-            graph, nodes, scheduled, candidateIndex)) {
-        return false;
-    }
-
-    if (candidatePriority >= 2) {
-        for (size_t j = 0; j < nodes.size(); ++j) {
-            if (scheduled[j] || nodes[j] == nullptr ||
-                nodes[j]->quadStatement == nullptr) {
-                continue;
-            }
-            if (!isMoveExtCallStmt(nodes[j]->quadStatement)) {
-                continue;
-            }
-            if (j >= candidateIndex) {
-                continue;
-            }
-            if (nodes[j]->tempDefined >= 0 &&
-                nodes[candidateIndex]->tempsUsed.count(
-                    nodes[j]->tempDefined) > 0) {
+        nodes[candidateIndex]->quadStatement->kind == quad::QuadKind::LOAD &&
+        nodes[candidateIndex]->chainUsed >= 0) {
+        auto *chainNode = findChainDefNode(
+            graph, nodes[candidateIndex]->chainUsed);
+        if (chainNode != nullptr &&
+            ptrCalcNeedsExplicitBundle(graph, chainNode, &nodes) &&
+            countCallsInBlock(nodes) >= 2) {
+            int firstCallIdx = firstCallIndexInBlock(nodes);
+            if (firstCallIdx >= 0 &&
+                !scheduled[static_cast<size_t>(firstCallIdx)]) {
                 return false;
             }
         }
     }
+
     return true;
 }
 
@@ -2147,6 +2781,9 @@ void selectInstructionsForBlock(
             bool candidateSub = isSubConstBinop(probe.stm);
             bool bestSub = bestIndex >= 0 &&
                            isSubConstBinop(nodes[bestIndex]->quadStatement);
+            bool candidateMul = isMulBinopStmt(probe.stm);
+            bool bestMul = bestIndex >= 0 &&
+                           isMulBinopStmt(nodes[bestIndex]->quadStatement);
             bool mulScheduled = mulBinopScheduledInBlock(nodes, scheduled);
 
             bool better = false;
@@ -2155,7 +2792,54 @@ void selectInstructionsForBlock(
             } else if (priority < bestPriority) {
                 better = true;
             } else if (priority == bestPriority) {
-                if (candidateSub && !bestSub && mulScheduled) {
+                bool candidateConst = isConstMoveStmt(probe.stm);
+                bool bestConst = bestIndex >= 0 &&
+                                 isConstMoveStmt(nodes[bestIndex]->quadStatement);
+                bool candidateExt = isExtCallLikeStmt(probe.stm);
+                bool bestExt = bestIndex >= 0 &&
+                               isExtCallLikeStmt(nodes[bestIndex]->quadStatement);
+
+                if (candidateExt && bestConst &&
+                    extCallWinsOverAdjacentConstMove(bestQuadIndex, quadIndex)) {
+                    better = true;
+                } else if (candidateConst && bestExt &&
+                           extCallWinsOverAdjacentConstMove(quadIndex, bestQuadIndex)) {
+                    better = false;
+                } else if (candidateMul && bestSub && !mulScheduled) {
+                    better = true;
+                } else if (candidateSub && bestMul && !mulScheduled) {
+                    better = false;
+                } else if (isAddBinop(probe.stm) &&
+                           hasUnscheduledMulAfter(
+                               nodes, scheduled, quadIndex)) {
+                    better = false;
+                } else if (candidateMul && bestIndex >= 0 &&
+                           isAddBinop(
+                               nodes[bestIndex]->quadStatement) &&
+                           hasUnscheduledMulAfter(
+                               nodes, scheduled, bestQuadIndex)) {
+                    better = true;
+                } else if (isAddBinop(probe.stm) && bestMul &&
+                           hasUnscheduledMulBefore(
+                               nodes, scheduled, quadIndex)) {
+                    better = false;
+                } else if (candidateMul && bestIndex >= 0 &&
+                           isAddBinop(
+                               nodes[bestIndex]->quadStatement) &&
+                           hasUnscheduledMulBefore(
+                               nodes, scheduled, bestQuadIndex)) {
+                    better = true;
+                } else if (isAddConstBinop(probe.stm) && bestMul &&
+                           hasUnscheduledMulBefore(
+                               nodes, scheduled, quadIndex)) {
+                    better = false;
+                } else if (candidateMul && bestIndex >= 0 &&
+                           isAddConstBinop(
+                               nodes[bestIndex]->quadStatement) &&
+                           hasUnscheduledMulBefore(
+                               nodes, scheduled, bestQuadIndex)) {
+                    better = true;
+                } else if (candidateSub && !bestSub && mulScheduled) {
                     better = quadIndex > bestQuadIndex;
                 } else if (!candidateSub && bestSub) {
                     better = false;

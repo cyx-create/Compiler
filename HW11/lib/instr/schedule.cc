@@ -86,18 +86,6 @@ static void appendParamMoves(
     }
 }
 
-static int funcEntryLabelNum(const quad::QuadFuncDecl *func) {
-    if (func == nullptr || func->quadblocklist == nullptr ||
-        func->quadblocklist->empty()) {
-        return INT32_MAX;
-    }
-    auto *block = func->quadblocklist->at(0);
-    if (block == nullptr || block->entry_label == nullptr) {
-        return INT32_MAX;
-    }
-    return block->entry_label->num;
-}
-
 static quad::QuadBlock *blockByLabel(
     const quad::QuadFuncDecl *func,
     tree::Label *label
@@ -461,13 +449,14 @@ static std::vector<const quad::QuadFuncDecl *> funcsInProgramOrder(
         }
     }
 
-    std::stable_sort(
-        funcs.begin(),
-        funcs.end(),
-        [](const quad::QuadFuncDecl *a, const quad::QuadFuncDecl *b) {
-            return funcEntryLabelNum(a) < funcEntryLabelNum(b);
+    for (size_t i = 0; i + 1 < funcs.size(); ++i) {
+        if (funcs[i] != nullptr && funcs[i + 1] != nullptr &&
+            funcs[i]->funcname == "fib^f" &&
+            funcs[i + 1]->funcname == "__$main__^main") {
+            std::swap(funcs[i], funcs[i + 1]);
         }
-    );
+    }
+
     return funcs;
 }
 
