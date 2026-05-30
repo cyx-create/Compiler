@@ -27,6 +27,20 @@ static bool isExitCallStmt(const quad::QuadStm *stm) {
         auto *ext = dynamic_cast<const quad::QuadExtCall *>(stm);
         return ext != nullptr && ext->extfun == "exit";
     }
+    if (stm->kind == quad::QuadKind::MOVE_EXTCALL) {
+        auto *moveExt = dynamic_cast<const quad::QuadMoveExtCall *>(stm);
+        return moveExt != nullptr && moveExt->extcall != nullptr &&
+               moveExt->extcall->extfun == "exit";
+    }
+    if (stm->kind == quad::QuadKind::CALL) {
+        auto *call = dynamic_cast<const quad::QuadCall *>(stm);
+        return call != nullptr && call->name == "exit";
+    }
+    if (stm->kind == quad::QuadKind::MOVE_CALL) {
+        auto *moveCall = dynamic_cast<const quad::QuadMoveCall *>(stm);
+        return moveCall != nullptr && moveCall->call != nullptr &&
+               moveCall->call->name == "exit";
+    }
     return false;
 }
 
@@ -271,19 +285,49 @@ static void emitReturn(
     appendEpilogue(funcSchedule);
 }
 
+static const std::vector<quad::QuadTerm *> *exitCallArgs(
+    const quad::QuadStm *stm
+) {
+    if (stm == nullptr) {
+        return nullptr;
+    }
+    if (stm->kind == quad::QuadKind::EXTCALL) {
+        auto *ext = dynamic_cast<const quad::QuadExtCall *>(stm);
+        return ext != nullptr ? ext->args : nullptr;
+    }
+    if (stm->kind == quad::QuadKind::MOVE_EXTCALL) {
+        auto *moveExt = dynamic_cast<const quad::QuadMoveExtCall *>(stm);
+        return moveExt != nullptr && moveExt->extcall != nullptr
+                   ? moveExt->extcall->args
+                   : nullptr;
+    }
+    if (stm->kind == quad::QuadKind::CALL) {
+        auto *call = dynamic_cast<const quad::QuadCall *>(stm);
+        return call != nullptr ? call->args : nullptr;
+    }
+    if (stm->kind == quad::QuadKind::MOVE_CALL) {
+        auto *moveCall = dynamic_cast<const quad::QuadMoveCall *>(stm);
+        return moveCall != nullptr && moveCall->call != nullptr
+                   ? moveCall->call->args
+                   : nullptr;
+    }
+    return nullptr;
+}
+
 static void emitExitCall(
     ScheduleFunc &funcSchedule,
     int &nextTempNum,
-    const quad::QuadExtCall *ext
+    const quad::QuadStm *stm
 ) {
-    if (ext == nullptr) {
+    if (stm == nullptr || !isExitCallStmt(stm)) {
         return;
     }
-    if (ext->args != nullptr && !ext->args->empty()) {
+    const std::vector<quad::QuadTerm *> *args = exitCallArgs(stm);
+    if (args != nullptr && !args->empty()) {
         tree::Temp *value = materializeOperand(
             funcSchedule,
             nextTempNum,
-            ext->args->at(0)
+            args->at(0)
         );
         if (value != nullptr) {
             appendOper(funcSchedule, "mov r0, `s0", {}, {value});
@@ -371,11 +415,7 @@ static void layoutFunction(
         }
 
         if (isExitCallStmt(last)) {
-            emitExitCall(
-                funcSchedule,
-                nextTempNum,
-                dynamic_cast<const quad::QuadExtCall *>(last)
-            );
+            emitExitCall(funcSchedule, nextTempNum, last);
             return;
         }
 
