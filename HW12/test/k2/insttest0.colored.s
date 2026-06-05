@@ -33,10 +33,10 @@ C$max$L105:
 	push {r4-r10, fp, lr}
 	sub sp, sp, #4
 	add fp, sp, #36
-	cmp r1, r2
+	mov r0, r2
+	cmp r1, r0
 	bgt C$max$L102
 C$max$L103:
-	mov r0, r2
 	sub sp, fp, #36
 	add sp, sp, #4
 	pop {r4-r10, fp, lr}

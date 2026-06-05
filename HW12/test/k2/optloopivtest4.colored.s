@@ -7,8 +7,10 @@ main$L105:
 	push {r4-r10, fp, lr}
 	sub sp, sp, #12
 	add fp, sp, #44
-	mov r0, #10
-	mov r10, r0
+	mov r10, #10
+	str r10, [fp, #-40]
+	ldr r9, [fp, #-40]
+	mov r10, r9
 	str r10, [fp, #-40]
 main$L102:
 	movw r0, #0
@@ -32,12 +34,15 @@ main$L103:
 	sub r10, r9, #1
 	str r10, [fp, #-44]
 	movw r0, #4
-	ldr r9, [fp, #-44]
-	mul r0, r0, r9
+	ldr r10, [fp, #-44]
+	mul r0, r0, r10
 	sub r0, r0, #2
 	bl putint
 	movw r0, #32
 	bl putch
+	ldr r9, [fp, #-44]
+	mov r10, r9
+	str r10, [fp, #-40]
 	b main$L102
 
 .global malloc

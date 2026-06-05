@@ -5,8 +5,8 @@
 b1$bubbleSort:
 b1$bubbleSort$L133:
 	push {r4-r10, fp, lr}
-	sub sp, sp, #40
-	add fp, sp, #72
+	sub sp, sp, #60
+	add fp, sp, #92
 	mov r10, r0
 	str r10, [fp, #-40]
 	mov r10, r1
@@ -34,19 +34,23 @@ b1$bubbleSort$L109:
 	ldr r9, [fp, #-40]
 	mov r0, r9
 	ldr r9, [fp, #-44]
-	mov r1, r9
+	mov r10, r9
+	str r10, [fp, #-44]
 	ldr r9, [fp, #-48]
 	sub r2, r9, #1
+	ldr r9, [fp, #-44]
+	mov r1, r9
 	blx r3
-	sub sp, fp, #72
-	add sp, sp, #40
+	sub sp, fp, #92
+	add sp, sp, #60
 	pop {r4-r10, fp, lr}
 	bx lr
 b1$bubbleSort$L108:
 	ldr r9, [fp, #-44]
 	mov r4, r9
 	ldr r9, [fp, #-44]
-	ldr r5, [r9]
+	ldr r10, [r9]
+	str r10, [fp, #-56]
 	movw r0, #0
 	ldr r9, [fp, #-52]
 	cmp r9, r0
@@ -57,21 +61,26 @@ b1$bubbleSort$L110:
 	bl exit
 b1$bubbleSort$L111:
 	ldr r9, [fp, #-52]
-	cmp r9, r5
+	ldr r10, [fp, #-56]
+	cmp r9, r10
 	bge b1$bubbleSort$L110
 b1$bubbleSort$L112:
 	ldr r9, [fp, #-52]
 	add r0, r9, #1
 	ldr r9, [fp, #-52]
 	add r10, r9, #1
-	str r10, [fp, #-56]
+	str r10, [fp, #-60]
+	ldr r9, [fp, #-44]
+	mov r10, r9
+	str r10, [fp, #-84]
 	movw r1, #4
 	mul r0, r0, r1
 	ldr r4, [r4, r0]
 	ldr r9, [fp, #-44]
-	ldr r5, [r9]
+	ldr r10, [r9]
+	str r10, [fp, #-64]
 	movw r0, #0
-	ldr r9, [fp, #-56]
+	ldr r9, [fp, #-60]
 	cmp r9, r0
 	bge b1$bubbleSort$L114
 b1$bubbleSort$L113:
@@ -79,30 +88,34 @@ b1$bubbleSort$L113:
 	movt r0, #65535
 	bl exit
 b1$bubbleSort$L114:
-	ldr r9, [fp, #-56]
-	cmp r9, r5
+	ldr r9, [fp, #-60]
+	ldr r10, [fp, #-64]
+	cmp r9, r10
 	bge b1$bubbleSort$L113
 b1$bubbleSort$L115:
-	ldr r9, [fp, #-56]
+	ldr r9, [fp, #-60]
 	add r0, r9, #1
 	movw r1, #4
 	mul r0, r0, r1
-	ldr r9, [fp, #-64]
+	ldr r9, [fp, #-84]
 	ldr r0, [r9, r0]
 	cmp r4, r0
 	bgt b1$bubbleSort$L130
 b1$bubbleSort$L131:
 b1$bubbleSort$L132:
 	ldr r9, [fp, #-52]
-	add r0, r9, #1
-	mov r10, r0
+	add r10, r9, #1
+	str r10, [fp, #-52]
+	ldr r9, [fp, #-52]
+	mov r10, r9
 	str r10, [fp, #-52]
 	b b1$bubbleSort$L107
 b1$bubbleSort$L130:
 	ldr r9, [fp, #-44]
 	mov r4, r9
 	ldr r9, [fp, #-44]
-	ldr r5, [r9]
+	ldr r10, [r9]
+	str r10, [fp, #-68]
 	movw r0, #0
 	ldr r9, [fp, #-52]
 	cmp r9, r0
@@ -113,17 +126,23 @@ b1$bubbleSort$L118:
 	bl exit
 b1$bubbleSort$L119:
 	ldr r9, [fp, #-52]
-	cmp r9, r5
+	ldr r10, [fp, #-68]
+	cmp r9, r10
 	bge b1$bubbleSort$L118
 b1$bubbleSort$L120:
 	ldr r9, [fp, #-40]
-	mov r1, r9
+	mov r10, r9
+	str r10, [fp, #-40]
 	ldr r9, [fp, #-52]
 	add r0, r9, #1
-	movw r2, #4
-	mul r0, r0, r2
+	ldr r9, [fp, #-44]
+	mov r10, r9
+	str r10, [fp, #-88]
+	movw r1, #4
+	mul r0, r0, r1
 	ldr r0, [r4, r0]
-	str r0, [r1]
+	ldr r10, [fp, #-40]
+	str r0, [r10]
 	ldr r9, [fp, #-44]
 	ldr r4, [r9]
 	movw r0, #0
@@ -140,41 +159,49 @@ b1$bubbleSort$L122:
 	bge b1$bubbleSort$L121
 b1$bubbleSort$L123:
 	ldr r9, [fp, #-52]
-	add r5, r9, #1
+	add r10, r9, #1
+	str r10, [fp, #-72]
+	ldr r9, [fp, #-44]
+	mov r10, r9
+	str r10, [fp, #-92]
 	ldr r9, [fp, #-44]
 	ldr r4, [r9]
 	movw r0, #0
-	cmp r5, r0
+	ldr r9, [fp, #-72]
+	cmp r9, r0
 	bge b1$bubbleSort$L125
 b1$bubbleSort$L124:
 	movw r0, #65535
 	movt r0, #65535
 	bl exit
 b1$bubbleSort$L125:
-	cmp r5, r4
+	ldr r9, [fp, #-72]
+	cmp r9, r4
 	bge b1$bubbleSort$L124
 b1$bubbleSort$L126:
 	ldr r9, [fp, #-52]
+	add r1, r9, #1
+	ldr r9, [fp, #-72]
 	add r0, r9, #1
-	add r1, r5, #1
 	ldr r9, [fp, #-52]
 	add r10, r9, #1
-	str r10, [fp, #-60]
+	str r10, [fp, #-76]
 	ldr r9, [fp, #-44]
 	mov r4, r9
 	movw r2, #4
-	mul r0, r0, r2
-	movw r2, #4
 	mul r1, r1, r2
-	ldr r9, [fp, #-68]
-	add r0, r9, r0
-	ldr r9, [fp, #-72]
-	ldr r1, [r9, r1]
-	str r1, [r0]
+	movw r2, #4
+	mul r0, r0, r2
+	ldr r9, [fp, #-88]
+	add r1, r9, r1
+	ldr r9, [fp, #-92]
+	ldr r0, [r9, r0]
+	str r0, [r1]
 	ldr r9, [fp, #-44]
-	ldr r5, [r9]
+	ldr r10, [r9]
+	str r10, [fp, #-80]
 	movw r0, #0
-	ldr r9, [fp, #-60]
+	ldr r9, [fp, #-76]
 	cmp r9, r0
 	bge b1$bubbleSort$L128
 b1$bubbleSort$L127:
@@ -182,11 +209,12 @@ b1$bubbleSort$L127:
 	movt r0, #65535
 	bl exit
 b1$bubbleSort$L128:
-	ldr r9, [fp, #-60]
-	cmp r9, r5
+	ldr r9, [fp, #-76]
+	ldr r10, [fp, #-80]
+	cmp r9, r10
 	bge b1$bubbleSort$L127
 b1$bubbleSort$L129:
-	ldr r9, [fp, #-60]
+	ldr r9, [fp, #-76]
 	add r1, r9, #1
 	ldr r9, [fp, #-40]
 	ldr r0, [r9]
@@ -196,8 +224,8 @@ b1$bubbleSort$L129:
 	b b1$bubbleSort$L132
 b1$bubbleSort$L102:
 	movw r0, #0
-	sub sp, fp, #72
-	add sp, sp, #40
+	sub sp, fp, #92
+	add sp, sp, #60
 	pop {r4-r10, fp, lr}
 	bx lr
 
@@ -217,47 +245,52 @@ main$L108:
 	mov r0, #0
 	mov r4, #0
 	movw r0, #7
-	ldr r9, [fp, #-40]
-	str r0, [r9]
+	ldr r10, [fp, #-40]
+	str r0, [r10]
 	movw r0, #6
-	ldr r9, [fp, #-40]
-	str r0, [r9, #4]
+	ldr r10, [fp, #-40]
+	str r0, [r10, #4]
 	movw r0, #3
-	ldr r9, [fp, #-40]
-	str r0, [r9, #8]
+	ldr r10, [fp, #-40]
+	str r0, [r10, #8]
 	movw r0, #0
-	ldr r9, [fp, #-40]
-	str r0, [r9, #12]
+	ldr r10, [fp, #-40]
+	str r0, [r10, #12]
 	movw r0, #5
-	ldr r9, [fp, #-40]
-	str r0, [r9, #16]
+	ldr r10, [fp, #-40]
+	str r0, [r10, #16]
 	movw r0, #9
-	ldr r9, [fp, #-40]
-	str r0, [r9, #20]
+	ldr r10, [fp, #-40]
+	str r0, [r10, #20]
 	movw r0, #1
-	ldr r9, [fp, #-40]
-	str r0, [r9, #24]
+	ldr r10, [fp, #-40]
+	str r0, [r10, #24]
 	movw r0, #2
-	ldr r9, [fp, #-40]
-	str r0, [r9, #28]
+	ldr r10, [fp, #-40]
+	str r0, [r10, #28]
 	movw r0, #8
 	bl malloc
 	ldr r9, [fp, #-40]
-	mov r1, r9
-	ldr r2, =b1$bubbleSort
-	str r2, [r0, #4]
+	mov r10, r9
+	str r10, [fp, #-40]
+	ldr r1, =b1$bubbleSort
+	str r1, [r0, #4]
 	ldr r3, [r0, #4]
 	ldr r9, [fp, #-40]
 	ldr r2, [r9]
+	ldr r9, [fp, #-40]
+	mov r1, r9
 	blx r3
 	mov r10, r4
 	str r10, [fp, #-44]
 main$L102:
 	ldr r9, [fp, #-44]
-	mov r0, r9
+	mov r10, r9
+	str r10, [fp, #-44]
 	ldr r9, [fp, #-40]
-	ldr r1, [r9]
-	cmp r0, r1
+	ldr r0, [r9]
+	ldr r9, [fp, #-44]
+	cmp r9, r0
 	blt main$L103
 main$L104:
 	movw r0, #10
@@ -269,7 +302,8 @@ main$L104:
 	bx lr
 main$L103:
 	ldr r9, [fp, #-40]
-	mov r5, r9
+	mov r10, r9
+	str r10, [fp, #-40]
 	ldr r9, [fp, #-40]
 	ldr r4, [r9]
 	movw r0, #0
@@ -288,14 +322,17 @@ main$L107:
 	ldr r9, [fp, #-44]
 	add r0, r9, #1
 	ldr r9, [fp, #-44]
-	add r4, r9, #1
+	add r10, r9, #1
+	str r10, [fp, #-44]
 	movw r1, #4
 	mul r0, r0, r1
-	ldr r0, [r5, r0]
+	ldr r9, [fp, #-40]
+	ldr r0, [r9, r0]
 	bl putint
 	movw r0, #32
 	bl putch
-	mov r10, r4
+	ldr r9, [fp, #-44]
+	mov r10, r9
 	str r10, [fp, #-44]
 	b main$L102
 
