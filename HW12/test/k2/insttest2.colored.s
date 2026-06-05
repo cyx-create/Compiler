@@ -5,8 +5,8 @@
 main:
 main$L108:
 	push {r4-r10, fp, lr}
-	sub sp, sp, #36
-	add fp, sp, #68
+	sub sp, sp, #32
+	add fp, sp, #64
 	movw r0, #4
 	bl malloc
 	mov r10, r0
@@ -15,33 +15,20 @@ main$L108:
 	str r10, [fp, #-44]
 	movw r0, #20
 	bl malloc
-	mov r10, r0
-	str r10, [fp, #-60]
+	mov r2, r0
 	movw r0, #4
-	ldr r10, [fp, #-60]
-	str r0, [r10]
+	str r0, [r2]
 	ldr r9, [fp, #-56]
-	mov r1, r9
-	ldr r9, [fp, #-56]
-	mov r10, r9
-	str r10, [fp, #-40]
-	movw r0, #1
-	ldr r10, [fp, #-60]
-	str r0, [r10, #4]
-	movw r0, #2
-	ldr r10, [fp, #-60]
-	str r0, [r10, #8]
-	movw r0, #3
-	ldr r10, [fp, #-60]
-	str r0, [r10, #12]
-	movw r0, #4
-	ldr r10, [fp, #-60]
-	str r0, [r10, #16]
-	ldr r9, [fp, #-60]
-	str r9, [r1]
-	ldr r9, [fp, #-44]
-	mov r10, r9
-	str r10, [fp, #-48]
+	mov r0, r9
+	movw r1, #1
+	str r1, [r2, #4]
+	movw r1, #2
+	str r1, [r2, #8]
+	movw r1, #3
+	str r1, [r2, #12]
+	movw r1, #4
+	str r1, [r2, #16]
+	str r2, [r0]
 main$L102:
 	movw r0, #0
 	ldr r9, [fp, #-48]
@@ -51,8 +38,8 @@ main$L104:
 	movw r0, #10
 	bl putch
 	movw r0, #2
-	sub sp, fp, #68
-	add sp, sp, #36
+	sub sp, fp, #64
+	add sp, sp, #32
 	pop {r4-r10, fp, lr}
 	bx lr
 main$L103:
@@ -60,14 +47,11 @@ main$L103:
 	sub r10, r9, #1
 	str r10, [fp, #-52]
 	ldr r9, [fp, #-40]
-	ldr r10, [r9]
-	str r10, [fp, #-68]
-	ldr r9, [fp, #-68]
-	mov r10, r9
-	str r10, [fp, #-68]
-	ldr r9, [fp, #-68]
-	ldr r10, [r9]
+	ldr r0, [r9]
+	mov r10, r0
 	str r10, [fp, #-64]
+	ldr r10, [r0]
+	str r10, [fp, #-60]
 	movw r0, #0
 	ldr r9, [fp, #-52]
 	cmp r9, r0
@@ -78,7 +62,7 @@ main$L105:
 	bl exit
 main$L106:
 	ldr r9, [fp, #-52]
-	ldr r10, [fp, #-64]
+	ldr r10, [fp, #-60]
 	cmp r9, r10
 	bge main$L105
 main$L107:
@@ -86,14 +70,11 @@ main$L107:
 	add r0, r9, #1
 	movw r1, #4
 	mul r0, r0, r1
-	ldr r9, [fp, #-68]
+	ldr r9, [fp, #-64]
 	ldr r0, [r9, r0]
 	bl putint
 	movw r0, #32
 	bl putch
-	ldr r9, [fp, #-52]
-	mov r10, r9
-	str r10, [fp, #-48]
 	b main$L102
 
 .global malloc

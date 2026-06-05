@@ -66,8 +66,9 @@ int main(int argc, const char *argv[]) {
     for (int k : kValues) {
         cout << "\n========== REGISTER ALLOCATION WITH k=" << k << " ==========" << endl;
         
-        // Create output directory in current directory
-        string outputDir = "k" + to_string(k);
+        string outputDir = (fs::exists("test") && fs::is_directory("test"))
+            ? "test/k" + to_string(k)
+            : "k" + to_string(k);
         try {
             fs::create_directories(outputDir);
         } catch (const exception& e) {
