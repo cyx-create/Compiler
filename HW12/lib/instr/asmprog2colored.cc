@@ -213,13 +213,50 @@ vector<AssemInstr> expandInstruction(
         instr.dst[0] != nullptr && instr.src[0] != nullptr) {
         int dstAlias = resolveAlias(instr.dst[0]->num, coloring);
         int srcAlias = resolveAlias(instr.src[0]->num, coloring);
+        bool dstSpill = isSpilledTemp(instr.dst[0]->num, coloring);
+        bool srcSpill = isSpilledTemp(instr.src[0]->num, coloring);
+
         if (dstAlias == srcAlias) {
             return expanded;
         }
+
+        if (dstSpill && srcSpill) {
+            expanded.push_back(makeOper(
+                "ldr r9, [fp, #" + to_string(spillOffsets.at(srcAlias)) + "]"));
+            expanded.push_back(makeOper(
+                "str r9, [fp, #" + to_string(spillOffsets.at(dstAlias)) + "]"));
+            return expanded;
+        }
+
+        if (dstSpill && !srcSpill) {
+            expanded.push_back(makeOper(
+                "mov r10, " + getTempRegName(instr.src[0]->num, coloring)));
+            expanded.push_back(makeOper(
+                "str r10, [fp, #" + to_string(spillOffsets.at(dstAlias)) + "]"));
+            return expanded;
+        }
+
+        if (!dstSpill && srcSpill) {
+            expanded.push_back(makeOper(
+                "ldr r9, [fp, #" + to_string(spillOffsets.at(srcAlias)) + "]"));
+            expanded.push_back(makeOper(
+                "mov " + getTempRegName(instr.dst[0]->num, coloring) + ", r9"));
+            return expanded;
+        }
+
         if (getTempRegName(instr.dst[0]->num, coloring) ==
             getTempRegName(instr.src[0]->num, coloring)) {
             return expanded;
         }
+
+        string formatted = formatColoredAssem(instr, funcName, coloring, spilledSrcRegs);
+        AssemInstr colored = instr;
+        colored.assem = formatted;
+        colored.dst.clear();
+        colored.src.clear();
+        colored.jumps = AssemTargets();
+        expanded.push_back(colored);
+        return expanded;
     }
 
     set<int> spilledDsts;

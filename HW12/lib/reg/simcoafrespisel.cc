@@ -145,6 +145,9 @@ bool Coloring::coalesce() {
     if (ig == nullptr || movePairs.empty()) {
         return false;
     }
+    if (k >= 8) {
+        return false;
+    }
 
     const int K = k + 1;
 

@@ -10,8 +10,7 @@ main$L113:
 	movw r0, #4
 	bl malloc
 	mov r1, #0
-	mov r10, #0
-	str r10, [fp, #-40]
+	mov r4, #0
 	ldr r1, =fib$f
 	str r1, [r0]
 	mov r10, r0
@@ -80,8 +79,7 @@ main$L104:
 	bgt main$L105
 main$L106:
 main$L107:
-	ldr r9, [fp, #-40]
-	mov r10, r9
+	mov r10, r4
 	str r10, [fp, #-40]
 main$L110:
 	ldr r9, [fp, #-40]
@@ -145,17 +143,19 @@ fib$f$L106:
 	ldr r2, [r0]
 	ldr r9, [fp, #-40]
 	sub r1, r9, #1
-	mov r4, r0
 	mov r5, r0
+	mov r4, r0
 	ldr r9, [fp, #-40]
 	sub r6, r9, #2
 	blx r2
-	ldr r2, [r4]
-	mov r4, r0
-	mov r0, r5
+	mov r1, r0
+	ldr r0, [r5]
+	mov r5, r1
+	mov r2, r0
+	mov r0, r4
 	mov r1, r6
 	blx r2
-	add r0, r4, r0
+	add r0, r5, r0
 	sub sp, fp, #40
 	add sp, sp, #8
 	pop {r4-r10, fp, lr}

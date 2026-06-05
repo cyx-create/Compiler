@@ -13,16 +13,14 @@ b1$bubbleSort$L133:
 	str r10, [fp, #-44]
 	mov r10, r2
 	str r10, [fp, #-48]
-	mov r10, #0
-	str r10, [fp, #-52]
-	movw r0, #1
+	mov r0, #0
+	movw r1, #1
 	ldr r9, [fp, #-48]
-	cmp r9, r0
+	cmp r9, r1
 	ble b1$bubbleSort$L102
 b1$bubbleSort$L103:
 b1$bubbleSort$L104:
-	ldr r9, [fp, #-52]
-	mov r10, r9
+	mov r10, r0
 	str r10, [fp, #-52]
 b1$bubbleSort$L107:
 	ldr r9, [fp, #-48]
@@ -93,10 +91,8 @@ b1$bubbleSort$L115:
 b1$bubbleSort$L131:
 b1$bubbleSort$L132:
 	ldr r9, [fp, #-52]
-	add r10, r9, #1
-	str r10, [fp, #-52]
-	ldr r9, [fp, #-52]
-	mov r10, r9
+	add r0, r9, #1
+	mov r10, r0
 	str r10, [fp, #-52]
 	b b1$bubbleSort$L107
 b1$bubbleSort$L130:
@@ -118,17 +114,15 @@ b1$bubbleSort$L119:
 	bge b1$bubbleSort$L118
 b1$bubbleSort$L120:
 	ldr r9, [fp, #-40]
-	mov r10, r9
-	str r10, [fp, #-40]
+	mov r0, r9
 	ldr r9, [fp, #-52]
-	add r0, r9, #1
+	add r1, r9, #1
 	ldr r9, [fp, #-44]
 	mov r7, r9
-	movw r1, #4
-	mul r0, r0, r1
-	ldr r0, [r4, r0]
-	ldr r10, [fp, #-40]
-	str r0, [r10]
+	movw r2, #4
+	mul r1, r1, r2
+	ldr r1, [r4, r1]
+	str r1, [r0]
 	ldr r9, [fp, #-44]
 	ldr r4, [r9]
 	movw r0, #0
@@ -162,19 +156,19 @@ b1$bubbleSort$L125:
 	bge b1$bubbleSort$L124
 b1$bubbleSort$L126:
 	ldr r9, [fp, #-52]
-	add r1, r9, #1
-	add r0, r6, #1
+	add r0, r9, #1
+	add r1, r6, #1
 	ldr r9, [fp, #-52]
 	add r5, r9, #1
 	ldr r9, [fp, #-44]
 	mov r6, r9
 	movw r2, #4
-	mul r1, r1, r2
-	movw r2, #4
 	mul r0, r0, r2
-	add r1, r7, r1
-	ldr r0, [r4, r0]
-	str r0, [r1]
+	movw r2, #4
+	mul r1, r1, r2
+	add r0, r7, r0
+	ldr r1, [r4, r1]
+	str r1, [r0]
 	ldr r9, [fp, #-44]
 	ldr r4, [r9]
 	movw r0, #0
@@ -216,53 +210,51 @@ main$L108:
 	mov r10, r0
 	str r10, [fp, #-40]
 	mov r0, #0
-	mov r10, #0
-	str r10, [fp, #-44]
+	mov r4, #0
 	movw r0, #7
-	ldr r10, [fp, #-40]
-	str r0, [r10]
+	ldr r9, [fp, #-40]
+	str r0, [r9]
 	movw r0, #6
-	ldr r10, [fp, #-40]
-	str r0, [r10, #4]
+	ldr r9, [fp, #-40]
+	str r0, [r9, #4]
 	movw r0, #3
-	ldr r10, [fp, #-40]
-	str r0, [r10, #8]
+	ldr r9, [fp, #-40]
+	str r0, [r9, #8]
 	movw r0, #0
-	ldr r10, [fp, #-40]
-	str r0, [r10, #12]
+	ldr r9, [fp, #-40]
+	str r0, [r9, #12]
 	movw r0, #5
-	ldr r10, [fp, #-40]
-	str r0, [r10, #16]
+	ldr r9, [fp, #-40]
+	str r0, [r9, #16]
 	movw r0, #9
-	ldr r10, [fp, #-40]
-	str r0, [r10, #20]
+	ldr r9, [fp, #-40]
+	str r0, [r9, #20]
 	movw r0, #1
-	ldr r10, [fp, #-40]
-	str r0, [r10, #24]
+	ldr r9, [fp, #-40]
+	str r0, [r9, #24]
 	movw r0, #2
-	ldr r10, [fp, #-40]
-	str r0, [r10, #28]
+	ldr r9, [fp, #-40]
+	str r0, [r9, #28]
 	movw r0, #8
 	bl malloc
 	ldr r9, [fp, #-40]
 	mov r1, r9
 	ldr r2, =b1$bubbleSort
 	str r2, [r0, #4]
-	ldr r3, [r0, #4]
+	ldr r2, [r0, #4]
 	ldr r9, [fp, #-40]
-	ldr r2, [r9]
+	ldr r5, [r9]
+	mov r3, r2
+	mov r2, r5
 	blx r3
-	ldr r9, [fp, #-44]
-	mov r10, r9
+	mov r10, r4
 	str r10, [fp, #-44]
 main$L102:
 	ldr r9, [fp, #-44]
-	mov r10, r9
-	str r10, [fp, #-44]
+	mov r0, r9
 	ldr r9, [fp, #-40]
-	ldr r0, [r9]
-	ldr r9, [fp, #-44]
-	cmp r9, r0
+	ldr r1, [r9]
+	cmp r0, r1
 	blt main$L103
 main$L104:
 	movw r0, #10
@@ -274,10 +266,9 @@ main$L104:
 	bx lr
 main$L103:
 	ldr r9, [fp, #-40]
-	mov r10, r9
-	str r10, [fp, #-40]
+	mov r4, r9
 	ldr r9, [fp, #-40]
-	ldr r4, [r9]
+	ldr r5, [r9]
 	movw r0, #0
 	ldr r9, [fp, #-44]
 	cmp r9, r0
@@ -288,23 +279,20 @@ main$L105:
 	bl exit
 main$L106:
 	ldr r9, [fp, #-44]
-	cmp r9, r4
+	cmp r9, r5
 	bge main$L105
 main$L107:
 	ldr r9, [fp, #-44]
 	add r0, r9, #1
 	ldr r9, [fp, #-44]
-	add r10, r9, #1
-	str r10, [fp, #-44]
+	add r5, r9, #1
 	movw r1, #4
 	mul r0, r0, r1
-	ldr r9, [fp, #-40]
-	ldr r0, [r9, r0]
+	ldr r0, [r4, r0]
 	bl putint
 	movw r0, #32
 	bl putch
-	ldr r9, [fp, #-44]
-	mov r10, r9
+	mov r10, r5
 	str r10, [fp, #-44]
 	b main$L102
 

@@ -28,17 +28,15 @@ main$L104:
 	bx lr
 main$L103:
 	movw r0, #4
-	ldr r10, [fp, #-40]
-	mul r0, r0, r10
 	ldr r9, [fp, #-40]
-	sub r10, r9, #2
-	str r10, [fp, #-40]
+	mul r0, r0, r9
+	ldr r9, [fp, #-40]
+	sub r4, r9, #2
 	add r0, r0, #2
 	bl putint
 	movw r0, #32
 	bl putch
-	ldr r9, [fp, #-40]
-	mov r10, r9
+	mov r10, r4
 	str r10, [fp, #-40]
 	b main$L102
 

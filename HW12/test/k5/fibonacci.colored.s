@@ -10,8 +10,7 @@ main$L113:
 	movw r0, #4
 	bl malloc
 	mov r1, #0
-	mov r10, #0
-	str r10, [fp, #-40]
+	mov r4, #0
 	ldr r1, =fib$f
 	str r1, [r0]
 	mov r10, r0
@@ -80,8 +79,7 @@ main$L104:
 	bgt main$L105
 main$L106:
 main$L107:
-	ldr r9, [fp, #-40]
-	mov r10, r9
+	mov r10, r4
 	str r10, [fp, #-40]
 main$L110:
 	ldr r9, [fp, #-40]
@@ -128,33 +126,25 @@ main$L105:
 fib$f:
 fib$f$L108:
 	push {r4-r10, fp, lr}
-	sub sp, sp, #16
-	add fp, sp, #48
-	mov r10, r0
-	str r10, [fp, #-48]
+	sub sp, sp, #12
+	add fp, sp, #44
 	mov r10, r1
 	str r10, [fp, #-40]
-	movw r0, #0
+	movw r1, #0
 	ldr r9, [fp, #-40]
-	cmp r9, r0
+	cmp r9, r1
 	beq fib$f$L105
 fib$f$L104:
-	movw r0, #1
+	movw r1, #1
 	ldr r9, [fp, #-40]
-	cmp r9, r0
+	cmp r9, r1
 	beq fib$f$L105
 fib$f$L106:
-	ldr r9, [fp, #-48]
-	ldr r2, [r9]
-	ldr r9, [fp, #-48]
-	mov r0, r9
+	ldr r2, [r0]
 	ldr r9, [fp, #-40]
 	sub r1, r9, #1
-	ldr r9, [fp, #-48]
-	mov r4, r9
-	ldr r9, [fp, #-48]
-	mov r10, r9
-	str r10, [fp, #-48]
+	mov r4, r0
+	mov r5, r0
 	ldr r9, [fp, #-40]
 	sub r10, r9, #2
 	str r10, [fp, #-44]
@@ -163,21 +153,20 @@ fib$f$L106:
 	ldr r0, [r4]
 	mov r4, r1
 	mov r2, r0
-	ldr r9, [fp, #-48]
-	mov r0, r9
+	mov r0, r5
 	ldr r9, [fp, #-44]
 	mov r1, r9
 	blx r2
 	add r0, r4, r0
-	sub sp, fp, #48
-	add sp, sp, #16
+	sub sp, fp, #44
+	add sp, sp, #12
 	pop {r4-r10, fp, lr}
 	bx lr
 fib$f$L105:
 	ldr r9, [fp, #-40]
 	mov r0, r9
-	sub sp, fp, #48
-	add sp, sp, #16
+	sub sp, fp, #44
+	add sp, sp, #12
 	pop {r4-r10, fp, lr}
 	bx lr
 
