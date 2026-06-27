@@ -1,0 +1,51 @@
+public
+int main() {
+int n;
+int i;
+class fib o;
+i = 0;
+o = new fib();
+putch(69);
+putch(110);
+putch(116);
+putch(101);
+putch(114);
+putch(32);
+putch(116);
+putch(104);
+putch(101);
+putch(32);
+putch(110);
+putch(117);
+putch(109);
+putch(98);
+putch(101);
+putch(114);
+putch(32);
+putch(111);
+putch(102);
+putch(32);
+putch(116);
+putch(101);
+putch(114);
+putch(109);
+putch(58);
+n = getint();
+if (n < 0 || n > 47)
+return -1;
+while (i < n) {
+putint(o.f(i));
+putch(32);
+i = i + 1;
+}
+putch(10);
+return 0;
+}
+public class fib {
+public int f(int n) {
+if (n == 0 || n == 1)
+return n;
+else
+return this.f(n - 1) + this.f(n - 2);
+}
+}

@@ -1,0 +1,28 @@
+Function __$main__^main() last_label=103 last_temp=112:
+  Block: Entry Label: L103
+    Exit labels: L101 L100 
+    LABEL L103; def: use: 
+    MOVE_BINOP t10900:int <- (+, Const:1, Const:1); def: t10900 use: 
+    MOVE_BINOP t10400:int <- (*, t10900:int, Const:4); def: t10400 use: t10900 
+    MOVE_EXTCALL t10100:ptr <- malloc(t10400:int); def: t10100 use: t10400 
+    STORE Const:1 -> Mem(t10100:ptr); def: use: t10100 
+    MOVE t10200:ptr <- t10100:ptr; def: t10200 use: t10100 
+    MOVE t10700:ptr <- t10200:ptr; def: t10700 use: t10200 
+    LOAD t10300:int <- Mem(t10200:ptr); def: t10300 use: t10200 
+    CJUMP >= Const:0 Const:0? L101 : L100; def: use: 
+  Block: Entry Label: L101
+    Exit labels: L100 L102 
+    LABEL L101; def: use: 
+    CJUMP >= Const:0 t10300:int? L100 : L102; def: use: t10300 
+  Block: Entry Label: L100
+    Exit labels: 
+    LABEL L100; def: use: 
+    EXTCALL exit(Const:-1); def: use: 
+  Block: Entry Label: L102
+    Exit labels: 
+    LABEL L102; def: use: 
+    MOVE_BINOP t11000:int <- (+, Const:0, Const:1); def: t11000 use: 
+    MOVE_BINOP t11100:int <- (*, t11000:int, Const:4); def: t11100 use: t11000 
+    PTR_CALC t11200:ptr <- t10700:ptr + t11100:int; def: t11200 use: t10700 t11100 
+    STORE Const:0 -> Mem(t11200:ptr); def: use: t11200 
+    RETURN Const:0; def: use: 

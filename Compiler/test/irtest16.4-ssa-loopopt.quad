@@ -1,0 +1,29 @@
+Function __$main__^main() last_label=100 last_temp=111:
+  Block: Entry Label: L100
+    Exit labels: 
+    LABEL L100; 
+    MOVE t10000:ptr <- Const:0; 
+    MOVE t10100:ptr <- Const:0; 
+    MOVE_EXTCALL t10300:ptr <- malloc(Const:12); 
+    PTR_CALC t10800:ptr <- t10300:ptr + Const:8; 
+    STORE Name:A^f -> Mem(t10800:ptr); 
+    MOVE t10001:ptr <- t10300:ptr; 
+    PTR_CALC t10900:ptr <- t10001:ptr + Const:0; 
+    STORE Const:1 -> Mem(t10900:ptr); 
+    MOVE_EXTCALL t10400:ptr <- malloc(Const:12); 
+    PTR_CALC t11000:ptr <- t10400:ptr + Const:8; 
+    STORE Name:B^f -> Mem(t11000:ptr); 
+    MOVE t10101:ptr <- t10400:ptr; 
+    PTR_CALC t11100:ptr <- t10101:ptr + Const:4; 
+    STORE Const:1 -> Mem(t11100:ptr); 
+    RETURN Const:0; 
+Function B^f(t100) last_label=100 last_temp=102:
+  Block: Entry Label: L100
+    Exit labels: 
+    LABEL L100; 
+    RETURN Const:0; 
+Function A^f(t100) last_label=100 last_temp=102:
+  Block: Entry Label: L100
+    Exit labels: 
+    LABEL L100; 
+    RETURN Const:0; 

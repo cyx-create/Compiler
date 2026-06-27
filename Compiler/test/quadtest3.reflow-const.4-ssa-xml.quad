@@ -1,0 +1,30 @@
+<Program kind="PROGRAM" last_label_num="100" last_temp_num="104">
+    <funcdecl kind="FUNCDECL" name="__$main__^main" last_label_num="100" last_temp_num="106">
+        <block kind="BLOCK" entry="100">
+            <label kind="LABEL" name="100"/>
+            <extcall kind="EXTCALL" name="putint">
+                <args>
+                    <arg index="0">
+                        <value kind="CONST" value="1"/>
+                    </arg>
+                </args>
+                <use>
+                    <temp id="10000"/>
+                </use>
+            </extcall>
+            <extcall kind="EXTCALL" name="putch">
+                <args>
+                    <arg index="0">
+                        <value kind="CONST" value="10"/>
+                    </arg>
+                </args>
+            </extcall>
+            <return kind="RETURN">
+                <value kind="CONST" value="1"/>
+                <use>
+                    <temp id="10000"/>
+                </use>
+            </return>
+        </block>
+    </funcdecl>
+</Program>

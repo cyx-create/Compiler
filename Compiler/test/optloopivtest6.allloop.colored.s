@@ -1,0 +1,68 @@
+.balign 4
+.global main
+.section .text
+.arm
+main:
+main$L110:
+	push {r4-r10, fp, lr}
+	sub sp, sp, #12
+	add fp, sp, #44
+	bl getint
+	mov r10, r0
+	str r10, [fp, #-40]
+	mov r0, #10
+	mov r1, #0
+	mov r10, r0
+	str r10, [fp, #-44]
+	mov r4, r1
+main$L102:
+	movw r0, #0
+	ldr r12, [fp, #-44]
+	cmp r12, r0
+	bgt main$L103
+main$L104:
+	mov r0, r4
+	bl putint
+	movw r0, #10
+	bl putch
+	mov r0, r4
+	sub sp, fp, #44
+	add sp, sp, #12
+	pop {r4-r10, fp, lr}
+	bx lr
+main$L103:
+	movw r0, #0
+	ldr r12, [fp, #-40]
+	cmp r12, r0
+	bgt main$L107
+main$L108:
+	mov r0, #4
+	mov r1, r0
+main$L109:
+	ldr r12, [fp, #-44]
+	sub r0, r12, #1
+	mov r10, r0
+	str r10, [fp, #-44]
+	mov r4, r1
+	b main$L102
+main$L107:
+	movw r0, #3
+	ldr r12, [fp, #-44]
+	mul r0, r0, r12
+	add r4, r0, #2
+	mov r0, r4
+	bl putint
+	movw r0, #32
+	bl putch
+	mov r1, r4
+	b main$L109
+
+.global malloc
+.global getint
+.global getch
+.global getarray
+.global putint
+.global putch
+.global putarray
+.global starttime
+.global stoptime

@@ -1,0 +1,7 @@
+Function __$main__^main() last_label=100 last_temp=106:
+  Block: Entry Label: L100
+    Exit labels: 
+    LABEL L100; 
+    EXTCALL putint(Const:1); 
+    EXTCALL putch(Const:10); 
+    RETURN Const:1; 

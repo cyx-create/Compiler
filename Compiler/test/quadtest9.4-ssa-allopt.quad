@@ -1,0 +1,77 @@
+Function __$main__^main() last_label=100 last_temp=146:
+  Block: Entry Label: L100
+    Exit labels: 
+    LABEL L100; 
+    MOVE_EXTCALL t10300:ptr <- malloc(Const:20); 
+    PTR_CALC t11800:ptr <- t10300:ptr + Const:16; 
+    STORE Name:A^f -> Mem(t11800:ptr); 
+    MOVE t10001:ptr <- t10300:ptr; 
+    MOVE_EXTCALL t10400:ptr <- malloc(Const:20); 
+    PTR_CALC t11900:ptr <- t10400:ptr + Const:16; 
+    STORE Name:B^f -> Mem(t11900:ptr); 
+    MOVE t10101:ptr <- t10400:ptr; 
+    PTR_CALC t12000:ptr <- t10001:ptr + Const:16; 
+    LOAD t10700:ptr <- Mem(t12000:ptr); 
+    CALL f[t10700:ptr] (t10001:ptr); 
+    PTR_CALC t12100:ptr <- t10101:ptr + Const:16; 
+    LOAD t10900:ptr <- Mem(t12100:ptr); 
+    CALL f[t10900:ptr] (t10101:ptr); 
+    PTR_CALC t12200:ptr <- t10001:ptr + Const:0; 
+    LOAD t12300:int <- Mem(t12200:ptr); 
+    PTR_CALC t12400:ptr <- t10001:ptr + Const:4; 
+    LOAD t12500:int <- Mem(t12400:ptr); 
+    MOVE_BINOP t12600:int <- (+, t12300:int, t12500:int); 
+    PTR_CALC t12700:ptr <- t10101:ptr + Const:0; 
+    LOAD t12800:int <- Mem(t12700:ptr); 
+    MOVE_BINOP t12900:int <- (+, t12600:int, t12800:int); 
+    PTR_CALC t13000:ptr <- t10101:ptr + Const:8; 
+    LOAD t13100:int <- Mem(t13000:ptr); 
+    MOVE_BINOP t13200:int <- (+, t12900:int, t13100:int); 
+    PTR_CALC t13300:ptr <- t10101:ptr + Const:12; 
+    LOAD t13400:int <- Mem(t13300:ptr); 
+    MOVE_BINOP t11100:int <- (+, t13200:int, t13400:int); 
+    EXTCALL putint(t11100:int); 
+    EXTCALL putch(Const:10); 
+    MOVE t10002:ptr <- t10101:ptr; 
+    PTR_CALC t13500:ptr <- t10002:ptr + Const:0; 
+    LOAD t13600:int <- Mem(t13500:ptr); 
+    PTR_CALC t13700:ptr <- t10101:ptr + Const:0; 
+    LOAD t13800:int <- Mem(t13700:ptr); 
+    MOVE_BINOP t13900:int <- (+, t13600:int, t13800:int); 
+    PTR_CALC t14000:ptr <- t10101:ptr + Const:8; 
+    LOAD t14100:int <- Mem(t14000:ptr); 
+    MOVE_BINOP t14200:int <- (+, t13900:int, t14100:int); 
+    PTR_CALC t14300:ptr <- t10101:ptr + Const:12; 
+    LOAD t14400:int <- Mem(t14300:ptr); 
+    MOVE_BINOP t11400:int <- (+, t14200:int, t14400:int); 
+    EXTCALL putint(t11400:int); 
+    EXTCALL putch(Const:10); 
+    RETURN Const:1; 
+Function A^f(t100) last_label=100 last_temp=106:
+  Block: Entry Label: L100
+    Exit labels: 
+    LABEL L100; 
+    PTR_CALC t10300:ptr <- t100:ptr + Const:0; 
+    STORE Const:1 -> Mem(t10300:ptr); 
+    PTR_CALC t10400:ptr <- t100:ptr + Const:4; 
+    STORE Const:2 -> Mem(t10400:ptr); 
+    RETURN Const:0; 
+Function B^f(t100) last_label=100 last_temp=115:
+  Block: Entry Label: L100
+    Exit labels: 
+    LABEL L100; 
+    PTR_CALC t10300:ptr <- t100:ptr + Const:0; 
+    STORE Const:4 -> Mem(t10300:ptr); 
+    PTR_CALC t10400:ptr <- t100:ptr + Const:8; 
+    STORE Const:30 -> Mem(t10400:ptr); 
+    PTR_CALC t10500:ptr <- t100:ptr + Const:12; 
+    STORE Const:100 -> Mem(t10500:ptr); 
+    PTR_CALC t10600:ptr <- t100:ptr + Const:0; 
+    LOAD t10700:int <- Mem(t10600:ptr); 
+    PTR_CALC t10800:ptr <- t100:ptr + Const:8; 
+    LOAD t10900:int <- Mem(t10800:ptr); 
+    MOVE_BINOP t11000:int <- (+, t10700:int, t10900:int); 
+    PTR_CALC t11100:ptr <- t100:ptr + Const:12; 
+    LOAD t11200:int <- Mem(t11100:ptr); 
+    MOVE_BINOP t11300:int <- (+, t11000:int, t11200:int); 
+    RETURN t11300:int; 

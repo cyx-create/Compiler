@@ -1,0 +1,8 @@
+public int main() {
+return 0;
+}
+public class A {
+public int[] f() {
+return 1;
+}
+}

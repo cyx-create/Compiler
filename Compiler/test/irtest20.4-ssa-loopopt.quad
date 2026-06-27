@@ -1,0 +1,51 @@
+Function __$main__^main() last_label=100 last_temp=133:
+  Block: Entry Label: L100
+    Exit labels: 
+    LABEL L100; 
+    MOVE t10000:ptr <- Const:0; 
+    MOVE t10100:ptr <- Const:0; 
+    PTR_CALC t10800:ptr <- t10000:ptr + Const:0; 
+    LOAD t10900:int <- Mem(t10800:ptr); 
+    PTR_CALC t11000:ptr <- t10000:ptr + Const:4; 
+    LOAD t11100:int <- Mem(t11000:ptr); 
+    MOVE_BINOP t11200:int <- (+, t10900:int, t11100:int); 
+    PTR_CALC t11300:ptr <- t10100:ptr + Const:0; 
+    LOAD t11400:int <- Mem(t11300:ptr); 
+    MOVE_BINOP t11500:int <- (+, t11200:int, t11400:int); 
+    PTR_CALC t11600:ptr <- t10100:ptr + Const:8; 
+    LOAD t11700:int <- Mem(t11600:ptr); 
+    MOVE_BINOP t11800:int <- (+, t11500:int, t11700:int); 
+    PTR_CALC t11900:ptr <- t10100:ptr + Const:12; 
+    LOAD t12000:int <- Mem(t11900:ptr); 
+    MOVE_BINOP t10300:int <- (+, t11800:int, t12000:int); 
+    EXTCALL putint(t10300:int); 
+    MOVE t10001:ptr <- t10100:ptr; 
+    PTR_CALC t12100:ptr <- t10001:ptr + Const:0; 
+    LOAD t12200:int <- Mem(t12100:ptr); 
+    PTR_CALC t12300:ptr <- t10001:ptr + Const:4; 
+    LOAD t12400:int <- Mem(t12300:ptr); 
+    MOVE_BINOP t12500:int <- (+, t12200:int, t12400:int); 
+    PTR_CALC t12600:ptr <- t10100:ptr + Const:0; 
+    LOAD t12700:int <- Mem(t12600:ptr); 
+    MOVE_BINOP t12800:int <- (+, t12500:int, t12700:int); 
+    PTR_CALC t12900:ptr <- t10100:ptr + Const:8; 
+    LOAD t13000:int <- Mem(t12900:ptr); 
+    MOVE_BINOP t13100:int <- (+, t12800:int, t13000:int); 
+    PTR_CALC t13200:ptr <- t10100:ptr + Const:12; 
+    LOAD t13300:int <- Mem(t13200:ptr); 
+    MOVE_BINOP t10500:int <- (+, t13100:int, t13300:int); 
+    EXTCALL putint(t10500:int); 
+    RETURN Const:0; 
+Function B^f(t100) last_label=100 last_temp=110:
+  Block: Entry Label: L100
+    Exit labels: 
+    LABEL L100; 
+    PTR_CALC t10300:ptr <- t100:ptr + Const:0; 
+    LOAD t10400:int <- Mem(t10300:ptr); 
+    PTR_CALC t10500:ptr <- t100:ptr + Const:8; 
+    LOAD t10600:int <- Mem(t10500:ptr); 
+    MOVE_BINOP t10700:int <- (+, t10400:int, t10600:int); 
+    PTR_CALC t10800:ptr <- t100:ptr + Const:12; 
+    LOAD t10900:int <- Mem(t10800:ptr); 
+    MOVE_BINOP t11000:int <- (+, t10700:int, t10900:int); 
+    RETURN t11000:int; 

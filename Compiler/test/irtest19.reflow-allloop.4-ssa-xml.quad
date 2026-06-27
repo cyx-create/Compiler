@@ -1,0 +1,169 @@
+<Program kind="PROGRAM" last_label_num="100" last_temp_num="112">
+    <funcdecl kind="FUNCDECL" name="B^g" last_label_num="100" last_temp_num="102">
+        <params>
+            <param temp="100"/>
+        </params>
+        <block kind="BLOCK" entry="100">
+            <label kind="LABEL" name="100"/>
+            <return kind="RETURN">
+                <value kind="CONST" value="0"/>
+            </return>
+        </block>
+    </funcdecl>
+    <funcdecl kind="FUNCDECL" name="C^f" last_label_num="100" last_temp_num="102">
+        <params>
+            <param temp="100"/>
+        </params>
+        <block kind="BLOCK" entry="100">
+            <label kind="LABEL" name="100"/>
+            <return kind="RETURN">
+                <value kind="CONST" value="0"/>
+            </return>
+        </block>
+    </funcdecl>
+    <funcdecl kind="FUNCDECL" name="D^f" last_label_num="100" last_temp_num="112">
+        <params>
+            <param temp="100"/>
+        </params>
+        <block kind="BLOCK" entry="100">
+            <label kind="LABEL" name="100"/>
+            <ptrcalc kind="PTR_CALC">
+                <dst kind="TEMP" id="10500" type="ptr"/>
+                <ptr kind="TEMP" id="100" type="ptr"/>
+                <offset kind="CONST" value="16"/>
+                <def>
+                    <temp id="10500"/>
+                </def>
+                <use>
+                    <temp id="100"/>
+                </use>
+            </ptrcalc>
+            <load kind="LOAD" dst="10600" temp_type="int">
+                <src kind="TEMP" id="10500" type="ptr"/>
+                <def>
+                    <temp id="10600"/>
+                </def>
+                <use>
+                    <temp id="10500"/>
+                </use>
+            </load>
+            <ptrcalc kind="PTR_CALC">
+                <dst kind="TEMP" id="10700" type="ptr"/>
+                <ptr kind="TEMP" id="100" type="ptr"/>
+                <offset kind="CONST" value="24"/>
+                <def>
+                    <temp id="10700"/>
+                </def>
+                <use>
+                    <temp id="100"/>
+                </use>
+            </ptrcalc>
+            <load kind="LOAD" dst="10800" temp_type="ptr">
+                <src kind="TEMP" id="10700" type="ptr"/>
+                <def>
+                    <temp id="10800"/>
+                </def>
+                <use>
+                    <temp id="10700"/>
+                </use>
+            </load>
+            <ptrcalc kind="PTR_CALC">
+                <dst kind="TEMP" id="10900" type="ptr"/>
+                <ptr kind="TEMP" id="10800" type="ptr"/>
+                <offset kind="CONST" value="16"/>
+                <def>
+                    <temp id="10900"/>
+                </def>
+                <use>
+                    <temp id="10800"/>
+                </use>
+            </ptrcalc>
+            <load kind="LOAD" dst="11000" temp_type="int">
+                <src kind="TEMP" id="10900" type="ptr"/>
+                <def>
+                    <temp id="11000"/>
+                </def>
+                <use>
+                    <temp id="10900"/>
+                </use>
+            </load>
+            <movebinop kind="MOVE_BINOP" dst="10200" temp_type="int" op="+">
+                <left kind="TEMP" id="10600" type="int"/>
+                <right kind="TEMP" id="11000" type="int"/>
+                <def>
+                    <temp id="10200"/>
+                </def>
+                <use>
+                    <temp id="10600"/>
+                    <temp id="11000"/>
+                </use>
+            </movebinop>
+            <extcall kind="EXTCALL" name="putint">
+                <args>
+                    <arg index="0">
+                        <value kind="TEMP" id="10200" type="int"/>
+                    </arg>
+                </args>
+                <use>
+                    <temp id="10200"/>
+                </use>
+            </extcall>
+            <ptrcalc kind="PTR_CALC">
+                <dst kind="TEMP" id="11100" type="ptr"/>
+                <ptr kind="TEMP" id="100" type="ptr"/>
+                <offset kind="CONST" value="28"/>
+                <def>
+                    <temp id="11100"/>
+                </def>
+                <use>
+                    <temp id="100"/>
+                </use>
+            </ptrcalc>
+            <load kind="LOAD" dst="11200" temp_type="ptr">
+                <src kind="TEMP" id="11100" type="ptr"/>
+                <def>
+                    <temp id="11200"/>
+                </def>
+                <use>
+                    <temp id="11100"/>
+                </use>
+            </load>
+            <return kind="RETURN">
+                <value kind="TEMP" id="11200" type="ptr"/>
+                <use>
+                    <temp id="11200"/>
+                </use>
+            </return>
+        </block>
+    </funcdecl>
+    <funcdecl kind="FUNCDECL" name="B^f" last_label_num="100" last_temp_num="102">
+        <params>
+            <param temp="100"/>
+        </params>
+        <block kind="BLOCK" entry="100">
+            <label kind="LABEL" name="100"/>
+            <return kind="RETURN">
+                <value kind="CONST" value="0"/>
+            </return>
+        </block>
+    </funcdecl>
+    <funcdecl kind="FUNCDECL" name="__$main__^main" last_label_num="100" last_temp_num="101">
+        <block kind="BLOCK" entry="100">
+            <label kind="LABEL" name="100"/>
+            <return kind="RETURN">
+                <value kind="CONST" value="0"/>
+            </return>
+        </block>
+    </funcdecl>
+    <funcdecl kind="FUNCDECL" name="A^f" last_label_num="100" last_temp_num="102">
+        <params>
+            <param temp="100"/>
+        </params>
+        <block kind="BLOCK" entry="100">
+            <label kind="LABEL" name="100"/>
+            <return kind="RETURN">
+                <value kind="CONST" value="0"/>
+            </return>
+        </block>
+    </funcdecl>
+</Program>
